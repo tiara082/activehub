@@ -5,7 +5,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\MatchController;
 use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\Owner\VenueController;
+use App\Http\Controllers\VenueController ;
+use App\Http\Controllers\Owner\VenueController as OwnerVenueController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 
@@ -22,6 +23,8 @@ Route::get('/fields/{field}', [FieldController::class, 'show'])->name('fields.sh
 Route::get('/matches', [MatchController::class, 'index'])->name('matches.index');
 Route::get('/matches/{match}', [MatchController::class, 'show'])->name('matches.show');
 
+Route::get('/venue', [VenueController::class, 'index'])->name('venue.index');
+Route::get('/venue/{id}', [VenueController::class,'show'])->name('venue.show');
 
 
 Route::middleware('guest')->group(function () {
