@@ -157,7 +157,7 @@
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      padding: 72px 64px 52px;
+      padding: 36px 64px 52px;
       overflow-y: auto;
       scrollbar-width: thin;
       scrollbar-color: #8aac5a #f4f7f0;
@@ -179,7 +179,7 @@
     .form-wrap {
       width: 100%;
       max-width: 600px;
-      padding-block: 20px 24px;
+      padding-block: 8px 24px;
     }
 
     .form-header h1 {
@@ -755,10 +755,6 @@
           <a href="#">Syarat &amp; ketentuan</a>
           dan
           <a href="#">Kebijakan privasi</a>.
-        </p>
-
-        <p class="auth-switch">
-          Sudah punya akun? <a href="{{ route('login') }}">Masuk sekarang</a>
         </p>
       </form>
     </div>

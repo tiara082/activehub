@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\MatchController;
 use App\Http\Controllers\CheckoutController;
@@ -41,7 +42,7 @@ Route::middleware('guest')->group(function () {
 // Aktifkan lagi setelah review desain selesai.
 
 // Logout
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::match(['get', 'post'], '/logout', LogoutController::class)->name('logout');
 
 // Checkout
 Route::get('/checkout/{booking}', [CheckoutController::class, 'show'])->name('checkout.show');
