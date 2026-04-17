@@ -37,33 +37,27 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 });
 
+// Temporary: auth/role middleware dimatikan agar halaman bisa dicek tanpa login.
+// Aktifkan lagi setelah review desain selesai.
 
-Route::middleware('auth')->group(function () {
-    // Logout
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+// Logout
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // Checkout (user yang sudah booking)
-    Route::get('/checkout/{booking}', [CheckoutController::class, 'show'])->name('checkout.show');
-    Route::post('/checkout/{booking}/pay', [CheckoutController::class, 'pay'])->name('checkout.pay');
+// Checkout
+Route::get('/checkout/{booking}', [CheckoutController::class, 'show'])->name('checkout.show');
+Route::post('/checkout/{booking}/pay', [CheckoutController::class, 'pay'])->name('checkout.pay');
 
-  
-    Route::middleware('role:user')->group(function () {
-        // Form create public match (hanya user yang punya booking)
-        Route::get('/matches/create', [MatchController::class, 'create'])->name('matches.create');
-        Route::post('/matches', [MatchController::class, 'store'])->name('matches.store');
-    });
+// Form create public match
+Route::get('/matches/create', [MatchController::class, 'create'])->name('matches.create');
+Route::post('/matches', [MatchController::class, 'store'])->name('matches.store');
 
+// Owner area
+Route::prefix('owner')->name('owner.')->group(function () {
+    Route::get('/dashboard', [OwnerDashboardController::class, 'index'])->name('dashboard');
+    Route::resource('venues', OwnerVenueController::class);
+});
 
-    Route::middleware('role:owner')->prefix('owner')->name('owner.')->group(function () {
-        // Dashboard owner
-        Route::get('/dashboard', [OwnerDashboardController::class, 'index'])->name('dashboard');
-
-        // Manajemen venue (form create venue ada di sini)
-        Route::resource('venues', VenueController::class);
-    });
-
-    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
-        // Dashboard admin
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-    });
+// Admin area
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 });
