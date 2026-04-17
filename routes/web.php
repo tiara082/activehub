@@ -13,44 +13,30 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 
 
 
-// Landing page
-Route::get('/', fn () => view('home'))->name('home');
+Route::get('/', fn () => view('landing.index'))->name('home');
 
-// Daftar lapangan & detail lapangan
+// MATCH
+Route::get('/matches', fn () => view('pubmatch.list'))->name('matches.index');
+Route::get('/matches/create', fn () => view('pubmatch.create'))->name('matches.create');
+
+// FIELD
 Route::get('/fields', [FieldController::class, 'index'])->name('fields.index');
 Route::get('/fields/{field}', [FieldController::class, 'show'])->name('fields.show');
 
-// Daftar public match & detail public match
-Route::get('/matches', [MatchController::class, 'index'])->name('matches.index');
-Route::get('/matches/{match}', [MatchController::class, 'show'])->name('matches.show');
+// VENUE
+Route::get('/venues/create', fn () => view('venue.create'))->name('venues.create');
 
-Route::get('/venue', [VenueController::class, 'index'])->name('venue.index');
-Route::get('/venue/{id}', [VenueController::class,'show'])->name('venue.show');
-
-
-Route::middleware('guest')->group(function () {
-    // Login
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-
-    // Register
-    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register'])->name('register.post');
-});
+// PAYMENT
+Route::get('/payment', fn () => view('booking.index'))->name('payment.index');
 
 // Temporary: auth/role middleware dimatikan agar halaman bisa dicek tanpa login.
 // Aktifkan lagi setelah review desain selesai.
 
-// Logout
-Route::match(['get', 'post'], '/logout', LogoutController::class)->name('logout');
+Route::middleware('auth')->group(function () {
 
 // Checkout
 Route::get('/checkout/{booking}', [CheckoutController::class, 'show'])->name('checkout.show');
 Route::post('/checkout/{booking}/pay', [CheckoutController::class, 'pay'])->name('checkout.pay');
-
-// Form create public match
-Route::get('/matches/create', [MatchController::class, 'create'])->name('matches.create');
-Route::post('/matches', [MatchController::class, 'store'])->name('matches.store');
 
 // Owner area
 Route::prefix('owner')->name('owner.')->group(function () {
@@ -58,7 +44,10 @@ Route::prefix('owner')->name('owner.')->group(function () {
     Route::resource('venues', OwnerVenueController::class);
 });
 
-// Admin area
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+        // Dashboard admin
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    });
+
+     
 });
