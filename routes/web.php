@@ -17,6 +17,10 @@ Route::get('/', fn () => view('landing.index'))->name('home');
 Route::get('/matches', fn () => view('pubmatch.list'))->name('matches.index');
 Route::get('/matches/create', fn () => view('pubmatch.create'))->name('matches.create');
 
+// PUBLIC MATCH
+Route::get('/pubmatchdetail', function () {
+    return view('pubmatch.detail');})->name('pubmatch.detail');
+
 // FIELD
 Route::get('/fields', [FieldController::class, 'index'])->name('fields.index');
 Route::get('/fields/{field}', [FieldController::class, 'show'])->name('fields.show');

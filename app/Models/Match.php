@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Match extends Model
+class matches extends Model
 {
     // Karena nama modelnya sudah 'Match' dan tabelnya 'matches', 
     // Laravel otomatis mengenali tabel 'matches' tanpa perlu $table lagi.
