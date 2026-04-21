@@ -8,14 +8,14 @@
             <div class="relative grid grid-cols-2 bg-[#1c3a0c]/40 p-1 rounded-xl w-[260px]">
 
                 <div 
-                    class="absolute top-1 bottom-1 w-1/2 bg-[#c8e63a] rounded-lg transition-all duration-300"
+                    class="absolute top-1 bottom-1 w-1/2 bg-yellow-300 rounded-lg transition-all duration-300"
                     :class="tab === 'pemilik' ? 'translate-x-0' : 'translate-x-full'"
                 ></div>
 
                 <button 
                     @click="tab = 'pemilik'"
                     class="relative z-10 py-2 text-sm font-semibold uppercase transition text-center"
-                    :class="tab === 'pemilik' ? 'text-[#1c3a0c]' : 'text-[#c8e63a]/70'"
+                    :class="tab === 'pemilik' ? 'text-[#1c3a0c]' : 'text-yellow-300/70'"
                 >
                     Pemilik
                 </button>
@@ -23,7 +23,7 @@
                 <button 
                     @click="tab = 'penyewa'"
                     class="relative z-10 py-2 text-sm font-semibold uppercase transition text-center"
-                    :class="tab === 'penyewa' ? 'text-[#1c3a0c]' : 'text-[#c8e63a]/70'"
+                    :class="tab === 'penyewa' ? 'text-[#1c3a0c]' : 'text-yellow-300/70'"
                 >
                     Penyewa
                 </button>
@@ -42,7 +42,7 @@
                     x-transition:enter-end="opacity-100 translate-y-0"
                 >
                     <h1 style="font-family:'Bebas Neue',sans-serif;"
-                        class="text-[#c8e63a] uppercase leading-[0.9]">
+                        class="text-yellow-300 uppercase leading-[0.9]">
 
                         <span class="block whitespace-nowrap text-[clamp(1.8rem,5vw,3.8rem)]">
                             Kelola Venue Lebih Praktis
@@ -54,7 +54,7 @@
 
                     </h1>
 
-                    <p class="text-[#c8e63a]/60 mt-5 max-w-md text-sm leading-relaxed">
+                    <p class="text-yellow-300/60 mt-5 max-w-md text-sm leading-relaxed">
                         Digitalkan sistem reservasi lapangan Anda. Pantau pendapatan secara real-time,
                         atur jadwal otomatis, dan jangkau lebih banyak komunitas olahraga di Malang.
                     </p>
@@ -67,7 +67,7 @@
                     x-transition:enter-end="opacity-100 translate-y-0"
                 >
                     <h1 style="font-family:'Bebas Neue',sans-serif;"
-                        class="text-[#c8e63a] uppercase leading-[0.9]">
+                        class="text-yellow-300 uppercase leading-[0.9]">
 
                         <span class="block whitespace-nowrap text-[clamp(1.8rem,5vw,3.8rem)]">
                             Cari Lawan Main
@@ -79,7 +79,7 @@
 
                     </h1>
 
-                    <p class="text-[#c8e63a]/60 mt-5 max-w-md text-sm leading-relaxed">
+                    <p class="text-yellow-300/60 mt-5 max-w-md text-sm leading-relaxed">
                         Gak perlu ribet chat admin. Pilih lapangan favoritmu, join public match yang tersedia,
                         dan bayar instan tanpa drama. Olahraga jadi makin gampang!
                     </p>
@@ -90,7 +90,7 @@
             <div class="flex justify-end">
 
                 <a href="#"
-                   class="group flex items-end gap-2 text-[#c8e63a]">
+                   class="group flex items-end gap-2 text-yellow-300">
 
                     <!-- TEXT -->
                     <div style="font-family:'Bebas Neue',sans-serif;"
@@ -107,7 +107,7 @@
                     <svg width="50" height="50" viewBox="0 0 24 24" fill="none"
                          class="rotate-[45deg] transition group-hover:translate-x-2 group-hover:-translate-y-2">
                         <path d="M4 12h12M10 6l6 6-6 6" 
-                              stroke="#c8e63a" 
+                              stroke="#fde047" 
                               stroke-width="2"/>
                     </svg>
 

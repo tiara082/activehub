@@ -2,7 +2,7 @@
             bg-[#0b3d0b] shadow-sm">
 
     {{-- LOGO --}}
-    <a href="/" class="font-display text-2xl font-black text-[#c8e63a] tracking-tight">
+    <a href="/" class="font-display text-2xl font-black text-yellow-300 tracking-tight">
         ActiveHub
     </a>
 
@@ -16,9 +16,10 @@
         </a>
 
         {{-- Cari Lapangan --}}
-        <a href="{{ route('fields.index') }}"
+        <a href="{{ route('venue.index') }}"
            class="text-white/80 text-sm font-medium hover:text-white transition-colors">
             Cari Lapangan
+
         </a>
 
         {{-- CART ICON (NEW) --}}
@@ -35,7 +36,7 @@
             </svg>
 
             {{-- badge --}}
-            <span class="absolute -top-2 -right-2 bg-[#c8e63a] text-[#0b3d0b] text-xs font-bold
+            <span class="absolute -top-2 -right-2 bg-yellow-300 text-[#0b3d0b] text-xs font-bold
                          w-5 h-5 flex items-center justify-center rounded-full">
                 0
             </span>

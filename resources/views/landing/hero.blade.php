@@ -34,7 +34,7 @@
             <!-- AKTIVITAS -->
             <div class="group flex items-center gap-3 flex-1 px-5 py-4 cursor-pointer relative">
 
-                <div class="w-10 h-10 bg-[#c8e63a] rounded-lg flex items-center justify-center">
+                <div class="w-10 h-10 bg-yellow-300 rounded-lg flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#1c3a0c" stroke-width="2" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13 3L4 14h7v7l9-11h-7z"/>
                     </svg>
@@ -67,7 +67,7 @@
 
             <!-- LOKASI -->
             <div class="flex items-center gap-3 flex-1 px-5 py-4">
-                <div class="w-10 h-10 bg-[#c8e63a] rounded-lg flex items-center justify-center">
+                <div class="w-10 h-10 bg-yellow-300 rounded-lg flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#1c3a0c" stroke-width="2" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V4.618a1 1 0 011.553-.832L9 6m0 14l6-3m-6 3V6m6 11l4.447 2.276A1 1 0 0021 18.382V6.618a1 1 0 00-.553-.894L15 3m0 14V3m0 0L9 6"/>
                     </svg>
@@ -84,7 +84,7 @@
             <!-- OLAHRAGA -->
             <div class="group flex items-center gap-3 flex-1 px-5 py-4 cursor-pointer relative">
 
-                <div class="w-10 h-10 bg-[#c8e63a] rounded-lg flex items-center justify-center">
+                <div class="w-10 h-10 bg-yellow-300 rounded-lg flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#1c3a0c" stroke-width="2" class="w-5 h-5">
                         <circle cx="12" cy="12" r="9"/>
                         <path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18"/>
@@ -125,10 +125,10 @@
 
             <!-- BUTTON -->
             <a href="{{ route('fields.index') }}"
-               class="bg-[#c8e63a] text-[#1c3a0c] font-semibold text-sm 
+               class="bg-yellow-300 text-[#1c3a0c] font-semibold text-sm 
                       flex items-center justify-center px-7 py-4 
                       rounded-r-xl 
-                      hover:bg-[#d9f24a] transition-all hover:scale-[1.03]">
+                      hover:bg-yellow-400 transition-all hover:scale-[1.03]">
                 Temukan →
             </a>
 

@@ -23,7 +23,7 @@
                                 group-hover:translate-y-0 group-hover:opacity-100
                                 transition duration-500">
 
-                        <div class="w-11 h-11 bg-[#c8e63a] rounded-full flex items-center justify-center mb-4
+                        <div class="w-11 h-11 bg-yellow-300 rounded-full flex items-center justify-center mb-4
                                     transition duration-300 group-hover:scale-110 group-hover:rotate-6">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#1c3a0c]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <rect x="3" y="4" width="18" height="18" rx="2"/>
@@ -45,7 +45,7 @@
                                 Pilih jadwal, cek ketersediaan, dan booking lapangan tanpa ribet.
                             </p>
 
-                            <div class="w-0 h-[2px] bg-[#c8e63a] mt-4 
+                            <div class="w-0 h-[2px] bg-yellow-300 mt-4 
                                         transition-all duration-500 delay-300
                                         group-hover:w-16"></div>
                         </div>
@@ -71,7 +71,7 @@
                             group-hover:translate-y-0 group-hover:opacity-100
                             transition duration-500">
 
-                    <div class="w-11 h-11 bg-[#c8e63a] rounded-full flex items-center justify-center mb-4
+                    <div class="w-11 h-11 bg-yellow-300 rounded-full flex items-center justify-center mb-4
                                 transition duration-300 group-hover:scale-110 group-hover:rotate-6">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#1c3a0c]" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -91,7 +91,7 @@
                             Temukan match terbuka dan gabung main bareng pemain lain.
                         </p>
 
-                        <div class="w-0 h-[2px] bg-[#c8e63a] mt-4 transition-all duration-500 group-hover:w-16"></div>
+                        <div class="w-0 h-[2px] bg-yellow-300 mt-4 transition-all duration-500 group-hover:w-16"></div>
                     </div>
 
                 </div>

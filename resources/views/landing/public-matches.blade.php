@@ -52,11 +52,11 @@
                                 12:00 – 14:00
                             </p>
 
-                            <p class="text-[#c8e63a] text-sm font-semibold mt-1">
+                            <p class="text-yellow-300 text-sm font-semibold mt-1">
                                 25k / orang
                             </p>
 
-                            <div class="w-0 h-[2px] bg-[#c8e63a] mt-2 
+                            <div class="w-0 h-[2px] bg-yellow-300 mt-2 
                                         transition-all duration-500 group-hover:w-14"></div>
                         </div>
 
@@ -65,7 +65,7 @@
                 </div>
 
                 <!-- SLOT BADGE -->
-                <span class="absolute top-3 right-3 bg-[#c8e63a] text-[#1c3a0c] text-xs font-bold px-2 py-1 rounded-md
+                <span class="absolute top-3 right-3 bg-yellow-300 text-[#1c3a0c] text-xs font-bold px-2 py-1 rounded-md
                              opacity-0 group-hover:opacity-100
                              transition duration-300">
                     sisa 1 slot
@@ -103,18 +103,18 @@
                                 18:00 – 20:00
                             </p>
 
-                            <p class="text-[#c8e63a] text-sm font-semibold mt-1">
+                            <p class="text-yellow-300 text-sm font-semibold mt-1">
                                 20k / orang
                             </p>
 
-                            <div class="w-0 h-[2px] bg-[#c8e63a] mt-2 
+                            <div class="w-0 h-[2px] bg-yellow-300 mt-2 
                                         transition-all duration-500 group-hover:w-14"></div>
                         </div>
                     </div>
 
                 </div>
 
-                <span class="absolute top-3 right-3 bg-[#c8e63a] text-[#1c3a0c] text-xs font-bold px-2 py-1 rounded-md
+                <span class="absolute top-3 right-3 bg-yellow-300 text-[#1c3a0c] text-xs font-bold px-2 py-1 rounded-md
                              opacity-0 group-hover:opacity-100
                              transition duration-300">
                     sisa 2 slot
@@ -152,18 +152,18 @@
                                 16:00 – 18:00
                             </p>
 
-                            <p class="text-[#c8e63a] text-sm font-semibold mt-1">
+                            <p class="text-yellow-300 text-sm font-semibold mt-1">
                                 15k / orang
                             </p>
 
-                            <div class="w-0 h-[2px] bg-[#c8e63a] mt-2 
+                            <div class="w-0 h-[2px] bg-yellow-300 mt-2 
                                         transition-all duration-500 group-hover:w-14"></div>
                         </div>
                     </div>
 
                 </div>
 
-                <span class="absolute top-3 right-3 bg-[#c8e63a] text-[#1c3a0c] text-xs font-bold px-2 py-1 rounded-md
+                <span class="absolute top-3 right-3 bg-yellow-300 text-[#1c3a0c] text-xs font-bold px-2 py-1 rounded-md
                              opacity-0 group-hover:opacity-100
                              transition duration-300">
                     sisa 3 slot
@@ -176,8 +176,8 @@
         <!-- CTA -->
         <div class="flex justify-center mt-12">
             <a href="{{ route('matches.index') }}"
-               class="bg-[#c8e63a] text-[#1c3a0c] font-bold text-sm px-8 py-3 rounded-xl
-                      hover:bg-[#d4ef4a] transition">
+               class="bg-yellow-300 text-[#1c3a0c] font-bold text-sm px-8 py-3 rounded-xl
+                      hover:bg-yellow-400 transition">
                 Lihat Semua →
             </a>
         </div>

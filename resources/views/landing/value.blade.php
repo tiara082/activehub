@@ -25,7 +25,7 @@
                         <button class="accordion-btn w-full flex items-start gap-3 text-left">
 
                             <!-- ICON -->
-                            <div class="icon w-9 h-9 bg-[#c8e63a] rounded-full flex items-center justify-center shrink-0 transition">
+                            <div class="icon w-9 h-9 bg-yellow-300 rounded-full flex items-center justify-center shrink-0 transition">
                                 <svg class="w-4 h-4 text-[#1c3a0c]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <rect x="3" y="4" width="18" height="18" rx="2"/>
                                     <line x1="8" y1="2" x2="8" y2="6"/>
@@ -47,7 +47,7 @@
                             </div>
 
                             <!-- INDICATOR -->
-                            <div class="indicator w-[2px] h-0 bg-[#c8e63a] transition-all duration-500"></div>
+                            <div class="indicator w-[2px] h-0 bg-yellow-300 transition-all duration-500"></div>
 
                         </button>
                     </div>
@@ -57,7 +57,7 @@
 
                         <button class="accordion-btn w-full flex items-start gap-3 text-left">
 
-                            <div class="icon w-9 h-9 bg-[#c8e63a] rounded-full flex items-center justify-center shrink-0 transition">
+                            <div class="icon w-9 h-9 bg-yellow-300 rounded-full flex items-center justify-center shrink-0 transition">
                                 <svg class="w-4 h-4 text-[#1c3a0c]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path d="M12 21s6-5.5 6-10a6 6 0 1 0-12 0c0 4.5 6 10 6 10z"/>
                                     <circle cx="12" cy="11" r="2"/>
@@ -76,7 +76,7 @@
                                 </div>
                             </div>
 
-                            <div class="indicator w-[2px] h-0 bg-[#c8e63a] transition-all duration-500"></div>
+                            <div class="indicator w-[2px] h-0 bg-yellow-300 transition-all duration-500"></div>
 
                         </button>
                     </div>
@@ -86,7 +86,7 @@
 
                         <button class="accordion-btn w-full flex items-start gap-3 text-left">
 
-                            <div class="icon w-9 h-9 bg-[#c8e63a] rounded-full flex items-center justify-center shrink-0 transition">
+                            <div class="icon w-9 h-9 bg-yellow-300 rounded-full flex items-center justify-center shrink-0 transition">
                                 <svg class="w-4 h-4 text-[#1c3a0c]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <circle cx="9" cy="7" r="4"/>
                                     <path d="M17 11c2 0 4 2 4 4v1H13"/>
@@ -106,7 +106,7 @@
                                 </div>
                             </div>
 
-                            <div class="indicator w-[2px] h-0 bg-[#c8e63a] transition-all duration-500"></div>
+                            <div class="indicator w-[2px] h-0 bg-yellow-300 transition-all duration-500"></div>
 
                         </button>
                     </div>

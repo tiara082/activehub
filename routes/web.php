@@ -29,6 +29,9 @@ Route::get('/fields/{field}', [FieldController::class, 'show'])->name('fields.sh
 Route::get('/venues/create', fn () => view('venue.create'))->name('venues.create');
 Route::get('/venuesdetail', fn () => view('detail-venue'))->name('detail.venue');
 
+Route::get('/venues', [VenueController::class, 'index'])->name('venue.index');
+Route::get('/venues/{id}', [VenueController::class,'show'])->name('venue.show');
+
 
 // PAYMENT
 Route::get('/payment', fn () => view('booking.index'))->name('payment.index');

@@ -70,7 +70,7 @@ class VenueController extends Controller
 
         $venue=$venues[$id];
 
-        return view('venues.show', compact('venue'));
+        return view('venue.show', compact('venue'));
     }
 
     public function store(Request $request)
