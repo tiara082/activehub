@@ -11,8 +11,6 @@ use App\Http\Controllers\Owner\VenueController as OwnerVenueController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 
-
-
 Route::get('/', fn () => view('landing.index'))->name('home');
 
 // MATCH
@@ -25,6 +23,8 @@ Route::get('/fields/{field}', [FieldController::class, 'show'])->name('fields.sh
 
 // VENUE
 Route::get('/venues/create', fn () => view('venue.create'))->name('venues.create');
+Route::get('/venuesdetail', fn () => view('detail-venue'))->name('detail.venue');
+
 
 // PAYMENT
 Route::get('/payment', fn () => view('booking.index'))->name('payment.index');
