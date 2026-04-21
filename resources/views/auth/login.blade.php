@@ -451,6 +451,17 @@
       margin-top: 6px;
     }
 
+    .success-box {
+      background: #edfbe9;
+      border: 1px solid #9ad58a;
+      color: #1f6b2a;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
     /* ── Role Switcher ── */
     .role-switcher {
       display: flex;
@@ -658,6 +669,12 @@
         <h1 id="formTitle">Masuk sebagai <span id="roleLabel">Pemain</span></h1>
         <p>Belum punya akun? <a href="{{ route('register') }}">Daftar</a></p>
       </header>
+
+      @if (session('success'))
+      <div class="success-box" role="status">
+        <p>{{ session('success') }}</p>
+      </div>
+      @endif
 
       @if ($errors->any())
       <div class="error-box" role="alert">

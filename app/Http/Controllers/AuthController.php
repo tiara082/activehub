@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
-    // --- Login ---
+    // ─── Login ──────────────────────────────────────────────────────────────
 
     public function showLogin()
     {
@@ -21,10 +24,15 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        $loginValue = $request->input('login');
+        $loginValue = trim($request->input('login'));
 
         // Deteksi: email atau nomor HP
         $field = filter_var($loginValue, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+
+        // Normalise phone: hapus spasi, awali dengan 0 jika perlu
+        if ($field === 'phone') {
+            $loginValue = $this->normalisePhone($loginValue);
+        }
 
         $credentials = [
             $field     => $loginValue,
@@ -42,7 +50,7 @@ class AuthController extends Controller
         ])->onlyInput('login');
     }
 
-    // --- Register ---
+    // ─── Register ───────────────────────────────────────────────────────────
 
     public function showRegister()
     {
@@ -51,21 +59,33 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $data = $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'email', 'unique:users'],
-            'phone'    => ['nullable', 'string', 'max:20'],
-            'role'     => ['required', 'in:owner,user'],
-            'password' => ['required', 'confirmed', 'min:8'],
+        $request->validate([
+            'name'                  => ['required', 'string', 'max:255'],
+            'email'                 => ['required', 'email', 'max:255', 'unique:users,email'],
+            'phone'                 => ['nullable', 'string', 'max:20'],
+            'role'                  => ['required', 'in:owner,user'],
+            'password'              => ['required', 'confirmed', Password::min(8)],
         ]);
 
-        $user = \App\Models\User::create($data);
-        Auth::login($user);
+        // Normalise phone: simpan tanpa prefix +62 marker duplikat
+        $phone = $request->input('phone')
+            ? $this->normalisePhone($request->input('phone'))
+            : null;
 
-        return $this->redirectByRole();
+        User::create([
+            'name'     => $request->input('name'),
+            'email'    => $request->input('email'),
+            'phone'    => $phone,
+            'role'     => $request->input('role'),
+            'password' => Hash::make($request->input('password')),
+        ]);
+
+        return redirect()
+            ->route('login')
+            ->with('success', 'Registrasi berhasil. Silakan login dulu.');
     }
 
-    // --- Logout ---
+    // ─── Logout ─────────────────────────────────────────────────────────────
 
     public function logout(Request $request)
     {
@@ -76,8 +96,11 @@ class AuthController extends Controller
         return redirect()->route('login');
     }
 
-    // --- Helper ---
+    // ─── Helpers ────────────────────────────────────────────────────────────
 
+    /**
+     * Redirect setelah login/register sesuai role user.
+     */
     private function redirectByRole()
     {
         return match (Auth::user()->role) {
@@ -85,5 +108,31 @@ class AuthController extends Controller
             'owner' => redirect()->route('owner.dashboard'),
             default => redirect()->route('home'),
         };
+    }
+
+    /**
+     * Normalise nomor HP ke format lokal (08xxxx).
+     * User menginput tanpa prefix +62 karena ada span "+62" di form,
+     * tapi kita simpan dengan awalan 0 agar konsisten.
+     *
+     * Contoh: "812 3456 7890" → "08123456789"
+     *         "+628123456789" → "08123456789"
+     */
+    private function normalisePhone(string $phone): string
+    {
+        // Hapus semua karakter non-digit
+        $digits = preg_replace('/\D/', '', $phone);
+
+        // Ganti awalan 62 → 0
+        if (str_starts_with($digits, '62')) {
+            $digits = '0' . substr($digits, 2);
+        }
+
+        // Pastikan ada awalan 0
+        if (!str_starts_with($digits, '0')) {
+            $digits = '0' . $digits;
+        }
+
+        return $digits;
     }
 }
