@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 
 class GameMatch extends Model
@@ -19,12 +20,17 @@ class GameMatch extends Model
         'status',
     ];
 
-    public function booking()
+    protected $casts = [
+        'total_players' => 'integer',
+        'price_per_person' => 'integer',
+    ];
+
+    public function booking(): BelongsTo
     {
         return $this->belongsTo(Booking::class);
     }
 
-    public function creator()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
