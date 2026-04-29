@@ -11,9 +11,6 @@
 
 <div class="grid lg:grid-cols-5 gap-6">
 
-    {{-- =========================
-        CALENDAR SECTION
-    ========================= --}}
     <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
 
         {{-- HEADER --}}
@@ -139,9 +136,6 @@
 
     </div>
 
-    {{-- =========================
-        SLOT TABLE SECTION
-    ========================= --}}
     <div class="lg:col-span-3 bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
 
         {{-- HEADER --}}

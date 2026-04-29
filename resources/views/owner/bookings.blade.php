@@ -53,7 +53,7 @@ $monthlyStats = $monthlyStats ?? collect(range(5, 0))->map(function ($i) use ($n
         'label'      => $month->translatedFormat('M'),
         'month_num'  => $month->month,
         'year'       => $month->year,
-        'total'      => rand(18, 62),      // ← ganti: BookingModel::ofMonth($month)->count()
+        'total'      => rand(18, 62),      
         'selesai'    => rand(10, 40),
         'dibatalkan' => rand(1, 8),
     ];
@@ -68,11 +68,6 @@ $diffPct   = $previousMonthStat['total'] > 0
     : 0;
 @endphp
 
-
-{{-- ============================================================
-     SECTION BARU: GRAFIK + RINGKASAN BULANAN
-     (disisipkan sebelum filter tab, tidak mengubah kode lama)
-     ============================================================ --}}
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
 
     {{-- GRAFIK 6 BULAN --}}
@@ -85,7 +80,6 @@ $diffPct   = $previousMonthStat['total'] > 0
             <span class="text-[11px] text-gray-400 font-medium">Jumlah booking</span>
         </div>
 
-        {{-- Bar chart — pure CSS/JS, no library needed --}}
         <div class="flex items-end gap-3 h-36" id="booking-chart">
             @foreach($monthlyStats as $idx => $stat)
             @php
@@ -176,10 +170,6 @@ $diffPct   = $previousMonthStat['total'] > 0
 
     </div>
 </div>
-{{-- ============================================================
-     END SECTION BARU
-     ============================================================ --}}
-
 
 {{-- STATUS FILTER --}}
 <div class="mb-6">
@@ -232,7 +222,6 @@ $diffPct   = $previousMonthStat['total'] > 0
         </svg>
     </div>
 
-    {{-- 🔥 FIXED DROPDOWN --}}
     <div class="relative w-full md:w-60">
         <select class="w-full appearance-none bg-white border border-gray-200 rounded-2xl px-4 py-3 pr-10 text-sm
                        focus:ring-2 focus:ring-[#1b3a1b] outline-none hover:border-gray-300 transition">
@@ -277,7 +266,6 @@ $diffPct   = $previousMonthStat['total'] > 0
     <div class="overflow-x-auto">
         <table class="w-full text-sm">
 
-            {{-- 🔥 FIXED HEADER SPACING --}}
             <thead class="text-[11px] text-gray-400 uppercase tracking-wider">
                 <tr>
                     <th class="px-6 py-4 text-left">Pemesan</th>

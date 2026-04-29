@@ -1,4 +1,3 @@
-{{-- resources/views/owner/pages/earnings.blade.php --}}
 @extends('partials.app')
 
 @section('title', 'Earnings')
@@ -9,7 +8,6 @@
 
 @section('content')
 
-{{-- ===== TOP ROW: SALDO + CHART ===== --}}
 <div class="grid lg:grid-cols-3 gap-5 mb-5">
 
     {{-- SALDO CARD --}}

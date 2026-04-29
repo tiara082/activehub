@@ -7,9 +7,6 @@
 
 <div class="grid lg:grid-cols-3 gap-6">
 
-    {{-- =========================
-        LEFT SIDE (MAIN)
-    ========================= --}}
     <div class="lg:col-span-2 space-y-5">
 
         {{-- ===== VENUE HEADER ===== --}}
@@ -118,7 +115,6 @@
                             Rp {{ $f['price'] }}/jam
                         </p>
 
-                        {{-- TYPE (UPDATED STYLE LIKE FACILITIES) --}}
                         @php
                         $type = $f['type'];
 
@@ -178,9 +174,6 @@
     </div>
 
 
-    {{-- =========================
-        RIGHT SIDE
-    ========================= --}}
     <div class="space-y-5">
 
         {{-- LIVE FIELD STATUS --}}

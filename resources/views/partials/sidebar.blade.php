@@ -3,7 +3,6 @@
     {{-- HEADER --}}
     <div class="px-4 pt-6 pb-4 space-y-5">
 
-        {{-- LOGO (lebih niat & proper hierarchy) --}}
         <div class="px-1">
             <h1 style="font-family:'Bebas Neue',sans-serif;"
                 class="text-[#0b3d0b] text-2xl tracking-wide leading-none">
@@ -11,7 +10,6 @@
             </h1>
         </div>
 
-        {{-- PROFILE (lebih modern & clean) --}}
         <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl 
                     border border-gray-100 bg-white shadow-sm">
 
@@ -31,7 +29,6 @@
                 </p>
             </div>
 
-            {{-- Optional dot (status subtle premium touch) --}}
             <div class="w-2 h-2 rounded-full bg-green-500"></div>
 
         </div>
