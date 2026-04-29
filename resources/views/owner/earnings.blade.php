@@ -1,0 +1,234 @@
+{{-- resources/views/owner/pages/earnings.blade.php --}}
+@extends('partials.app')
+
+@section('title', 'Earnings')
+@section('page-title', 'Earnings')
+@section('page-subtitle', 'Rekap pendapatan dan penarikan dana')
+@section('cta-label', 'Tarik Dana')
+@section('cta-href', '#')
+
+@section('content')
+
+{{-- ===== TOP ROW: SALDO + CHART ===== --}}
+<div class="grid lg:grid-cols-3 gap-5 mb-5">
+
+    {{-- SALDO CARD --}}
+    <div class="bg-[#1b3a1b] rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between">
+        <div class="absolute right-0 top-0 w-48 h-48 rounded-full bg-white/[0.04] -translate-y-1/3 translate-x-1/4"></div>
+        <div class="absolute left-0 bottom-0 w-32 h-32 rounded-full bg-yellow-300/5 translate-y-1/2 -translate-x-1/4"></div>
+
+        <div class="relative">
+            <p class="text-white/40 text-xs uppercase tracking-widest mb-2">Total Pendapatan</p>
+            <p class="font-mono text-3xl font-semibold text-yellow-300 leading-none">Rp 2.850.000</p>
+
+        </div>
+
+        <div class="relative mt-8">
+            <div class="h-px bg-white/10 mb-5"></div>
+            <div class="flex justify-between text-center">
+                <div>
+                    <p class="font-mono text-lg font-semibold text-white">Rp 8.1M</p>
+                    <p class="text-white/30 text-[11px] mt-0.5">Bulan Ini</p>
+                </div>
+                <div>
+                    <p class="font-mono text-lg font-semibold text-white">Rp 6.8M</p>
+                    <p class="text-white/30 text-[11px] mt-0.5">Bulan Lalu</p>
+                </div>
+                <div>
+                    <p class="font-mono text-lg font-semibold text-green-400">+19%</p>
+                    <p class="text-white/30 text-[11px] mt-0.5">Growth</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- BAR CHART --}}
+    <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 p-5">
+
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <p class="font-semibold text-gray-800 text-sm">Pendapatan Bulanan</p>
+                <p class="text-xs text-gray-400 mt-0.5">Riwayat 7 bulan terakhir (Juta Rp)</p>
+            </div>
+            <span class="bg-green-50 text-green-700 text-[10px] font-semibold px-3 py-1 rounded-full">
+                Apr 2025
+            </span>
+        </div>
+
+        @php
+        $bars = [
+        ['month'=>'Okt','val'=>4.2],
+        ['month'=>'Nov','val'=>6.1],
+        ['month'=>'Des','val'=>4.8],
+        ['month'=>'Jan','val'=>7.5],
+        ['month'=>'Feb','val'=>5.2],
+        ['month'=>'Mar','val'=>6.8],
+        ['month'=>'Apr','val'=>8.1,'current'=>true],
+        ];
+
+        $max = max(array_column($bars, 'val'));
+
+        foreach ($bars as $i => $b) {
+        $bars[$i]['pct'] = ($b['val'] / $max) * 100;
+        }
+        @endphp
+
+        <div class="flex items-end gap-3 h-32">
+            @foreach($bars as $bar)
+            <div class="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
+
+                <span class="font-mono text-[10px] opacity-0 group-hover:opacity-100 transition
+                             {{ isset($bar['current']) ? 'text-green-600 font-medium' : 'text-gray-400' }}">
+                    {{ $bar['val'] }}M
+                </span>
+
+                <div class="w-full rounded-t-xl transition-all duration-300 group-hover:scale-y-105 origin-bottom"
+                    style="height:{{ max($bar['pct'], 10) }}%;
+                            background:{{ isset($bar['current']) ? '#1b3a1b' : '#bbf7d0' }};">
+                </div>
+
+                <span class="text-[10px]
+                             {{ isset($bar['current']) ? 'text-[#1b3a1b] font-semibold' : 'text-gray-400' }}">
+                    {{ $bar['month'] }}
+                </span>
+
+            </div>
+            @endforeach
+        </div>
+
+    </div>
+
+</div>
+
+
+{{-- ===== BOTTOM ROW ===== --}}
+<div class="grid lg:grid-cols-2 gap-5">
+
+    {{-- RINCIAN PER LAPANGAN --}}
+    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-100">
+            <p class="font-semibold text-gray-800 text-sm">Rincian per Lapangan</p>
+            <p class="text-xs text-gray-400 mt-0.5">April 2025</p>
+        </div>
+
+        <div class="px-5 py-3 divide-y divide-gray-50">
+            @php
+            $laps = [
+            ['name'=>'Lapangan A','booking'=>67,'jam'=>134,'total'=>2100000,'prev'=>1900000],
+            ['name'=>'Lapangan B','booking'=>54,'jam'=>108,'total'=>1700000,'prev'=>1600000],
+            ['name'=>'Lapangan C','booking'=>48,'jam'=>96,'total'=>1500000,'prev'=>1400000],
+            ['name'=>'Lapangan D','booking'=>39,'jam'=>78,'total'=>1200000,'prev'=>1100000],
+            ];
+            @endphp
+
+            @foreach($laps as $lap)
+            @php
+            $diff = $lap['total'] - $lap['prev'];
+            $isUp = $diff >= 0;
+            @endphp
+
+            <div class="py-4">
+                <div class="flex items-center justify-between mb-2">
+                    <div>
+                        <p class="font-medium text-gray-800 text-sm">{{ $lap['name'] }}</p>
+                        <p class="text-[11px] text-gray-400">
+                            {{ $lap['booking'] }} booking • {{ $lap['jam'] }} jam
+                        </p>
+
+                        <p class="text-[11px] mt-1
+                                  {{ $isUp ? 'text-green-600' : 'text-red-400' }}">
+                            {{ $isUp ? '+' : '' }}Rp {{ number_format($diff/1000000,1) }}M dari bulan lalu
+                        </p>
+                    </div>
+
+                    <p class="font-mono font-semibold text-green-700 text-sm">
+                        Rp {{ number_format($lap['total']/1000000,1) }}M
+                    </p>
+                </div>
+
+                <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-[#1b3a1b] rounded-full"
+                        style="width: {{ ($lap['total']/2100000)*100 }}%">
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+
+
+    {{-- RIWAYAT TRANSAKSI --}}
+    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+            <div>
+                <p class="font-semibold text-gray-800 text-sm">Riwayat Transaksi</p>
+                <p class="text-xs text-gray-400 mt-0.5">Terbaru</p>
+            </div>
+            <a href="#" class="text-xs text-[#1b3a1b] font-semibold hover:underline">Lihat semua →</a>
+        </div>
+
+        <div class="divide-y divide-gray-50">
+            @php
+            $txns = [
+            ['date'=>'22 Apr, 14:35','name'=>'Agus Santoso','detail'=>'Lapangan A • 2 jam','amount'=>'Rp 300K','source'=>'online'],
+            ['date'=>'22 Apr, 13:10','name'=>'Tim Harimau FC','detail'=>'Lapangan B • 2 jam','amount'=>'Rp 300K','source'=>'online'],
+            ['date'=>'21 Apr, 10:00','name'=>'Budi Prakoso','detail'=>'Lapangan C • 3 jam','amount'=>'Rp 450K','source'=>'offline'],
+            ['date'=>'20 Apr, 18:00','name'=>'Andi Saputra','detail'=>'Lapangan D • 2 jam','amount'=>'Rp 300K','source'=>'offline'],
+            ];
+            @endphp
+
+            @foreach($txns as $t)
+            <div class="flex items-center gap-3 px-5 py-3.5 hover:bg-gray-50/40 transition-colors">
+
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0
+            {{ $t['source'] === 'online'  ? 'bg-blue-50' : 'bg-amber-50' }}">
+
+                    @if($t['source'] === 'online')
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="w-5 h-5 text-blue-600"
+                        viewBox="0 0 24 24"
+                        fill="currentColor">
+                        <path d="M3 6.75A2.25 2.25 0 015.25 4.5h13.5A2.25 2.25 0 0121 6.75v1.5H3v-1.5zM3 9.75h18v7.5A2.25 2.25 0 0118.75 19.5H5.25A2.25 2.25 0 013 17.25v-7.5zm3 4.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5H6z" />
+                    </svg>
+
+                    @else
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="w-5 h-5 text-amber-600"
+                        viewBox="0 0 24 24"
+                        fill="currentColor">
+                        <path d="M2.25 6.75A2.25 2.25 0 014.5 4.5h15A2.25 2.25 0 0121.75 6.75v10.5A2.25 2.25 0 0119.5 19.5h-15A2.25 2.25 0 012.25 17.25V6.75zM6 9a3 3 0 100 6 3 3 0 000-6zm9 0h3v1.5h-3V9zm0 3h3v1.5h-3V12z" />
+                    </svg>
+                    @endif
+
+                </div>
+
+                {{-- TEXT --}}
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-800 truncate">{{ $t['name'] }}</p>
+
+                    <p class="text-[11px] text-gray-400 flex items-center gap-2">
+                        {{ $t['detail'] }} • {{ $t['date'] }}
+
+                        {{-- LABEL --}}
+                        <span class="px-2 py-0.5 rounded text-[10px] font-medium
+                        {{ $t['source'] === 'online'
+                            ? 'bg-blue-50 text-blue-600'
+                            : 'bg-amber-50 text-amber-600' }}">
+                            {{ $t['source'] === 'online' ? 'Online' : 'Offline' }}
+                        </span>
+                    </p>
+                </div>
+
+                {{-- ALL INCOME --}}
+                <p class="font-mono font-semibold text-sm text-green-600 flex-shrink-0">
+                    +{{ $t['amount'] }}
+                </p>
+
+            </div>
+            @endforeach
+        </div>
+    </div>
+
+</div>
+
+@endsection

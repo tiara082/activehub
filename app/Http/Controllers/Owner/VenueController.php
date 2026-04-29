@@ -3,63 +3,110 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Venue;
+use App\Models\Booking;
+use Carbon\Carbon;
 
 class VenueController extends Controller
 {
-    /** GET /owner/venues — daftar venue milik owner */
     public function index()
     {
-        return view('owner.venues.index');
-    }
+        $user = Auth::user();
 
-    /** GET /owner/venues/create — form tambah venue */
-    public function create()
-    {
-        return view('owner.venues.create');
-    }
+        // Ambil venue milik owner + relasi fields
+        $venue = Venue::with('fields')
+            ->where('owner_id', $user->id)
+            ->first();
 
-    /** POST /owner/venues — simpan venue baru */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name'        => ['required', 'string', 'max:255'],
-            'location'    => ['nullable', 'string'],
-            'latitude'    => ['nullable', 'numeric'],
-            'longitude'   => ['nullable', 'numeric'],
-            'description' => ['nullable', 'string'],
-        ]);
+        // Kalau belum punya venue
+        if (!$venue) {
+            return view('owner.pages.venue', [
+                'venue' => null,
+                'fields' => collect(),
+                'liveFields' => [],
+                'stats' => [],
+                'payments' => []
+            ]);
+        }
 
-        // TODO: simpan venue dengan owner_id = auth()->id()
+        $fields = $venue->fields;
 
-        return redirect()->route('owner.venues.index')->with('success', 'Venue berhasil dibuat!');
-    }
+        // =========================
+        // 🔴 LIVE FIELD STATUS
+        // =========================
+        $now = Carbon::now();
 
-    /** GET /owner/venues/{venue} — detail venue */
-    public function show($venue)
-    {
-        return view('owner.venues.show', compact('venue'));
-    }
+        $liveFields = $fields->map(function ($field) use ($now) {
 
-    /** GET /owner/venues/{venue}/edit — form edit venue */
-    public function edit($venue)
-    {
-        return view('owner.venues.edit', compact('venue'));
-    }
+            $activeBooking = Booking::with(['timeSlot', 'user'])
+                ->where('field_id', $field->id)
+                ->where('status', '!=', 'Cancelled')
+                ->whereHas('timeSlot', function ($q) use ($now) {
+                    $q->where('start_time', '<=', $now)
+                      ->where('end_time', '>=', $now);
+                })
+                ->first();
 
-    /** PUT /owner/venues/{venue} — update venue */
-    public function update(Request $request, $venue)
-    {
-        // TODO: update venue
+            if ($activeBooking) {
+                return [
+                    'name' => $field->name,
+                    'status' => 'in_use',
+                    'time' => $activeBooking->timeSlot->start_time . ' - ' . $activeBooking->timeSlot->end_time,
+                    'user' => $activeBooking->user->name ?? '-',
+                ];
+            }
 
-        return redirect()->route('owner.venues.index')->with('success', 'Venue berhasil diperbarui!');
-    }
+            return [
+                'name' => $field->name,
+                'status' => 'available',
+                'time' => null,
+                'user' => null,
+            ];
+        });
 
-    /** DELETE /owner/venues/{venue} — hapus venue */
-    public function destroy($venue)
-    {
-        // TODO: hapus venue
+        // =========================
+        // 💰 PAYMENT OVERVIEW
+        // =========================
+        $monthlyBookings = Booking::whereHas('field', function ($q) use ($venue) {
+                $q->where('venue_id', $venue->id);
+            })
+            ->whereMonth('created_at', now()->month)
+            ->get();
 
-        return redirect()->route('owner.venues.index')->with('success', 'Venue berhasil dihapus!');
+        $payments = [
+            'paid' => $monthlyBookings->where('status', 'Paid')->count(),
+            'pending' => $monthlyBookings->where('status', 'Pending')->count(),
+            'expired' => $monthlyBookings->where('status', 'Expired')->count(),
+        ];
+
+        // =========================
+        // 📊 STATS
+        // =========================
+        $allBookings = Booking::whereHas('field', function ($q) use ($venue) {
+            $q->where('venue_id', $venue->id);
+        })->get();
+
+        $todayBookings = $allBookings->filter(function ($b) {
+            return $b->created_at->isToday();
+        });
+
+        $stats = [
+            'total_booking' => $allBookings->count(),
+            'revenue_month' => $monthlyBookings->where('status', 'Paid')->sum('total_price'),
+            'booking_today' => $todayBookings->count(),
+            'hours_used' => $monthlyBookings->count() * 1, // asumsi 1 booking = 1 jam
+        ];
+
+        // =========================
+        // 🚀 RETURN VIEW
+        // =========================
+        return view('owner.pages.venue', compact(
+            'venue',
+            'fields',
+            'liveFields',
+            'payments',
+            'stats'
+        ));
     }
 }

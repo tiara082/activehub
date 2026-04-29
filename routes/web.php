@@ -1,38 +1,19 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\FieldController;
-use App\Http\Controllers\MatchController;
 use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\VenueController ;
+use App\Http\Controllers\VenueController;
 use App\Http\Controllers\Owner\VenueController as OwnerVenueController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 
 Route::get('/', fn () => view('landing.index'))->name('home');
-
-// AUTH
-Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-
-    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register'])->name('register.post');
-});
-
-Route::post('/logout', LogoutController::class)
-    ->middleware('auth')
-    ->name('logout');
+Route::get('/profil', fn () => view('profile'))->name('profile');
 
 // MATCH
 Route::get('/matches', fn () => view('pubmatch.list'))->name('matches.index');
 Route::get('/matches/create', fn () => view('pubmatch.create'))->name('matches.create');
-
-// PUBLIC MATCH
-Route::get('/pubmatchdetail', function () {
-    return view('pubmatch.detail');})->name('pubmatch.detail');
 
 // FIELD
 Route::get('/fields', [FieldController::class, 'index'])->name('fields.index');
@@ -40,42 +21,41 @@ Route::get('/fields/{field}', [FieldController::class, 'show'])->name('fields.sh
 
 // VENUE
 Route::get('/venues/create', fn () => view('venue.create'))->name('venues.create');
-Route::get('/venuesdetail', fn () => view('detail-venue'))->name('detail.venue');
-
-Route::get('/venues', [VenueController::class, 'index'])->name('venue.index');
-Route::get('/venues/{id}', [VenueController::class,'show'])->name('venue.show');
-
+Route::get('/venuesdetail', fn () => view('venue.detail-venue'))->name('detail.venue');
+Route::get('/venue', [VenueController::class, 'index'])->name('venue.index');
+Route::get('/venue/{id}', [VenueController::class,'show'])->name('venue.show');
 
 // PAYMENT
 Route::get('/payment', fn () => view('booking.index'))->name('payment.index');
 
-// Temporary: auth/role middleware dimatikan agar halaman bisa dicek tanpa login.
-// Aktifkan lagi setelah review desain selesai.
 
-Route::middleware('auth')->group(function () {
-
-// Checkout
-Route::get('/checkout/{booking}', [CheckoutController::class, 'show'])->name('checkout.show');
-Route::post('/checkout/{booking}/pay', [CheckoutController::class, 'pay'])->name('checkout.pay');
-
-// Owner area
+// ==========================
+// OWNER (NO AUTH - PREVIEW FE)
+// ==========================
 Route::prefix('owner')->name('owner.')->group(function () {
-    Route::get('/dashboard', [OwnerDashboardController::class, 'index'])->name('dashboard');
+
+    // sementara arahkan ke salah satu page
+    Route::get('/dashboard', fn () => view('owner.venue'))->name('dashboard');
+
+    Route::get('/bookings', fn () => view('owner.bookings'))->name('bookings');
+    Route::get('/calendar', fn () => view('owner.calendar'))->name('calendar');
+    Route::get('/earnings', fn () => view('owner.earnings'))->name('earnings');
+    Route::get('/venue', fn () => view('owner.venue'))->name('venue');
+
     Route::resource('venues', OwnerVenueController::class);
 });
 
+
+// ==========================
+// AUTH AREA (KEEP)
+// ==========================
+Route::middleware('auth')->group(function () {
+
+    Route::get('/checkout/{booking}', [CheckoutController::class, 'show'])->name('checkout.show');
+    Route::post('/checkout/{booking}/pay', [CheckoutController::class, 'pay'])->name('checkout.pay');
+
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
-        // Dashboard admin
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     });
 
-     
 });
-
-// detail match
-Route::get('/match/{id}', [MatchController::class, 'show'])
-    ->name('match.detail');
-
-// join match
-Route::post('/match/{id}/join', [MatchController::class, 'join'])
-    ->name('match.join');
