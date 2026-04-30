@@ -30,12 +30,10 @@ Route::get('/payment', fn () => view('booking.index'))->name('payment.index');
 
 
 // ==========================
-// OWNER (NO AUTH - PREVIEW FE)
+// OWNER (WITH AUTH)
 // ==========================
-Route::prefix('owner')->name('owner.')->group(function () {
-
-    // sementara arahkan ke salah satu page
-    Route::get('/dashboard', fn () => view('owner.venue'))->name('dashboard');
+Route::prefix('owner')->name('owner.')->middleware('owner')->group(function () {
+    Route::get('/dashboard', [OwnerDashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/bookings', fn () => view('owner.bookings'))->name('bookings');
     Route::get('/calendar', fn () => view('owner.calendar'))->name('calendar');
