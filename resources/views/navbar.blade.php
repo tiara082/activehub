@@ -43,21 +43,64 @@
         </a>
 
         {{-- PROFILE ICON (NEW) --}}
-        <a href="{{ route('home') }}"
-           class="text-white/80 hover:text-white transition-colors group">
+        @auth
+            {{-- USER MENU DROPDOWN --}}
+            <div class="relative group">
+                <button class="text-white/80 hover:text-white transition-colors flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                         stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M4.5 20.25a8.25 8.25 0 0115 0"/>
+                    </svg>
+                    <span class="text-sm font-medium hidden sm:inline">{{ Auth::user()->name }}</span>
+                </button>
 
-            <svg class="w-5 h-5 group-hover:scale-110 transition-transform"
-                 fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                 stroke-width="1.8">
+                {{-- DROPDOWN MENU --}}
+                <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible 
+                            group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div class="px-4 py-3 border-b border-gray-200">
+                        <p class="text-sm font-semibold text-gray-800">{{ Auth::user()->name }}</p>
+                        <p class="text-xs text-gray-500">{{ Auth::user()->email }}</p>
+                    </div>
 
-                <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/>
+                    <a href="{{ route('profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        Profile
+                    </a>
 
-                <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M4.5 20.25a8.25 8.25 0 0115 0"/>
-            </svg>
+                    @if(Auth::user()->role === 'owner')
+                        <a href="{{ route('owner.venue') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            Owner Dashboard
+                        </a>
+                    @endif
 
-        </a>
+                    @if(Auth::user()->role === 'admin')
+                        <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            Admin Dashboard
+                        </a>
+                    @endif
+
+                    <div class="border-t border-gray-200">
+                        <a href="{{ route('logout') }}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 font-medium">
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @else
+            {{-- NOT LOGGED IN --}}
+            <a href="{{ route('login') }}"
+               class="text-white/80 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                     stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M4.5 20.25a8.25 8.25 0 0115 0"/>
+                </svg>
+            </a>
+        @endauth
 
     </div>
 

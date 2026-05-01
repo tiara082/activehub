@@ -62,15 +62,13 @@ class AuthController extends Controller
         $request->validate([
             'name'                  => ['required', 'string', 'max:255'],
             'email'                 => ['required', 'email', 'max:255', 'unique:users,email'],
-            'phone'                 => ['nullable', 'string', 'max:20'],
+            'phone'                 => ['required', 'string', 'max:20', 'unique:users,phone'],
             'role'                  => ['required', 'in:owner,user'],
             'password'              => ['required', 'confirmed', Password::min(8)],
         ]);
 
         // Normalise phone: simpan tanpa prefix +62 marker duplikat
-        $phone = $request->input('phone')
-            ? $this->normalisePhone($request->input('phone'))
-            : null;
+        $phone = $this->normalisePhone($request->input('phone'));
 
         User::create([
             'name'     => $request->input('name'),
@@ -105,7 +103,7 @@ class AuthController extends Controller
     {
         return match (Auth::user()->role) {
             'admin' => redirect()->route('admin.dashboard'),
-            'owner' => redirect()->route('owner.dashboard'),
+            'owner' => redirect()->route('owner.venue'),
             default => redirect()->route('home'),
         };
     }

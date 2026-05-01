@@ -1,15 +1,28 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\VenueController;
 use App\Http\Controllers\Owner\VenueController as OwnerVenueController;
-use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 
 Route::get('/', fn () => view('landing.index'))->name('home');
 Route::get('/profil', fn () => view('profile'))->name('profile');
+
+// ==========================
+// AUTH (LOGIN, REGISTER, LOGOUT)
+// ==========================
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+});
+
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
 
 // MATCH
 Route::get('/matches', fn () => view('pubmatch.list'))->name('matches.index');
@@ -32,8 +45,8 @@ Route::get('/payment', fn () => view('booking.index'))->name('payment.index');
 // ==========================
 // OWNER (WITH AUTH)
 // ==========================
-Route::prefix('owner')->name('owner.')->middleware('owner')->group(function () {
-    Route::get('/dashboard', [OwnerDashboardController::class, 'index'])->name('dashboard');
+Route::prefix('owner')->name('owner.')->middleware('auth')->group(function () {
+    Route::get('/dashboard', fn () => redirect()->route('owner.venue'))->name('dashboard');
 
     Route::get('/bookings', fn () => view('owner.bookings'))->name('bookings');
     Route::get('/calendar', fn () => view('owner.calendar'))->name('calendar');
