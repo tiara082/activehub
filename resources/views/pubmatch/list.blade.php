@@ -25,7 +25,7 @@
         </h1>
 
         <a href="#"
-        class="inline-block bg-yellow-300 hover:bg-yellow-400
+        class="inline-block bg-yellow-400 hover:bg-yellow-400
                 text-black font-bold px-12 py-4 rounded-xl transition">
             Buat Public Match
         </a>

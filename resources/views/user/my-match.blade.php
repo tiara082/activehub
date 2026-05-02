@@ -4,11 +4,54 @@
 
 @section('content')
 <div class="p-6">
- {{-- OFFSET SIDEBAR --}}
+
+    @php
+    
+    $tabs = [
+        'scheduled' => ['label'=>'Terjadwal','count'=>4],
+        'ongoing' => ['label'=>'Berlangsung','count'=>2],
+        'finished' => ['label'=>'Selesai','count'=>8],
+        'cancelled' => ['label'=>'Dibatalkan','count'=>2],
+    ];
+
+    $active = request('tab', 'scheduled');
+
+    $matches = [
+        [
+            'title'=>'Fun Match Weekend',
+            'sport'=>'Futsal',
+            'format'=>'7 vs 7',
+            'location'=>'Active Arena, Jakarta Selatan',
+            'date'=>'Minggu, 26 Mei 2024',
+            'time'=>'16:00 - 18:00',
+            'players'=>'10 / 14',
+            'minmax'=>'Min 10 - Max 14',
+            'role'=>'creator',
+            'status'=>'scheduled'
+        ],
+        [
+            'title'=>'Badminton Morning',
+            'sport'=>'Badminton',
+            'format'=>'4 vs 4',
+            'location'=>'Sport Center Jaksel',
+            'date'=>'Sabtu, 25 Mei 2024',
+            'time'=>'08:00 - 10:00',
+            'players'=>'6 / 8',
+            'minmax'=>'Min 6 - Max 8',
+            'role'=>'joined',
+            'status'=>'finished'
+        ],
+    ];
+
+    $filteredMatches = collect($matches)->filter(function($m) use ($active) {
+        return $m['status'] === $active;
+    });
+    @endphp
+
 
     <div class="grid lg:grid-cols-3 gap-6">
 
-        {{-- ================= LEFT CONTENT ================= --}}
+        {{-- ================= LEFT ================= --}}
         <div class="lg:col-span-2 space-y-5">
 
             {{-- HEADER --}}
@@ -19,77 +62,57 @@
                 </p>
             </div>
 
-            {{-- TABS --}}
-            <div class="flex gap-6 border-b pb-3 text-sm">
-
-                @php
-                $tabs = [
-                    'scheduled' => ['label'=>'Terjadwal','count'=>4],
-                    'ongoing' => ['label'=>'Berlangsung','count'=>2],
-                    'finished' => ['label'=>'Selesai','count'=>8],
-                    'cancelled' => ['label'=>'Dibatalkan','count'=>2],
-                ];
-                @endphp
+            {{-- ================= TABS ================= --}}
+            <div class="flex gap-6 text-sm border-b border-gray-200">
 
                 @foreach($tabs as $key => $tab)
-                <button
-                    class="flex items-center gap-2 pb-2 border-b-2
-                    {{ $loop->first ? 'text-[#0b3d0b] border-[#0b3d0b] font-medium' : 'text-gray-400 border-transparent' }}">
+                    @php $isActive = $active === $key; @endphp
 
-                    {{ $tab['label'] }}
+                    <a href="?tab={{ $key }}"
+                       class="pb-3 relative flex items-center gap-2 transition-all duration-200
+                       {{ $isActive
+                            ? 'text-[#0b3d0b] font-medium'
+                            : 'text-gray-400 hover:text-gray-600'
+                       }}">
 
-                    <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
-                        {{ $tab['count'] }}
-                    </span>
-                </button>
+                        {{-- LABEL --}}
+                        <span>{{ $tab['label'] }}</span>
+
+                        {{-- COUNT BADGE --}}
+                        <span class="text-[11px] font-semibold px-2 py-[2px] rounded-full
+                            {{ $isActive
+                                ? 'bg-[#0b3d0b]/10 text-[#0b3d0b]'
+                                : 'bg-gray-200 text-gray-500'
+                            }}">
+                            {{ $tab['count'] }}
+                        </span>
+
+                        {{-- UNDERLINE --}}
+                        @if($isActive)
+                            <span class="absolute left-0 bottom-0 w-full h-[2px] bg-[#0b3d0b] rounded-full"></span>
+                        @endif
+
+                    </a>
                 @endforeach
 
             </div>
 
 
-            {{-- MATCH LIST --}}
-            @php
-            $matches = [
-                [
-                    'title'=>'Fun Match Weekend',
-                    'sport'=>'Futsal',
-                    'format'=>'7 vs 7',
-                    'location'=>'Active Arena, Jakarta Selatan',
-                    'date'=>'Minggu, 26 Mei 2024',
-                    'time'=>'16:00 - 18:00',
-                    'players'=>'10 / 14',
-                    'minmax'=>'Min 10 - Max 14',
-                    'role'=>'creator'
-                ],
-                [
-                    'title'=>'Badminton Morning',
-                    'sport'=>'Badminton',
-                    'format'=>'4 vs 4',
-                    'location'=>'Sport Center Jaksel',
-                    'date'=>'Sabtu, 25 Mei 2024',
-                    'time'=>'08:00 - 10:00',
-                    'players'=>'6 / 8',
-                    'minmax'=>'Min 6 - Max 8',
-                    'role'=>'joined'
-                ],
-            ];
-            @endphp
-
-
+            {{-- ================= MATCH LIST ================= --}}
             <div class="space-y-4">
 
-                @foreach($matches as $m)
+                @forelse($filteredMatches as $m)
 
                 @php
                 $isCreator = $m['role'] === 'creator';
 
                 $badgeClass = $isCreator
-                ? 'bg-green-50 text-green-700'
-                : 'bg-purple-50 text-purple-700';
+                    ? 'text-green-700'
+                    : 'text-purple-700';
 
                 $btnClass = $isCreator
-                ? 'border-green-600 text-green-700 hover:bg-green-600 hover:text-white'
-                : 'border-purple-600 text-purple-700 hover:bg-purple-600 hover:text-white';
+                    ? 'border-green-600 text-green-700 hover:bg-green-800 hover:text-white'
+                    : 'border-purple-600 text-purple-700 hover:bg-purple-600 hover:text-white';
 
                 $label = $isCreator ? 'You Created' : 'Joined';
                 $action = $isCreator ? 'Manage' : 'View';
@@ -98,7 +121,7 @@
 
                 <div class="bg-white rounded-2xl border border-gray-100 p-5 flex justify-between items-center hover:shadow-sm transition relative">
 
-                    {{-- ACTION ICON (3 DOT) --}}
+                    {{-- DOT MENU --}}
                     <div class="absolute top-4 right-4">
                         <button class="text-gray-400 hover:text-gray-600">
                             ⋮
@@ -139,7 +162,6 @@
 
                         {{-- ACTION BOX --}}
                         <div class="p-4 rounded-xl text-center w-40
-                            {{ $isCreator ? 'bg-green-50/50' : 'bg-purple-50/50' }}">
 
                             <span class="text-xs px-2 py-1 rounded-full {{ $badgeClass }}">
                                 {{ $label }}
@@ -159,7 +181,11 @@
 
                 </div>
 
-                @endforeach
+                @empty
+                <div class="text-center py-16 text-gray-400">
+                    Tidak ada match di kategori ini
+                </div>
+                @endforelse
 
             </div>
 
@@ -169,7 +195,7 @@
         {{-- ================= RIGHT PANEL ================= --}}
         <div class="space-y-5">
 
-            {{-- UPCOMING MATCH --}}
+            {{-- UPCOMING --}}
             <div class="bg-white rounded-2xl border border-gray-100 p-5">
 
                 <div class="flex justify-between mb-4">
@@ -195,7 +221,7 @@
             </div>
 
 
-            {{-- MATCH STATS --}}
+            {{-- STATS --}}
             <div class="bg-white rounded-2xl border border-gray-100 p-5">
 
                 <p class="text-sm text-gray-500 mb-4">Statistik Match</p>
@@ -231,5 +257,4 @@
     </div>
 
 </div>
-
 @endsection

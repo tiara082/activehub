@@ -104,6 +104,7 @@ class AuthController extends Controller
         return match (Auth::user()->role) {
             'admin' => redirect()->route('admin.dashboard'),
             'owner' => redirect()->route('owner.venue'),
+            'user'  => redirect()->route('home'),
             default => redirect()->route('home'),
         };
     }

@@ -16,7 +16,7 @@
         </a>
 
         {{-- Cari Lapangan --}}
-        <a href="{{ route('venue.index') }}"
+        <a href="{{ route('venues.index') }}"
            class="text-white/80 text-sm font-medium hover:text-white transition-colors">
             Cari Lapangan
 
@@ -72,6 +72,12 @@
                     @if(Auth::user()->role === 'owner')
                         <a href="{{ route('owner.venue') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             Owner Dashboard
+                        </a>
+                    @endif
+
+                    @if(Auth::user()->role === 'user')
+                        <a href="{{ route('user.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            User Dashboard
                         </a>
                     @endif
 

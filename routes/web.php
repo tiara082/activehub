@@ -7,6 +7,8 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\VenueController;
 use App\Http\Controllers\Owner\VenueController as OwnerVenueController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\User\DashboardController;
+use App\Http\Controllers\Owner\OwnerProfileController;
 
 Route::get('/', fn () => view('landing.index'))->name('home');
 Route::get('/profil', fn () => view('profile'))->name('profile');
@@ -35,8 +37,8 @@ Route::get('/fields/{field}', [FieldController::class, 'show'])->name('fields.sh
 // VENUE
 Route::get('/venues/create', fn () => view('venue.create'))->name('venues.create');
 Route::get('/venuesdetail', fn () => view('venue.detail-venue'))->name('detail.venue');
-Route::get('/venue', [VenueController::class, 'index'])->name('venue.index');
-Route::get('/venue/{id}', [VenueController::class,'show'])->name('venue.show');
+Route::get('/venues', [VenueController::class, 'index'])->name('venues.index');
+Route::get('/venues/{id}', [VenueController::class,'show'])->name('venues.show');
 
 // PAYMENT
 Route::get('/payment', fn () => view('booking.index'))->name('payment.index');
@@ -52,10 +54,24 @@ Route::prefix('owner')->name('owner.')->middleware('auth')->group(function () {
     Route::get('/calendar', fn () => view('owner.calendar'))->name('calendar');
     Route::get('/earnings', fn () => view('owner.earnings'))->name('earnings');
     Route::get('/venue', fn () => view('owner.venue'))->name('venue');
+    Route::get('/profile', fn () => view('owner.profile'))->name('profile');
+    // Route::put('/profile', [OwnerProfileController::class, 'update'])->name('profile.update');
+    // Route::post('/profile/change-password', [OwnerProfileController::class, 'changePassword'])->name('profile.change-password');
 
     Route::resource('venues', OwnerVenueController::class);
 });
 
+Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/discover', fn () => view('user.discover'))->name('discover');
+    Route::get('/my-match', fn () => view('user.my-match'))->name('my-match');
+    Route::get('/bookings', fn () => view('user.bookings'))->name('bookings');
+    Route::get('/profile', fn () => view('user.profile'))->name('profile');
+    // Route::put('/profile', [userProfileController::class, 'update'])->name('profile.update');
+    // Route::post('/profile/change-password', [userProfileController::class, 'changePassword'])->name('profile.change-password');
+
+});
 
 // ==========================
 // AUTH AREA (KEEP)
