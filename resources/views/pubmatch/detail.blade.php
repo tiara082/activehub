@@ -15,7 +15,7 @@
 
         <!-- HERO IMAGE -->
         <img src="https://images.unsplash.com/photo-1584466977773-e625c37cdd50"
-             class="w-full h-72 object-cover">
+            class="w-full h-72 object-cover">
 
         <!-- CONTENT -->
         <div class="p-6">
