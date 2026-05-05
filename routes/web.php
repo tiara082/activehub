@@ -7,14 +7,15 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\VenueController;
 use App\Http\Controllers\Owner\VenueController as OwnerVenueController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\User\DashboardController;
-use App\Http\Controllers\Owner\OwnerProfileController;
 
+// ==========================
+// PUBLIC
+// ==========================
 Route::get('/', fn () => view('landing.index'))->name('home');
 Route::get('/profil', fn () => view('profile'))->name('profile');
 
 // ==========================
-// AUTH (LOGIN, REGISTER, LOGOUT)
+// AUTH
 // ==========================
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -24,30 +25,67 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
 
+// ==========================
 // MATCH
+// ==========================
 Route::get('/matches', fn () => view('pubmatch.list'))->name('matches.index');
 Route::get('/matches/create', fn () => view('pubmatch.create'))->name('matches.create');
 
+// ==========================
 // FIELD
+// ==========================
 Route::get('/fields', [FieldController::class, 'index'])->name('fields.index');
 Route::get('/fields/{field}', [FieldController::class, 'show'])->name('fields.show');
 
+// ==========================
 // VENUE
-Route::get('/venues/create', fn () => view('venue.create'))->name('venues.create');
-Route::get('/venuesdetail', fn () => view('venue.detail-venue'))->name('detail.venue');
+// ==========================
 Route::get('/venues', [VenueController::class, 'index'])->name('venues.index');
-Route::get('/venues/{id}', [VenueController::class,'show'])->name('venues.show');
+Route::get('/venues/create', fn () => view('venue.create'))->name('venues.create');
+Route::get('/venues/{id}', [VenueController::class, 'show'])->name('venues.show');
 
+// ==========================
+// FIELD BY VENUE
+// ==========================
+Route::get('/venues/{id}/fields', function ($id) {
+    return view('field.index', compact('id'));
+})->name('venues.fields');
+
+Route::get('/fields/{id}', function ($id) {
+    return view('field.detail', compact('id'));
+})->name('fields.detail');
+
+// ==========================
+// CHECKOUT
+// ==========================
+Route::get('/checkout/{booking}', [CheckoutController::class, 'show'])->name('checkout.show');
+Route::post('/checkout/{booking}/pay', [CheckoutController::class, 'pay'])->name('checkout.pay');
+
+// ==========================
 // PAYMENT
+// ==========================
 Route::get('/payment', fn () => view('booking.index'))->name('payment.index');
 
+// ==========================
+// USER AREA
+// ==========================
+Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
+
+    Route::get('/dashboard', [\App\Http\Controllers\User\DashboardController::class, 'index'])
+        ->name('dashboard');
+
+    Route::get('/discover', fn () => view('user.discover'))->name('discover');
+    Route::get('/my-match', fn () => view('user.my-match'))->name('my-match');
+    Route::get('/bookings', fn () => view('user.bookings'))->name('bookings');
+    Route::get('/profile', fn () => view('user.profile'))->name('profile');
+});
 
 // ==========================
-// OWNER (WITH AUTH)
+// OWNER AREA
 // ==========================
 Route::prefix('owner')->name('owner.')->middleware('auth')->group(function () {
+
     Route::get('/dashboard', fn () => redirect()->route('owner.venue'))->name('dashboard');
 
     Route::get('/bookings', fn () => view('owner.bookings'))->name('bookings');
@@ -55,33 +93,13 @@ Route::prefix('owner')->name('owner.')->middleware('auth')->group(function () {
     Route::get('/earnings', fn () => view('owner.earnings'))->name('earnings');
     Route::get('/venue', fn () => view('owner.venue'))->name('venue');
     Route::get('/profile', fn () => view('owner.profile'))->name('profile');
-    // Route::put('/profile', [OwnerProfileController::class, 'update'])->name('profile.update');
-    // Route::post('/profile/change-password', [OwnerProfileController::class, 'changePassword'])->name('profile.change-password');
 
     Route::resource('venues', OwnerVenueController::class);
 });
 
-Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-    Route::get('/discover', fn () => view('user.discover'))->name('discover');
-    Route::get('/my-match', fn () => view('user.my-match'))->name('my-match');
-    Route::get('/bookings', fn () => view('user.bookings'))->name('bookings');
-    Route::get('/profile', fn () => view('user.profile'))->name('profile');
-    // Route::put('/profile', [userProfileController::class, 'update'])->name('profile.update');
-    // Route::post('/profile/change-password', [userProfileController::class, 'changePassword'])->name('profile.change-password');
-
-});
-
 // ==========================
-// AUTH AREA (KEEP)
+// ADMIN AREA
 // ==========================
-Route::middleware('auth')->group(function () {
-
-    Route::get('/checkout/{booking}', [CheckoutController::class, 'show'])->name('checkout.show');
-    Route::post('/checkout/{booking}/pay', [CheckoutController::class, 'pay'])->name('checkout.pay');
-
-    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-    });
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 });
