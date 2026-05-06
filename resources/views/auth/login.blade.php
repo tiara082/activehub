@@ -738,6 +738,9 @@
           <label for="remember">Ingat saya</label>
         </div>
 
+        <!-- Hidden role field -->
+        <input type="hidden" id="roleInput" name="role" value="user">
+
         <button class="submit-btn" type="submit">Masuk</button>
 
         <div class="divider">Atau</div>
@@ -831,6 +834,9 @@
       // Update text & placeholder
       const role = tab.dataset.role;
       const cfg  = roleConfig[role];
+
+      // Update hidden role input
+      document.getElementById('roleInput').value = role;
 
       roleLabel.style.opacity   = '0';
       roleLabel.style.transform = 'translateY(-6px)';

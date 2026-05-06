@@ -9,7 +9,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
             {{-- BOOKING LAPANGAN --}}
-            <a href="{{ route('venues.index') }}"
+            <a href="{{ auth()->check() ? route('venues.index') : route('login') }}"
                class="block group relative overflow-hidden rounded-xl h-[380px] cursor-pointer
                       hover:ring-1 hover:ring-[#c8e63a]/40 transition">
 
@@ -56,7 +56,7 @@
             </a>
 
             {{-- PUBLIC MATCH --}}
-            <a href="{{ route('matches.index') }}"
+            <a href="{{ auth()->check() ? route('matches.index') : route('login') }}"
                class="block group relative overflow-hidden rounded-xl h-[380px] cursor-pointer
                       hover:ring-1 hover:ring-[#c8e63a]/40 transition">
 

@@ -22,9 +22,11 @@ class AuthController extends Controller
         $request->validate([
             'login'    => ['required', 'string'],
             'password' => ['required'],
+            'role'     => ['required', 'in:user,owner'],
         ]);
 
         $loginValue = trim($request->input('login'));
+        $requestedRole = $request->input('role');
 
         // Deteksi: email atau nomor HP
         $field = filter_var($loginValue, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
@@ -38,6 +40,18 @@ class AuthController extends Controller
             $field     => $loginValue,
             'password' => $request->input('password'),
         ];
+
+        // Cek user ada atau tidak
+        $user = \App\Models\User::where($field, $loginValue)->first();
+
+        // Validasi role
+        if ($user && $user->role !== $requestedRole) {
+            return back()->withErrors([
+                'login' => "Akun ini terdaftar sebagai " . 
+                          ($user->role === 'owner' ? 'Pemilik Lapangan' : 'Pemain') . 
+                          ". Silakan login dengan role yang sesuai.",
+            ])->onlyInput('login');
+        }
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
@@ -104,7 +118,7 @@ class AuthController extends Controller
         return match (Auth::user()->role) {
             'admin' => redirect()->route('admin.dashboard'),
             'owner' => redirect()->route('owner.venue'),
-            'user'  => redirect()->route('home'),
+            'user'  => redirect()->route('user.dashboard'),
             default => redirect()->route('home'),
         };
     }

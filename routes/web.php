@@ -30,7 +30,10 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout')->middle
 // MATCH
 // ==========================
 Route::get('/matches', fn () => view('pubmatch.list'))->name('matches.index');
-Route::get('/matches/create', fn () => view('pubmatch.create'))->name('matches.create');
+Route::middleware('auth')->group(function () {
+    Route::get('/matches/create', fn () => view('pubmatch.create'))->name('matches.create');
+    Route::post('/matches', fn () => 'store')->name('matches.store');
+});
 
 // ==========================
 // FIELD
@@ -42,8 +45,12 @@ Route::get('/fields/{field}', [FieldController::class, 'show'])->name('fields.sh
 // VENUE
 // ==========================
 Route::get('/venues', [VenueController::class, 'index'])->name('venues.index');
-
 Route::get('/venues/{id}', [VenueController::class, 'show'])->name('venues.show');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/venues/create', fn () => view('venue.create'))->name('venues.create');
+    Route::post('/venues', fn () => 'store')->name('venues.store');
+});
 
 // ==========================
 // FIELD BY VENUE
