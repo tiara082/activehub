@@ -11,61 +11,14 @@
 
 @php
 use Carbon\Carbon;
-
-$allBookings = $bookings ?? [
-    ['name'=>'Agus Santoso','phone'=>'+62 812-3456-7890','court'=>'Lapangan A','date'=>'23 Apr','time'=>'08:00–10:00','dur'=>'2 jam','total'=>'Rp 300K','status'=>'Selesai'],
-    ['name'=>'Tim Harimau FC','phone'=>'+62 856-7654-3210','court'=>'Lapangan B','date'=>'23 Apr','time'=>'13:00–15:00','dur'=>'2 jam','total'=>'Rp 300K','status'=>'Berlangsung'],
-    ['name'=>'Rizky Ramadhan','phone'=>'+62 877-1122-3344','court'=>'Lapangan A','date'=>'23 Apr','time'=>'19:00–21:00','dur'=>'2 jam','total'=>'Rp 300K','status'=>'Terjadwal'],
-    ['name'=>'Sari Indrawati','phone'=>'+62 895-5544-3322','court'=>'Lapangan D','date'=>'24 Apr','time'=>'16:00–18:00','dur'=>'2 jam','total'=>'Rp 300K','status'=>'Dibatalkan'],
-];
-
-$active = request('status', 'all');
-
-$bookings = collect($allBookings)
-    ->when($active !== 'all', function ($q) use ($active) {
-        return $q->where('status', $active);
-    })
-    ->values()
-    ->all();
-
+$todayLabel = Carbon::now()->translatedFormat('d M Y');
 $statusStyle = [
     'Selesai' => 'bg-green-50 text-green-700',
     'Berlangsung' => 'bg-yellow-50 text-yellow-700',
     'Terjadwal' => 'bg-blue-50 text-blue-700',
     'Dibatalkan' => 'bg-gray-50 text-gray-500',
+    'Pending' => 'bg-orange-50 text-orange-600',
 ];
-
-$todayLabel = Carbon::now()->translatedFormat('d M Y');
-
-$tabs = [
-    ['key'=>'all','label'=>'Semua','count'=>count($allBookings)],
-    ['key'=>'Terjadwal','label'=>'Terjadwal','count'=>collect($allBookings)->where('status','Terjadwal')->count()],
-    ['key'=>'Berlangsung','label'=>'Berlangsung','count'=>collect($allBookings)->where('status','Berlangsung')->count()],
-    ['key'=>'Selesai','label'=>'Selesai','count'=>collect($allBookings)->where('status','Selesai')->count()],
-    ['key'=>'Dibatalkan','label'=>'Dibatalkan','count'=>collect($allBookings)->where('status','Dibatalkan')->count()],
-];
-
-
-$now = Carbon::now();
-$monthlyStats = $monthlyStats ?? collect(range(5, 0))->map(function ($i) use ($now) {
-    $month = $now->copy()->subMonths($i);
-    return [
-        'label'      => $month->translatedFormat('M'),
-        'month_num'  => $month->month,
-        'year'       => $month->year,
-        'total'      => rand(18, 62),      
-        'selesai'    => rand(10, 40),
-        'dibatalkan' => rand(1, 8),
-    ];
-})->values()->all();
-
-$currentMonthStat  = end($monthlyStats);
-$previousMonthStat = $monthlyStats[count($monthlyStats) - 2];
-
-$diffTotal = $currentMonthStat['total'] - $previousMonthStat['total'];
-$diffPct   = $previousMonthStat['total'] > 0
-    ? round(($diffTotal / $previousMonthStat['total']) * 100)
-    : 0;
 @endphp
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
@@ -83,9 +36,9 @@ $diffPct   = $previousMonthStat['total'] > 0
         <div class="flex items-end gap-3 h-36" id="booking-chart">
             @foreach($monthlyStats as $idx => $stat)
             @php
-                $maxVal = max(array_column($monthlyStats, 'total')) ?: 1;
+                $maxVal = collect($monthlyStats)->max('total') ?: 1;
                 $heightPct = round(($stat['total'] / $maxVal) * 100);
-                $isLast = $idx === count($monthlyStats) - 1;
+                $isLast = $idx === (is_array($monthlyStats) ? count($monthlyStats) : $monthlyStats->count()) - 1;
             @endphp
             <div class="flex-1 flex flex-col items-center gap-1 group relative">
                 {{-- Tooltip --}}
@@ -149,9 +102,9 @@ $diffPct   = $previousMonthStat['total'] > 0
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex-1">
             <p class="text-xs font-semibold text-gray-800 mb-3">Riwayat Bulanan</p>
             <div class="space-y-3">
-                @foreach(array_slice($monthlyStats, -4, 3) as $hist)
+                @foreach(collect($monthlyStats)->slice(-4, 3) as $hist)
                 @php
-                    $maxHist = max(array_column($monthlyStats, 'total')) ?: 1;
+                    $maxHist = collect($monthlyStats)->max('total') ?: 1;
                     $barW    = round(($hist['total'] / $maxHist) * 100);
                 @endphp
                 <div>
@@ -178,7 +131,7 @@ $diffPct   = $previousMonthStat['total'] > 0
         @foreach($tabs as $tab)
             @php $isActive = $active === $tab['key']; @endphp
 
-            <a href="?status={{ $tab['key'] }}"
+            <a href="{{ request()->fullUrlWithQuery(['status' => $tab['key']]) }}"
                class="relative flex items-center gap-2 whitespace-nowrap px-4 py-2 rounded-xl
                transition-all duration-200 ease-out
                {{ $isActive
@@ -208,13 +161,14 @@ $diffPct   = $previousMonthStat['total'] > 0
 
 
 {{-- SEARCH --}}
-<div class="flex flex-col md:flex-row gap-3 mb-6">
+<form method="GET" action="{{ route('owner.bookings') }}" class="flex flex-col md:flex-row gap-3 mb-6" id="filterForm">
+    <input type="hidden" name="status" value="{{ $active }}">
 
     <div class="flex-1 relative">
-        <input type="text"
-            placeholder="Cari nama, nomor, atau lapangan..."
+        <input type="text" name="search" value="{{ request('search') }}"
+            placeholder="Cari nama atau nomor HP..."
             class="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 pl-10 text-sm
-                   focus:ring-2 focus:ring-[#1b3a1b] outline-none">
+                   focus:ring-2 focus:ring-[#1b3a1b] outline-none" onchange="document.getElementById('filterForm').submit()">
 
         <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
              fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -223,14 +177,15 @@ $diffPct   = $previousMonthStat['total'] > 0
     </div>
 
     <div class="relative w-full md:w-60">
-        <select class="w-full appearance-none bg-white border border-gray-200 rounded-2xl px-4 py-3 pr-10 text-sm
+        <select name="field_id" onchange="document.getElementById('filterForm').submit()" class="w-full appearance-none bg-white border border-gray-200 rounded-2xl px-4 py-3 pr-10 text-sm
                        focus:ring-2 focus:ring-[#1b3a1b] outline-none hover:border-gray-300 transition">
 
             <option value="">Semua Lapangan</option>
-            <option value="A">Lapangan A</option>
-            <option value="B">Lapangan B</option>
-            <option value="C">Lapangan C</option>
-            <option value="D">Lapangan D</option>
+            @if($venue && $venue->fields)
+                @foreach($venue->fields as $field)
+                    <option value="{{ $field->id }}" {{ request('field_id') == $field->id ? 'selected' : '' }}>{{ $field->name }}</option>
+                @endforeach
+            @endif
 
         </select>
 
@@ -241,9 +196,9 @@ $diffPct   = $previousMonthStat['total'] > 0
         </div>
     </div>
 
-    <input type="date"
+    <input type="date" name="date" value="{{ request('date') }}" onchange="document.getElementById('filterForm').submit()"
         class="bg-white border border-gray-200 rounded-2xl px-4 py-3 text-sm">
-</div>
+</form>
 
 
 {{-- TABLE CARD --}}

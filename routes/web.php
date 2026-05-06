@@ -42,7 +42,7 @@ Route::get('/fields/{field}', [FieldController::class, 'show'])->name('fields.sh
 // VENUE
 // ==========================
 Route::get('/venues', [VenueController::class, 'index'])->name('venues.index');
-Route::get('/venues/create', fn () => view('venue.create'))->name('venues.create');
+
 Route::get('/venues/{id}', [VenueController::class, 'show'])->name('venues.show');
 
 // ==========================
@@ -83,19 +83,49 @@ Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
 
 // ==========================
 // OWNER AREA
-// ==========================
-Route::prefix('owner')->name('owner.')->middleware('auth')->group(function () {
+// // ==========================
+// Route::prefix('owner')->name('owner.')->middleware('auth')->group(function () {
+    
+
+//     Route::get('/dashboard', fn () => redirect()->route('owner.venue'))->name('dashboard');
+
+//     Route::get('/bookings', fn () => view('owner.bookings'))->name('bookings');
+//     Route::get('/calendar', fn () => view('owner.calendar'))->name('calendar');
+//     Route::get('/earnings', fn () => view('owner.earnings'))->name('earnings');
+//     Route::get('/venue', [OwnerVenueController::class, 'index'])->name('venue');
+//     Route::get('/profile', fn () => view('owner.profile'))->name('profile');
+
+//     Route::resource('venues', OwnerVenueController::class);
+// });
+
+Route::middleware(['auth'])->prefix('owner')->name('owner.')->group(function () {
+
+
+    Route::get('/venue/create', [OwnerVenueController::class, 'create'])->name('venue.create');
+    Route::get('/venue/{venue}/edit', [OwnerVenueController::class, 'edit'])->name('venue.edit');
+
+    // Venue
+    Route::get   ('/venue',                   [OwnerVenueController::class, 'index'])        ->name('venue');
+    Route::post  ('/venue',                   [OwnerVenueController::class, 'storeVenue'])   ->name('venue.store');
+    Route::put   ('/venue/{venue}',           [OwnerVenueController::class, 'updateVenue'])  ->name('venue.update');
+    Route::delete('/venue/{venue}',           [OwnerVenueController::class, 'destroyVenue']) ->name('venue.destroy');
+
+    // Field (nested under venue)
+    Route::post  ('/venue/{venue}/field',           [OwnerVenueController::class, 'storeField'])   ->name('venue.field.store');
+    Route::put   ('/venue/{venue}/field/{field}',   [OwnerVenueController::class, 'updateField'])  ->name('venue.field.update');
+    Route::delete('/venue/{venue}/field/{field}',   [OwnerVenueController::class, 'destroyField']) ->name('venue.field.destroy');
 
     Route::get('/dashboard', fn () => redirect()->route('owner.venue'))->name('dashboard');
 
-    Route::get('/bookings', fn () => view('owner.bookings'))->name('bookings');
-    Route::get('/calendar', fn () => view('owner.calendar'))->name('calendar');
+    Route::get('/bookings', [\App\Http\Controllers\Owner\BookingController::class, 'index'])->name('bookings');
+    Route::get('/calendar', [\App\Http\Controllers\Owner\CalendarController::class, 'index'])->name('calendar');
+    Route::post('/calendar/block', [\App\Http\Controllers\Owner\CalendarController::class, 'blockFullDay'])->name('calendar.block');
+    Route::post('/calendar/unblock', [\App\Http\Controllers\Owner\CalendarController::class, 'unblockFullDay'])->name('calendar.unblock');
+    Route::post('/calendar/booking', [\App\Http\Controllers\Owner\CalendarController::class, 'storeOfflineBooking'])->name('calendar.booking');
     Route::get('/earnings', fn () => view('owner.earnings'))->name('earnings');
-    Route::get('/venue', fn () => view('owner.venue'))->name('venue');
     Route::get('/profile', fn () => view('owner.profile'))->name('profile');
-
-    Route::resource('venues', OwnerVenueController::class);
 });
+
 
 // ==========================
 // ADMIN AREA

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Venue extends Model
 {
-   protected $fillable = ['owner_id', 'name', 'location', 'latitude', 'longitude', 'description'];
+   protected $fillable = ['owner_id', 'name', 'location', 'latitude', 'longitude', 'description', 'open_time', 'close_time'];
 
    protected $casts = [
       'latitude' => 'decimal:6',

@@ -1,83 +1,99 @@
-{{-- resources/views/owner/pages/venue.blade.php --}}
 @extends('partials.app')
 
 @section('title', 'My Venue')
 
 @section('content')
 
+{{-- FLASH MESSAGES --}}
+@if(session('success'))
+<div class="mb-4 px-4 py-3 bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl">
+    {{ session('success') }}
+</div>
+@endif
+@if(session('error'))
+<div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl">
+    {{ session('error') }}
+</div>
+@endif
+
 <div class="grid lg:grid-cols-3 gap-6">
 
+    {{-- ===================== LEFT COL ===================== --}}
     <div class="lg:col-span-2 space-y-5">
+
+        @if($activeVenue)
 
         {{-- ===== VENUE HEADER ===== --}}
         <div class="bg-white rounded-2xl border border-gray-100 p-6 space-y-5 relative">
 
-            {{-- ACTION ICONS --}}
+            {{-- ACTION BUTTONS --}}
             <div class="absolute top-5 right-5 flex items-center gap-2">
 
-                {{-- EDIT (UPDATED ICON) --}}
+                {{-- EDIT VENUE --}}
                 <div class="relative group">
-                    <button class="w-9 h-9 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition">
+                    <a href="{{ route('owner.venue.edit', $activeVenue->id) }}"
+                        class="w-9 h-9 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition">
                         <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 20h9"/>
                             <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 20h9" />
-                            <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z" />
+                                d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z"/>
+                        </svg>
+                    </a>
+                    <span class="absolute right-0 top-full mt-2 text-xs bg-gray-900 text-white px-2 py-1 rounded
+                                 opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-10">
+                        Edit Venue
+                    </span>
+                </div>
+
+                {{-- DELETE VENUE --}}
+                <div class="relative group">
+                    <button onclick="openModal('deleteVenueModal')"
+                        class="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center transition">
+                        <svg class="w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                            <path d="M10 11v6"/><path d="M14 11v6"/>
+                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
                         </svg>
                     </button>
-
-                    <span class="absolute right-0 top-full mt-2 text-xs bg-gray-900 text-white px-2 py-1 rounded 
-                                 opacity-0 group-hover:opacity-100 transition whitespace-nowrap">
-                        Edit Venue
+                    <span class="absolute right-0 top-full mt-2 text-xs bg-gray-900 text-white px-2 py-1 rounded
+                                 opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-10">
+                        Hapus Venue
                     </span>
                 </div>
 
             </div>
 
-            {{-- CONTENT --}}
+            {{-- VENUE INFO --}}
             <div>
-                <h2 class="text-gray-900 text-2xl font-semibold">
-                    Darmo Premium Sports
+                <h2 class="text-gray-900 text-2xl font-semibold pr-24">
+                    {{ $activeVenue->name }}
                 </h2>
                 <p class="text-gray-500 text-sm mt-1">
-                    Surabaya, Jawa Timur
+                    {{ $activeVenue->location ?? '-' }}
                 </p>
-
-                {{-- DESCRIPTION --}}
+                @if($activeVenue->description)
                 <p class="text-sm text-gray-600 mt-3 leading-relaxed max-w-xl">
-                    Venue olahraga premium dengan fasilitas lengkap untuk futsal dan badminton,
-                    cocok untuk latihan rutin maupun pertandingan.
+                    {{ $activeVenue->description }}
                 </p>
+                @endif
             </div>
 
-            {{-- TAG GROUPS --}}
-            <div class="space-y-4">
-
-                {{-- SPORT --}}
-                <div>
-                    <p class="text-xs text-gray-400 mb-2">Olahraga</p>
-                    <div class="flex flex-wrap gap-2">
-                        @foreach(['Futsal','Badminton'] as $sport)
-                        <span class="text-xs font-medium bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg">
-                            {{ $sport }}
-                        </span>
-                        @endforeach
-                    </div>
+            {{-- SPORT TAGS (unique from fields) --}}
+            @php $sports = $activeVenue->fields->pluck('sport_type')->unique()->filter(); @endphp
+            @if($sports->isNotEmpty())
+            <div>
+                <p class="text-xs text-gray-400 mb-2">Olahraga</p>
+                <div class="flex flex-wrap gap-2">
+                    @foreach($sports as $sport)
+                    <span class="text-xs font-medium bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg">
+                        {{ $sport }}
+                    </span>
+                    @endforeach
                 </div>
-
-                {{-- FACILITIES --}}
-                <div>
-                    <p class="text-xs text-gray-400 mb-2">Fasilitas</p>
-                    <div class="flex flex-wrap gap-2">
-                        @foreach(['AC','CCTV'] as $facility)
-                        <span class="text-xs font-medium bg-yellow-50 text-yellow-700 px-3 py-1.5 rounded-lg">
-                            {{ $facility }}
-                        </span>
-                        @endforeach
-                    </div>
-                </div>
-
             </div>
+            @endif
 
         </div>
 
@@ -87,241 +103,393 @@
 
             <div class="flex items-center justify-between mb-4">
                 <h3 class="font-semibold text-gray-800">Lapangan</h3>
+                <a href="{{ route('owner.venue.edit', $activeVenue->id) }}#lapangan"
+                    class="inline-flex items-center gap-1.5 text-xs font-medium bg-gray-900 hover:bg-gray-700
+                           text-white px-3 py-2 rounded-lg transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-width="2" stroke-linecap="round" d="M12 5v14M5 12h14"/>
+                    </svg>
+                    Tambah Lapangan
+                </a>
             </div>
 
-            @php
-            $fields = [
-            ['name'=>'Court A','sport'=>'Futsal','price'=>'150K','capacity'=>'10 orang','type'=>'Indoor'],
-            ['name'=>'Court B','sport'=>'Badminton','price'=>'80K','capacity'=>'4 orang','type'=>'Outdoor'],
-            ['name'=>'Court C','sport'=>'Futsal','price'=>'150K','capacity'=>'10 orang','type'=>'Indoor'],
-            ];
-            @endphp
-
+            @if($activeVenue->fields->isEmpty())
+                <p class="text-sm text-gray-400 text-center py-8">Belum ada lapangan. Tambahkan lapangan pertama kamu.</p>
+            @else
             <div class="space-y-3">
-
-                @foreach($fields as $f)
+                @foreach($activeVenue->fields as $field)
+                @php
+                    $typeClass = $field->is_indoor
+                        ? 'bg-green-50 text-green-700'
+                        : 'bg-blue-50 text-blue-700';
+                    $typeLabel = $field->is_indoor ? 'Indoor' : 'Outdoor';
+                @endphp
                 <div class="border border-gray-100 rounded-xl p-4 flex items-center justify-between hover:shadow-sm transition">
-
                     <div>
-                        <p class="font-medium text-gray-900">{{ $f['name'] }}</p>
+                        <p class="font-medium text-gray-900">{{ $field->name }}</p>
                         <p class="text-sm text-gray-500">
-                            {{ $f['sport'] }} • {{ $f['capacity'] }}
+                            {{ $field->sport_type ?? '-' }}
+                            @if($field->capacity) • {{ $field->capacity }} orang @endif
                         </p>
                     </div>
 
-                    <div class="flex items-center gap-6">
-
+                    <div class="flex items-center gap-4">
                         <p class="text-sm font-medium text-gray-700">
-                            Rp {{ $f['price'] }}/jam
+                            Rp {{ number_format($field->price_per_hour, 0, ',', '.') }}/jam
                         </p>
-
-                        @php
-                        $type = $f['type'];
-
-                        $typeClass = match($type) {
-                        'Indoor' => 'bg-green-50 text-green-700',
-                        'Outdoor' => 'bg-blue-50 text-blue-700',
-                        default => 'bg-gray-50 text-gray-600',
-                        };
-                        @endphp
                         <span class="text-xs font-medium px-3 py-1.5 rounded-lg {{ $typeClass }}">
-                            {{ $type }}
+                            {{ $typeLabel }}
                         </span>
 
-                        {{-- ACTION ICONS --}}
-                        <div class="flex gap-2">
+                        {{-- EDIT FIELD --}}
+                        <a href="{{ route('owner.venue.edit', $activeVenue->id) }}#lapangan"
+                            class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-700 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z"/>
+                            </svg>
+                        </a>
 
-                            {{-- EDIT --}}
-                            <button class="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-black">
-                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                        d="M12 20h9" />
-                                    <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                        d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z" />
-                                </svg>
-                            </button>
-
-                            {{-- DELETE --}}
-                            <button class="w-7 h-7 flex items-center justify-center text-red-500 hover:text-red-600">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="w-4 h-4 text-red-500"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="1.8"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round">
-
-                                    <polyline points="3 6 5 6 21 6"></polyline>
-                                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
-                                    <path d="M10 11v6"></path>
-                                    <path d="M14 11v6"></path>
-                                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
-                                </svg>
-                            </button>
-
-                        </div>
-
+                        {{-- DELETE FIELD --}}
+                        <button onclick="openDeleteField({{ $field->id }}, '{{ addslashes($field->name) }}')"
+                            class="w-7 h-7 flex items-center justify-center text-red-400 hover:text-red-600 transition">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"/>
+                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                <path d="M10 11v6"/><path d="M14 11v6"/>
+                                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                            </svg>
+                        </button>
                     </div>
-
                 </div>
                 @endforeach
-
             </div>
+            @endif
 
         </div>
+
+        @else
+
+        {{-- ===== NO VENUE EMPTY STATE ===== --}}
+        <div class="bg-white rounded-2xl border border-gray-100 p-12 text-center">
+            <div class="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                        d="M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H3.75A.75.75 0 013 21V9.75z"/>
+                    <path stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M9 21V12h6v9"/>
+                </svg>
+            </div>
+            <p class="text-gray-800 font-semibold text-base">Belum ada venue</p>
+            <p class="text-gray-400 text-sm mt-1 mb-5">Tambahkan venue pertama Anda untuk mulai mengelola lapangan.</p>
+<a href="{{ route('owner.venue.create') }}"
+   class="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition">
+    Tambah Venue
+</a>
+        </div>
+
+        @endif
 
     </div>
 
 
+    {{-- ===================== RIGHT SIDEBAR ===================== --}}
     <div class="space-y-5">
+
+        @if($activeVenue)
 
         {{-- LIVE FIELD STATUS --}}
         <div class="bg-white rounded-2xl border border-gray-100">
-
             <div class="px-5 py-4 border-b flex items-center justify-between">
-                <h3 class="font-semibold text-gray-800 text-sm">
-                    Live Field Status
-                </h3>
-
-                <span class="text-xs text-gray-400">
-                    Now
-                </span>
+                <h3 class="font-semibold text-gray-800 text-sm">Live Field Status</h3>
+                <span class="text-xs text-gray-400">Now</span>
             </div>
-
             <div class="divide-y">
-
+                @forelse($activeVenue->fields as $field)
                 @php
-                $fields = [
-                ['name'=>'Court A','status'=>'in_use','time'=>'08:00 - 10:00','user'=>'Agus'],
-                ['name'=>'Court B','status'=>'available','time'=>null,'user'=>null],
-                ['name'=>'Court C','status'=>'in_use','time'=>'09:00 - 10:00','user'=>'Fajar'],
-                ];
+                    $now           = now();
+                    $activeBooking = $field->bookings()
+                        ->where('status', 'confirmed')
+                        ->whereHas('timeSlot', function ($q) use ($now) {
+                            $q->whereDate('date', $now->toDateString())
+                              ->where('start_time', '<=', $now->format('H:i:s'))
+                              ->where('end_time', '>=', $now->format('H:i:s'));
+                        })
+                        ->with('user')
+                        ->first();
+                    $isInUse     = (bool) $activeBooking;
+                    $statusClass = $isInUse ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-500';
+                    $label       = $isInUse ? 'In Use' : 'Available';
                 @endphp
-
-                @foreach($fields as $f)
-
-                @php
-                $isInUse = $f['status'] === 'in_use';
-
-                $statusClass = $isInUse
-                ? 'bg-green-50 text-green-600'
-                : 'bg-gray-50 text-gray-500';
-
-                $label = $isInUse ? 'In Use' : 'Available';
-                @endphp
-
                 <div class="px-5 py-4 flex items-center justify-between hover:bg-gray-50 transition">
-
-                    {{-- LEFT --}}
                     <div>
-                        <p class="text-sm font-medium text-gray-800">
-                            {{ $f['name'] }}
-                        </p>
-
+                        <p class="text-sm font-medium text-gray-800">{{ $field->name }}</p>
                         <p class="text-xs text-gray-500 mt-1">
                             @if($isInUse)
-                            {{ $f['user'] }} • {{ $f['time'] }}
+                                {{ $activeBooking->user->name ?? '-' }} •
+                                {{ \Carbon\Carbon::parse($activeBooking->start_time)->format('H:i') }} -
+                                {{ \Carbon\Carbon::parse($activeBooking->end_time)->format('H:i') }}
                             @else
-                            Available
+                                Available
                             @endif
                         </p>
                     </div>
-
-                    {{-- RIGHT BADGE --}}
-                    <span class="text-xs px-2 py-1 rounded-full {{ $statusClass }}">
-                        {{ $label }}
-                    </span>
-
+                    <span class="text-xs px-2 py-1 rounded-full {{ $statusClass }}">{{ $label }}</span>
                 </div>
-
-                @endforeach
-
+                @empty
+                <p class="text-sm text-gray-400 text-center py-6 px-5">Tidak ada lapangan.</p>
+                @endforelse
             </div>
-
         </div>
 
 
-        {{-- PAYMENT STATUS --}}
+        {{-- PAYMENT OVERVIEW --}}
         <div class="bg-white rounded-2xl border border-gray-100 p-5">
-
             <div class="flex items-center justify-between mb-4">
-                <p class="text-sm font-semibold text-gray-800">
-                    Payment Overview
-                </p>
-
-                <span class="text-xs text-gray-400">
-                    This month
-                </span>
+                <p class="text-sm font-semibold text-gray-800">Payment Overview</p>
+                <span class="text-xs text-gray-400">This month</span>
             </div>
-
+            @php
+                $venueFieldIds = $activeVenue->fields->pluck('id');
+                $paid    = \App\Models\Booking::whereIn('field_id', $venueFieldIds)
+                               ->whereMonth('created_at', now()->month)
+                               ->where('status', 'paid')->count();
+                $pending = \App\Models\Booking::whereIn('field_id', $venueFieldIds)
+                               ->whereMonth('created_at', now()->month)
+                               ->where('status', 'pending')->count();
+                $expired = \App\Models\Booking::whereIn('field_id', $venueFieldIds)
+                               ->whereMonth('created_at', now()->month)
+                               ->where('status', 'expired')->count();
+            @endphp
             <div class="space-y-3">
-
-                {{-- PAID --}}
                 <div class="flex items-center justify-between p-3 rounded-xl bg-green-50/50 hover:bg-green-50 transition">
                     <div class="flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-green-500"></span>
                         <span class="text-sm text-gray-600">Paid</span>
                     </div>
-                    <span class="text-sm font-semibold text-green-600">24</span>
+                    <span class="text-sm font-semibold text-green-600">{{ $paid }}</span>
                 </div>
-
-                {{-- PENDING --}}
                 <div class="flex items-center justify-between p-3 rounded-xl bg-yellow-50/50 hover:bg-yellow-50 transition">
                     <div class="flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
                         <span class="text-sm text-gray-600">Pending Payment</span>
                     </div>
-                    <span class="text-sm font-semibold text-yellow-600">3</span>
+                    <span class="text-sm font-semibold text-yellow-600">{{ $pending }}</span>
                 </div>
-
-                {{-- EXPIRED --}}
                 <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition">
                     <div class="flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-gray-400"></span>
                         <span class="text-sm text-gray-600">Expired</span>
                     </div>
-                    <span class="text-sm font-semibold text-gray-500">5</span>
+                    <span class="text-sm font-semibold text-gray-500">{{ $expired }}</span>
                 </div>
-
             </div>
-
         </div>
 
 
         {{-- STATS --}}
         <div class="bg-white rounded-2xl border border-gray-100 p-5">
-
             <p class="text-sm text-gray-500 mb-4">Statistik</p>
-
+            @php
+                $totalBookings = \App\Models\Booking::whereIn('field_id', $venueFieldIds)->count();
+                $monthRevenue  = \App\Models\Booking::whereIn('field_id', $venueFieldIds)
+                                     ->whereMonth('created_at', now()->month)
+                                     ->where('status', 'paid')
+                                     ->sum('total_price');
+                $todayBookings = \App\Models\Booking::whereIn('field_id', $venueFieldIds)
+                                     ->whereDate('created_at', today())->count();
+                $hoursUsed     = \App\Models\Booking::whereIn('field_id', $venueFieldIds)
+                                    //  ->whereDate('booking_date', today())
+                                     ->where('status', 'confirmed')
+                                     ->get()
+                                     ->sum(fn($b) =>
+                                         \Carbon\Carbon::parse($b->start_time)
+                                             ->diffInHours(\Carbon\Carbon::parse($b->end_time))
+                                     );
+            @endphp
             <div class="grid grid-cols-2 gap-4">
-
                 <div class="bg-gray-50 rounded-xl p-4">
                     <p class="text-xs text-gray-500">Total Booking</p>
-                    <p class="text-lg font-semibold text-gray-900 mt-1">247</p>
+                    <p class="text-lg font-semibold text-gray-900 mt-1">{{ $totalBookings }}</p>
                 </div>
-
                 <div class="bg-gray-50 rounded-xl p-4">
                     <p class="text-xs text-gray-500">Revenue Bulan</p>
-                    <p class="text-lg font-semibold text-gray-900 mt-1">Rp 4.2M</p>
+                    <p class="text-lg font-semibold text-gray-900 mt-1">
+                        Rp {{ $monthRevenue >= 1000000
+                            ? number_format($monthRevenue / 1000000, 1) . 'M'
+                            : number_format($monthRevenue, 0, ',', '.') }}
+                    </p>
                 </div>
-
                 <div class="bg-gray-50 rounded-xl p-4">
                     <p class="text-xs text-gray-500">Booking Hari Ini</p>
-                    <p class="text-lg font-semibold text-gray-900 mt-1">12</p>
+                    <p class="text-lg font-semibold text-gray-900 mt-1">{{ $todayBookings }}</p>
                 </div>
-
                 <div class="bg-gray-50 rounded-xl p-4">
                     <p class="text-xs text-gray-500">Jam Terpakai</p>
-                    <p class="text-lg font-semibold text-gray-900 mt-1">36 jam</p>
+                    <p class="text-lg font-semibold text-gray-900 mt-1">{{ $hoursUsed }} jam</p>
                 </div>
-
             </div>
-
         </div>
+
+        @else
+        <div class="bg-white rounded-2xl border border-gray-100 p-6 text-center">
+            <p class="text-sm text-gray-400">Statistik akan muncul setelah venue ditambahkan.</p>
+        </div>
+        @endif
 
     </div>
 
 </div>
+
+
+{{-- ============================================================ --}}
+{{--  MODALS                                                       --}}
+{{-- ============================================================ --}}
+
+{{-- ===== ADD VENUE ===== --}}
+<div id="addVenueModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="font-semibold text-gray-900">Tambah Venue</h3>
+            <button onclick="closeModal('addVenueModal')" class="text-gray-400 hover:text-gray-600 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-width="2" stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <form method="POST" action="{{ route('owner.venue.store') }}" class="space-y-4">
+            @csrf
+            <div>
+                <label class="text-xs text-gray-500 mb-1 block">Nama Venue <span class="text-red-400">*</span></label>
+                <input type="text" name="name" required
+                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                    placeholder="cth. Darmo Premium Sports">
+            </div>
+            <div>
+                <label class="text-xs text-gray-500 mb-1 block">Lokasi</label>
+                <input type="text" name="location"
+                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                    placeholder="cth. Surabaya, Jawa Timur">
+            </div>
+            <div>
+                <label class="text-xs text-gray-500 mb-1 block">Deskripsi</label>
+                <textarea name="description" rows="3"
+                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 resize-none"
+                    placeholder="Deskripsi singkat venue..."></textarea>
+            </div>
+            <div class="flex gap-3 pt-1">
+                <button type="button" onclick="closeModal('addVenueModal')"
+                    class="flex-1 border border-gray-200 text-gray-600 text-sm font-medium py-2.5 rounded-xl hover:bg-gray-50 transition">
+                    Batal
+                </button>
+                <button type="submit"
+                    class="flex-1 bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium py-2.5 rounded-xl transition">
+                    Simpan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+@if($activeVenue)
+{{-- ===== DELETE VENUE ===== --}}
+<div id="deleteVenueModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center">
+        <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                    d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            </svg>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-1">Hapus Venue?</h3>
+        <p class="text-sm text-gray-500 mb-6">
+            Venue <strong>{{ $activeVenue->name }}</strong> dan semua lapangannya akan dihapus permanen.
+        </p>
+        <div class="flex gap-3">
+            <button onclick="closeModal('deleteVenueModal')"
+                class="flex-1 border border-gray-200 text-gray-600 text-sm font-medium py-2.5 rounded-xl hover:bg-gray-50 transition">
+                Batal
+            </button>
+            <form method="POST" action="{{ route('owner.venue.destroy', $activeVenue) }}" class="flex-1">
+                @csrf
+                @method('DELETE')
+                <button type="submit"
+                    class="w-full bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-2.5 rounded-xl transition">
+                    Hapus
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+{{-- ===== DELETE FIELD ===== --}}
+<div id="deleteFieldModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center">
+        <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                    d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            </svg>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-1">Hapus Lapangan?</h3>
+        <p class="text-sm text-gray-500 mb-6">
+            Lapangan <strong id="deleteFieldName"></strong> akan dihapus permanen.
+        </p>
+        <div class="flex gap-3">
+            <button onclick="closeModal('deleteFieldModal')"
+                class="flex-1 border border-gray-200 text-gray-600 text-sm font-medium py-2.5 rounded-xl hover:bg-gray-50 transition">
+                Batal
+            </button>
+            <form id="deleteFieldForm" method="POST" action="" class="flex-1">
+                @csrf
+                @method('DELETE')
+                <button type="submit"
+                    class="w-full bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-2.5 rounded-xl transition">
+                    Hapus
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@endif {{-- end @if($activeVenue) for modals --}}
+
+
+{{-- ============================================================ --}}
+{{--  JAVASCRIPT                                                   --}}
+{{-- ============================================================ --}}
+<script>
+    function openModal(id) {
+        document.getElementById(id).classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    }
+
+    // Close modal on backdrop click
+    document.querySelectorAll('[id$="Modal"]').forEach(modal => {
+        modal.addEventListener('click', function (e) {
+            if (e.target === this) closeModal(this.id);
+        });
+    });
+
+    // Populate delete field modal
+    function openDeleteField(id, name) {
+        const baseUrl = "{{ url('owner/venue') }}/{{ $activeVenue->id ?? '' }}/field/";
+        document.getElementById('deleteFieldForm').action = baseUrl + id;
+        document.getElementById('deleteFieldName').textContent = name;
+        openModal('deleteFieldModal');
+    }
+</script>
 
 @endsection

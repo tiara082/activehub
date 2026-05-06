@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bookings', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('venues', function (Blueprint $table) {
+            $table->time('open_time')->default('07:00:00');
+            $table->time('close_time')->default('22:00:00');
         });
     }
 
@@ -22,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bookings');
+        Schema::table('venues', function (Blueprint $table) {
+            $table->dropColumn(['open_time', 'close_time']);
+        });
     }
 };

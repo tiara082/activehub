@@ -18,16 +18,35 @@
 
             {{-- LEFT INFO --}}
             <div>
-                <p class="font-semibold text-gray-800 text-sm">April 2025</p>
+                <p class="font-semibold text-gray-800 text-sm">{{ \Carbon\Carbon::parse($date)->translatedFormat('F Y') }}</p>
                 <p class="text-xs text-gray-400">Klik tanggal untuk lihat slot</p>
             </div>
 
             {{-- RIGHT ACTION (POJOK) --}}
-            <div>
-                <button class="px-3 py-1.5 text-[11px] rounded-xl bg-red-50 text-red-600
-                               hover:bg-red-100 transition font-semibold">
-                    Block Full Day
-                </button>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('owner.calendar', ['month' => \Carbon\Carbon::parse($date)->subMonth()->format('m'), 'year' => \Carbon\Carbon::parse($date)->subMonth()->format('Y')]) }}" class="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200">&lt;</a>
+                <a href="{{ route('owner.calendar', ['month' => \Carbon\Carbon::parse($date)->addMonth()->format('m'), 'year' => \Carbon\Carbon::parse($date)->addMonth()->format('Y')]) }}" class="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200">&gt;</a>
+                @if(isset($isFullDayBlocked) && $isFullDayBlocked)
+                    <form action="{{ route('owner.calendar.unblock') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="date" value="{{ $selectedDate }}">
+                        <button type="submit" class="px-3 py-1.5 text-[11px] rounded-xl bg-gray-100 text-gray-600
+                                       hover:bg-gray-200 transition font-semibold"
+                                onclick="return confirm('Buka kembali blokir jadwal untuk seharian penuh pada tanggal ini?')">
+                            Unblock Full Day
+                        </button>
+                    </form>
+                @else
+                    <form action="{{ route('owner.calendar.block') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="date" value="{{ $selectedDate }}">
+                        <button type="submit" class="px-3 py-1.5 text-[11px] rounded-xl bg-red-50 text-red-600
+                                       hover:bg-red-100 transition font-semibold"
+                                onclick="return confirm('Block semua lapangan seharian penuh pada tanggal ini?')">
+                            Block Full Day
+                        </button>
+                    </form>
+                @endif
             </div>
 
         </div>
@@ -41,55 +60,14 @@
             @endforeach
         </div>
 
-        {{-- DATES --}}
-        @php
-        $days = [
-            ['n'=>30,'empty'=>true,'type'=>''],
-            ['n'=>31,'empty'=>true,'type'=>''],
-            ['n'=>1,'empty'=>false,'type'=>''],
-            ['n'=>2,'empty'=>false,'type'=>'booked'],
-            ['n'=>3,'empty'=>false,'type'=>'booked'],
-            ['n'=>4,'empty'=>false,'type'=>'partial'],
-            ['n'=>5,'empty'=>false,'type'=>'booked'],
-            ['n'=>6,'empty'=>false,'type'=>'booked'],
-            ['n'=>7,'empty'=>false,'type'=>'partial'],
-            ['n'=>8,'empty'=>false,'type'=>'booked'],
-            ['n'=>9,'empty'=>false,'type'=>''],
-            ['n'=>10,'empty'=>false,'type'=>'booked'],
-            ['n'=>11,'empty'=>false,'type'=>'booked'],
-            ['n'=>12,'empty'=>false,'type'=>'booked'],
-            ['n'=>13,'empty'=>false,'type'=>''],
-            ['n'=>14,'empty'=>false,'type'=>'booked'],
-            ['n'=>15,'empty'=>false,'type'=>'partial'],
-            ['n'=>16,'empty'=>false,'type'=>'booked'],
-            ['n'=>17,'empty'=>false,'type'=>'booked'],
-            ['n'=>18,'empty'=>false,'type'=>'booked'],
-            ['n'=>19,'empty'=>false,'type'=>'booked'],
-            ['n'=>20,'empty'=>false,'type'=>'partial'],
-            ['n'=>21,'empty'=>false,'type'=>'booked'],
-            ['n'=>22,'empty'=>false,'type'=>'booked'],
-            ['n'=>23,'empty'=>false,'type'=>'today'],
-            ['n'=>24,'empty'=>false,'type'=>''],
-            ['n'=>25,'empty'=>false,'type'=>''],
-            ['n'=>26,'empty'=>false,'type'=>''],
-            ['n'=>27,'empty'=>false,'type'=>''],
-            ['n'=>28,'empty'=>false,'type'=>''],
-            ['n'=>29,'empty'=>false,'type'=>''],
-            ['n'=>30,'empty'=>false,'type'=>''],
-            ['n'=>1,'empty'=>true,'type'=>''],
-            ['n'=>2,'empty'=>true,'type'=>''],
-            ['n'=>3,'empty'=>true,'type'=>''],
-        ];
-        @endphp
-
         <div class="grid grid-cols-7 gap-1 px-3 pb-4">
 
             @foreach($days as $day)
-            <div
+            <a href="{{ $day['empty'] ? '#' : route('owner.calendar', ['date' => $day['date'], 'month' => \Carbon\Carbon::parse($date)->format('m'), 'year' => \Carbon\Carbon::parse($date)->format('Y')]) }}"
                 class="aspect-square flex flex-col items-center justify-center rounded-xl text-[13px]
                        relative transition-all cursor-pointer
                        hover:scale-[1.02]
-                       {{ $day['empty'] ? 'text-gray-300 cursor-default' : 'hover:bg-gray-50 text-gray-700' }}
+                       {{ $day['empty'] ? 'text-gray-300 cursor-default pointer-events-none' : 'hover:bg-gray-50 text-gray-700' }}
                        {{ $day['type'] === 'today' ? 'bg-[#1b3a1b] text-white font-bold' : '' }}
                        {{ $day['type'] === 'booked' ? 'bg-green-50 text-green-700' : '' }}
                        {{ $day['type'] === 'partial' ? 'bg-yellow-50 text-yellow-700' : '' }}
@@ -100,7 +78,7 @@
                     <span class="absolute bottom-1 w-1 h-1 rounded-full
                                  {{ $day['type'] === 'booked' ? 'bg-green-500' : 'bg-yellow-500' }}"></span>
                 @endif
-            </div>
+            </a>
             @endforeach
 
         </div>
@@ -142,11 +120,11 @@
         <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
 
             <div>
-                <p class="font-semibold text-gray-800 text-sm">Slot — 23 April 2025</p>
+                <p class="font-semibold text-gray-800 text-sm">Slot — {{ \Carbon\Carbon::parse($selectedDate)->translatedFormat('d F Y') }}</p>
                 <p class="text-xs text-gray-400">Klik slot untuk blokir jam tertentu</p>
             </div>
 
-            <button class="px-4 py-2 text-sm rounded-xl bg-[#0b3d0b] text-white hover:bg-[#163016] transition">
+            <button onclick="openAddBookingModal()" class="px-4 py-2 text-sm rounded-xl bg-[#0b3d0b] text-white hover:bg-[#163016] transition">
                 + Add Booking
             </button>
 
@@ -158,28 +136,19 @@
                 <thead>
                     <tr class="bg-gray-50 border-b border-gray-100">
                         <th class="text-left text-[10px] text-gray-400 uppercase px-5 py-3 w-24">Waktu</th>
-                        @foreach(['Lap A','Lap B','Lap C','Lap D'] as $col)
-                            <th class="text-center text-[10px] text-gray-400 uppercase px-2 py-3">
-                                {{ $col }}
-                            </th>
-                        @endforeach
+                        @if($venue && $venue->fields)
+                            @foreach($venue->fields as $field)
+                                <th class="text-center text-[10px] text-gray-400 uppercase px-2 py-3">
+                                    {{ $field->name }}
+                                </th>
+                            @endforeach
+                        @endif
                     </tr>
                 </thead>
 
                 <tbody class="divide-y divide-gray-50">
 
                     @php
-                    $slots = [];
-                    for ($h = 7; $h < 22; $h++) {
-                        $slots[] = [
-                            sprintf("%02d:00", $h),
-                            'free',
-                            'free',
-                            'free',
-                            'free'
-                        ];
-                    }
-
                     $slotClass = [
                         'booked'  => 'bg-green-50 text-green-700 border border-green-100',
                         'free'    => 'bg-gray-50 text-gray-400 border border-gray-100 hover:bg-yellow-50 hover:text-yellow-700 hover:border-yellow-200 cursor-pointer',
@@ -204,14 +173,14 @@
                             {{ $slot[0] }}
                         </td>
 
-                        @foreach([1,2,3,4] as $i)
+                        @for($i = 1; $i < count($slot); $i++)
                         <td class="px-2 py-3 text-center">
                             <span class="text-[11px] font-semibold px-3 py-1.5 rounded-lg inline-block transition
-                                         {{ $slotClass[$slot[$i]] }}">
-                                {{ $slotLabel[$slot[$i]] }}
+                                         {{ $slotClass[$slot[$i]] ?? $slotClass['free'] }}">
+                                {{ $slotLabel[$slot[$i]] ?? 'Unknown' }}
                             </span>
                         </td>
-                        @endforeach
+                        @endfor
 
                     </tr>
                     @endforeach
@@ -224,5 +193,115 @@
     </div>
 
 </div>
+
+{{-- MODAL ADD BOOKING (OFFLINE) --}}
+<div id="addBookingModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="font-semibold text-gray-900">Add Offline Booking</h3>
+            <button onclick="closeAddBookingModal()" class="text-gray-400 hover:text-gray-600 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-width="2" stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <form method="POST" action="{{ route('owner.calendar.booking') }}" class="space-y-4">
+            @csrf
+            <div>
+                <label class="text-xs text-gray-500 mb-1 block">Tanggal</label>
+                <input type="date" name="date" value="{{ \Carbon\Carbon::parse($selectedDate)->format('Y-m-d') }}" required
+                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0b3d0b]">
+            </div>
+            <div>
+                <label class="text-xs text-gray-500 mb-1 block">Lapangan</label>
+                <select name="field_id" required
+                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0b3d0b] bg-white">
+                    <option value="">-- Pilih Lapangan --</option>
+                    @if($venue && $venue->fields)
+                        @foreach($venue->fields as $field)
+                            <option value="{{ $field->id }}">{{ $field->name }}</option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-xs text-gray-500 mb-1 block">Jam Mulai</label>
+                    <select name="start_time" id="start_time" required
+                        class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0b3d0b] bg-white">
+                        @for($h = $startHour ?? 7; $h < ($endHour ?? 22); $h++)
+                            <option value="{{ sprintf('%02d:00', $h) }}">{{ sprintf('%02d:00', $h) }}</option>
+                        @endfor
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 mb-1 block">Jam Selesai</label>
+                    <select name="end_time" id="end_time" required
+                        class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0b3d0b] bg-white">
+                        @for($h = ($startHour ?? 7) + 1; $h <= ($endHour ?? 22); $h++)
+                            <option value="{{ sprintf('%02d:00', $h) }}">{{ sprintf('%02d:00', $h) }}</option>
+                        @endfor
+                    </select>
+                </div>
+            </div>
+            <div class="flex gap-3 pt-4">
+                <button type="button" onclick="closeAddBookingModal()"
+                    class="flex-1 border border-gray-200 text-gray-600 text-sm font-medium py-2.5 rounded-xl hover:bg-gray-50 transition">
+                    Batal
+                </button>
+                <button type="submit"
+                    class="flex-1 bg-[#0b3d0b] hover:bg-[#163016] text-white text-sm font-medium py-2.5 rounded-xl transition">
+                    Simpan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openAddBookingModal() {
+        document.getElementById('addBookingModal').classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+    }
+    function closeAddBookingModal() {
+        document.getElementById('addBookingModal').classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const startSelect = document.getElementById('start_time');
+        const endSelect = document.getElementById('end_time');
+
+        if (startSelect && endSelect) {
+            startSelect.addEventListener('change', function() {
+                const startHour = parseInt(this.value.split(':')[0]);
+                
+                // Keep current selection if valid, otherwise update it
+                const currentEndHour = parseInt(endSelect.value.split(':')[0]);
+                
+                // Hide options in end_time that are <= startHour
+                Array.from(endSelect.options).forEach(option => {
+                    const optHour = parseInt(option.value.split(':')[0]);
+                    if (optHour <= startHour) {
+                        option.disabled = true;
+                        option.style.display = 'none';
+                    } else {
+                        option.disabled = false;
+                        option.style.display = '';
+                    }
+                });
+
+                // Auto select next hour if current end_time is invalid
+                if (currentEndHour <= startHour) {
+                    const nextValidHour = (startHour + 1).toString().padStart(2, '0') + ':00';
+                    endSelect.value = nextValidHour;
+                }
+            });
+            
+            // Trigger initially
+            startSelect.dispatchEvent(new Event('change'));
+        }
+    });
+</script>
 
 @endsection

@@ -3,110 +3,165 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Field;
 use App\Models\Venue;
-use App\Models\Booking;
-use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class VenueController extends Controller
 {
-    public function index()
+    // =========================================================
+    //  VENUE
+    // =========================================================
+
+    public function index(): View
     {
         $user = Auth::user();
 
-        // Ambil venue milik owner + relasi fields
-        $venue = Venue::with('fields')
-            ->where('owner_id', $user->id)
-            ->first();
-
-        // Kalau belum punya venue
-        if (!$venue) {
-            return view('owner.pages.venue', [
-                'venue' => null,
-                'fields' => collect(),
-                'liveFields' => [],
-                'stats' => [],
-                'payments' => []
-            ]);
-        }
-
-        $fields = $venue->fields;
-
-        // =========================
-        // 🔴 LIVE FIELD STATUS
-        // =========================
-        $now = Carbon::now();
-
-        $liveFields = $fields->map(function ($field) use ($now) {
-
-            $activeBooking = Booking::with(['timeSlot', 'user'])
-                ->where('field_id', $field->id)
-                ->where('status', '!=', 'Cancelled')
-                ->whereHas('timeSlot', function ($q) use ($now) {
-                    $q->where('start_time', '<=', $now)
-                      ->where('end_time', '>=', $now);
-                })
-                ->first();
-
-            if ($activeBooking) {
-                return [
-                    'name' => $field->name,
-                    'status' => 'in_use',
-                    'time' => $activeBooking->timeSlot->start_time . ' - ' . $activeBooking->timeSlot->end_time,
-                    'user' => $activeBooking->user->name ?? '-',
-                ];
-            }
-
-            return [
-                'name' => $field->name,
-                'status' => 'available',
-                'time' => null,
-                'user' => null,
-            ];
-        });
-
-        // =========================
-        // 💰 PAYMENT OVERVIEW
-        // =========================
-        $monthlyBookings = Booking::whereHas('field', function ($q) use ($venue) {
-                $q->where('venue_id', $venue->id);
-            })
-            ->whereMonth('created_at', now()->month)
+        $venues = $user
+            ->venues()
+            ->with('fields')
+            ->latest()
             ->get();
 
-        $payments = [
-            'paid' => $monthlyBookings->where('status', 'Paid')->count(),
-            'pending' => $monthlyBookings->where('status', 'Pending')->count(),
-            'expired' => $monthlyBookings->where('status', 'Expired')->count(),
-        ];
+        $activeVenue = $venues->first();
 
-        // =========================
-        // 📊 STATS
-        // =========================
-        $allBookings = Booking::whereHas('field', function ($q) use ($venue) {
-            $q->where('venue_id', $venue->id);
-        })->get();
+        return view('owner.venue', compact('venues', 'activeVenue'));
+    }
 
-        $todayBookings = $allBookings->filter(function ($b) {
-            return $b->created_at->isToday();
-        });
+    public function create(): View
+    {
+        return view('venue.create');
+    }
 
-        $stats = [
-            'total_booking' => $allBookings->count(),
-            'revenue_month' => $monthlyBookings->where('status', 'Paid')->sum('total_price'),
-            'booking_today' => $todayBookings->count(),
-            'hours_used' => $monthlyBookings->count() * 1, // asumsi 1 booking = 1 jam
-        ];
+    public function edit(Venue $venue): View
+    {
+        $this->authorizeVenue($venue);
+        $venue->load('fields');
+        return view('venue.create', compact('venue'));
+    }
 
-        // =========================
-        // 🚀 RETURN VIEW
-        // =========================
-        return view('owner.pages.venue', compact(
-            'venue',
-            'fields',
-            'liveFields',
-            'payments',
-            'stats'
-        ));
+    /**
+     * STORE VENUE + FIELDS (FIXED)
+     */
+    public function storeVenue(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'name'        => 'required|string|max:255',
+            'location'    => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'latitude'    => 'nullable|numeric',
+            'longitude'   => 'nullable|numeric',
+            'open_time'   => 'nullable|date_format:H:i',
+            'close_time'  => 'nullable|date_format:H:i',
+
+            // fields
+            'fields'                   => 'required|array|min:1',
+            'fields.*.name'           => 'required|string|max:255',
+            'fields.*.sport_type'     => 'nullable|string|max:100',
+            'fields.*.price_per_hour' => 'required|integer|min:0',
+            'fields.*.capacity'       => 'nullable|integer|min:1',
+            'fields.*.is_indoor'      => 'required|in:0,1',
+        ]);
+
+        // 1. create venue
+        $venue = Auth::user()->venues()->create([
+            'name'        => $data['name'],
+            'location'    => $data['location'],
+            'description' => $data['description'] ?? null,
+            'latitude'    => $data['latitude'] ?? null,
+            'longitude'   => $data['longitude'] ?? null,
+            'open_time'   => $data['open_time'] ?? '07:00',
+            'close_time'  => $data['close_time'] ?? '22:00',
+        ]);
+
+        // 2. create fields
+        foreach ($data['fields'] as $field) {
+            $venue->fields()->create($field);
+        }
+
+        return redirect()->route('owner.venue')
+            ->with('success', 'Venue & lapangan berhasil ditambahkan.');
+    }
+
+    /**
+     * UPDATE VENUE + FIELDS (FIXED)
+     */
+    public function updateVenue(Request $request, Venue $venue): RedirectResponse
+    {
+        $this->authorizeVenue($venue);
+
+        $data = $request->validate([
+            'name'        => 'required|string|max:255',
+            'location'    => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'latitude'    => 'nullable|numeric',
+            'longitude'   => 'nullable|numeric',
+            'open_time'   => 'nullable|date_format:H:i',
+            'close_time'  => 'nullable|date_format:H:i',
+
+            'fields'                   => 'required|array|min:1',
+            'fields.*.name'           => 'required|string|max:255',
+            'fields.*.sport_type'     => 'nullable|string|max:100',
+            'fields.*.price_per_hour' => 'required|integer|min:0',
+            'fields.*.capacity'       => 'nullable|integer|min:1',
+            'fields.*.is_indoor'      => 'required|in:0,1',
+        ]);
+
+        // update venue
+        $venue->update([
+            'name'        => $data['name'],
+            'location'    => $data['location'],
+            'description' => $data['description'] ?? null,
+            'latitude'    => $data['latitude'] ?? null,
+            'longitude'   => $data['longitude'] ?? null,
+            'open_time'   => $data['open_time'] ?? '07:00',
+            'close_time'  => $data['close_time'] ?? '22:00',
+        ]);
+
+        // reset fields (simple & aman)
+        $venue->fields()->delete();
+
+        foreach ($data['fields'] as $field) {
+            $venue->fields()->create($field);
+        }
+
+        return redirect()->route('owner.venue')
+            ->with('success', 'Venue & lapangan berhasil diperbarui.');
+    }
+
+    public function destroyVenue(Venue $venue): RedirectResponse
+    {
+        $this->authorizeVenue($venue);
+
+        $venue->delete();
+
+        return redirect()->route('owner.venue')
+            ->with('success', 'Venue berhasil dihapus.');
+    }
+
+    public function destroyField(Venue $venue, Field $field): RedirectResponse
+    {
+        $this->authorizeVenue($venue);
+
+        if ($field->venue_id !== $venue->id) {
+            abort(404);
+        }
+
+        $field->delete();
+
+        return redirect()->route('owner.venue')
+            ->with('success', 'Lapangan berhasil dihapus.');
+    }
+
+    // =========================================================
+    // HELPERS
+    // =========================================================
+
+    private function authorizeVenue(Venue $venue): void
+    {
+        abort_if($venue->owner_id !== Auth::id(), 403);
     }
 }

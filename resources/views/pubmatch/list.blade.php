@@ -8,17 +8,23 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
     <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .font-anton { font-family: 'Anton', sans-serif; }
+        .font-display { font-family: 'Bebas Neue', sans-serif; }
     </style>
+    <script src="//unpkg.com/alpinejs" defer></script>
 </head>
 
 <body class="bg-gray-100 min-h-screen">
 
+    @include('navbar')
+
     {{-- ===== HERO ===== --}}
-    <section class="bg-[#1b3a1b] w-full px-6 py-16 text-center">
+    <section class="bg-[#1b3a1b] w-full px-6 pt-28 pb-16 text-center mt-16">
 
         <h1 class="font-anton text-white text-4xl md:text-5xl uppercase tracking-wide leading-tight mb-6">
             ISI SLOT DAN MULAI PERTANDINGAN

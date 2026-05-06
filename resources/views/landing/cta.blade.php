@@ -89,7 +89,7 @@
 
             <div class="flex justify-end">
 
-                <a href="#"
+                <a :href="tab === 'pemilik' ? '{{ route('login') }}' : '{{ route('venues.index') }}'"
                    class="group flex items-end gap-2 text-yellow-300">
 
                     <!-- TEXT -->
