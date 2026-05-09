@@ -9,8 +9,13 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet" />
 
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
-        .font-anton { font-family: 'Anton', sans-serif; }
+        .font-anton {
+            font-family: 'Anton', sans-serif;
+        }
     </style>
 </head>
 
@@ -36,7 +41,8 @@
             </div>
 
             <div class="flex items-center">
-                <button class="w-10 h-10 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition">
+                <button onclick="removeItem(this)"
+            class="w-10 h-10 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition">
 
                     <svg xmlns="http://www.w3.org/2000/svg"
                          class="w-5 h-5"
@@ -69,7 +75,8 @@
             </div>
 
             <div class="flex items-center">
-                <button class="w-10 h-10 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition">
+                <button onclick="removeItem(this)"
+            class="w-10 h-10 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition">
 
                     <svg xmlns="http://www.w3.org/2000/svg"
                          class="w-5 h-5"
@@ -149,9 +156,11 @@
 
                 <span class="font-medium text-gray-700">QRIS</span>
 
-                <div class="w-5 h-5 flex items-center justify-center rounded-full border border-gray-400">
-                    <div class="w-2.5 h-2.5 bg-[#0b3d0b] rounded-full hidden"></div>
-                </div>
+               <div class="w-5 h-5 flex items-center justify-center rounded-full border border-gray-400">
+    
+                <i class="fas fa-check text-[10px] text-[#0b3d0b] hidden check-icon"></i>
+
+            </div>
 
             </button>
 
@@ -161,7 +170,9 @@
                 <span class="font-medium text-gray-700">Bank Mandiri</span>
 
                 <div class="w-5 h-5 flex items-center justify-center rounded-full border border-gray-400">
-                    <div class="w-2.5 h-2.5 bg-[#0b3d0b] rounded-full hidden"></div>
+    
+                    <i class="fas fa-check text-[10px] text-[#0b3d0b] hidden check-icon"></i>
+
                 </div>
 
             </button>
@@ -172,7 +183,9 @@
                 <span class="font-medium text-gray-700">Bank BCA</span>
 
                 <div class="w-5 h-5 flex items-center justify-center rounded-full border border-gray-400">
-                    <div class="w-2.5 h-2.5 bg-[#0b3d0b] rounded-full hidden"></div>
+    
+                    <i class="fas fa-check text-[10px] text-[#0b3d0b] hidden check-icon"></i>
+
                 </div>
 
             </button>
@@ -184,36 +197,65 @@
     <!-- BUTTON -->
     <section class="pt-6">
 
-        <button class="w-full bg-[#c8e63a] hover:bg-[#d6ef4a]
-                       text-[#0b3d0b] font-bold py-4 rounded-xl
-                       shadow-md transition active:scale-[0.98]">
+        <a href="{{ route('payment.qr') }}"
+        class="block w-full bg-yellow-400 hover:bg-yellow-500
+                text-[#0b3d0b] font-bold py-4 rounded-xl
+                shadow-md transition active:scale-[0.98]
+                text-center">
 
             Bayar Sekarang
 
-        </button>
+        </a>
 
     </section>
 
-</main>
+    </main>
 
 <script>
-function selectPayment(el) {
-    const items = document.querySelectorAll('.payment-item');
+    function selectPayment(selectedButton) {
 
-    items.forEach(item => {
-        item.classList.remove('border-[#0b3d0b]');
-        item.classList.add('border-gray-200');
+        const isSelected = selectedButton.classList.contains('active-payment');
 
-        const dot = item.querySelector('div div');
-        if (dot) dot.classList.add('hidden');
-    });
+        // reset semua
+        document.querySelectorAll('.payment-item').forEach(item => {
 
-    el.classList.add('border-[#0b3d0b]');
-    el.classList.remove('border-gray-200');
+            item.classList.remove(
+                'border-[#0b3d0b]',
+                'bg-green-50',
+                'active-payment'
+            );
 
-    const activeDot = el.querySelector('div div');
-    if (activeDot) activeDot.classList.remove('hidden');
-}
+            item.classList.add('border-gray-200');
+
+            // sembunyikan checklist
+            item.querySelector('.check-icon').classList.add('hidden');
+        });
+
+        // kalau sebelumnya BELUM dipilih → aktifkan
+        if (!isSelected) {
+
+            selectedButton.classList.remove('border-gray-200');
+
+            selectedButton.classList.add(
+                'border-[#0b3d0b]',
+                'bg-green-50',
+                'active-payment'
+            );
+
+            // tampilkan checklist
+            selectedButton.querySelector('.check-icon').classList.remove('hidden');
+        }
+    }
+
+     function removeItem(button) {
+
+        // cari card parent
+        const itemCard = button.closest('.booking-item');
+
+        // hapus card
+        itemCard.remove();
+    }
+
 </script>
 
 </body>

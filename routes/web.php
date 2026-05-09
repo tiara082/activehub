@@ -7,6 +7,8 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\VenueController;
 use App\Http\Controllers\Owner\VenueController as OwnerVenueController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\MatchController;
 
 // ==========================
 // PUBLIC
@@ -29,11 +31,34 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout')->middle
 // ==========================
 // MATCH
 // ==========================
-Route::get('/matches', fn () => view('pubmatch.list'))->name('matches.index');
+// LIST (PUBLIC)
+Route::get('/matches', [MatchController::class, 'index'])
+    ->name('matches.index');
+
+// CREATE HARUS DI ATAS {match}
 Route::middleware('auth')->group(function () {
-    Route::get('/matches/create', fn () => view('pubmatch.create'))->name('matches.create');
-    Route::post('/matches', fn () => 'store')->name('matches.store');
+
+    Route::get('/matches/create', function () {
+
+        $bookingId = request('booking');
+
+        $booking = \App\Models\Booking::with([
+            'field',
+            'field.venue',
+            'field.sport'
+        ])->find($bookingId);
+
+        return view('pubmatch.create', compact('booking'));
+
+    })->name('matches.create');
+
+    Route::post('/matches', [MatchController::class, 'store'])
+        ->name('matches.store');
 });
+
+// DETAIL (WAJIB PALING BAWAH)
+Route::get('/matches/{match}', [MatchController::class, 'show'])
+    ->name('matches.show');
 
 // ==========================
 // FIELD
@@ -73,6 +98,10 @@ Route::post('/checkout/{booking}/pay', [CheckoutController::class, 'pay'])->name
 // PAYMENT
 // ==========================
 Route::get('/payment', fn () => view('booking.index'))->name('payment.index');
+Route::get('/payment/qr', fn () => view('booking.qr'))
+    ->name('payment.qr');
+Route::get('/payment/success', fn () => view('booking.success'))
+    ->name('payment.success');
 
 // ==========================
 // USER AREA
@@ -140,3 +169,10 @@ Route::middleware(['auth'])->prefix('owner')->name('owner.')->group(function () 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 });
+
+// ==========================
+// CHART
+// ==========================
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');

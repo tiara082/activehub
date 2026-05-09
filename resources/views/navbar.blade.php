@@ -23,7 +23,7 @@
         </a>
 
         {{-- CART ICON (NEW) --}}
-        <a href="#"
+        <a href="{{ route('cart.index') }}"
            class="relative text-white/80 hover:text-white transition-colors group">
 
             <svg class="w-5 h-5 group-hover:scale-110 transition-transform"

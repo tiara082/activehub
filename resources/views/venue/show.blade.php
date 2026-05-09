@@ -143,30 +143,52 @@
                         </div>
                     </div>
                     <!-- Jadwal Grid -->
-                    <div id="field1" class="field-schedules open grid-cols-2 md:grid-cols-4 gap-3 px-4 pb-4 border-t border-gray-100 pt-4">
-                        <div class="schedule-card border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-green-400" onclick="selectSchedule(this)">
-                            <p class="text-xs text-gray-400 mb-0.5">60 menit</p>
-                            <p class="text-sm font-bold text-gray-800">08:00 - 09:00</p>
-                            <p class="text-xs text-gray-500 mt-0.5">Rp 100.000</p>
-                        </div>
-                        <div class="schedule-card border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-green-400" onclick="selectSchedule(this)">
-                            <p class="text-xs text-gray-400 mb-0.5">60 menit</p>
-                            <p class="text-sm font-bold text-gray-800">09:00 - 10:00</p>
-                            <p class="text-xs text-gray-500 mt-0.5">Rp 100.000</p>
-                        </div>
-                        <div class="schedule-card border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-green-400" onclick="selectSchedule(this)">
-                            <p class="text-xs text-gray-400 mb-0.5">60 menit</p>
-                            <p class="text-sm font-bold text-gray-800">10:00 - 11:00</p>
-                            <p class="text-xs text-gray-500 mt-0.5">Rp 100.000</p>
-                        </div>
-                        <div class="schedule-card border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-green-400" onclick="selectSchedule(this)">
-                            <p class="text-xs text-gray-400 mb-0.5">60 menit</p>
-                            <p class="text-sm font-bold text-gray-800">11:00 - 12:00</p>
-                            <p class="text-xs text-gray-500 mt-0.5">Rp 50.000</p>
-                        </div>
-                    </div>
-                </div>
+<div id="field1" class="field-schedules open grid-cols-2 md:grid-cols-4 gap-3 px-4 pb-4 border-t border-gray-100 pt-4">
 
+    <div class="schedule-card border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-green-400 transition"
+         onclick="selectSchedule(this)">
+        <p class="text-xs text-gray-400 mb-0.5">60 menit</p>
+        <p class="text-sm font-bold text-gray-800">08:00 - 09:00</p>
+        <p class="text-xs text-gray-500 mt-0.5">Rp 100.000</p>
+    </div>
+
+    <div class="schedule-card border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-green-400 transition"
+         onclick="selectSchedule(this)">
+        <p class="text-xs text-gray-400 mb-0.5">60 menit</p>
+        <p class="text-sm font-bold text-gray-800">09:00 - 10:00</p>
+        <p class="text-xs text-gray-500 mt-0.5">Rp 100.000</p>
+    </div>
+
+    <div class="schedule-card border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-green-400 transition"
+         onclick="selectSchedule(this)">
+        <p class="text-xs text-gray-400 mb-0.5">60 menit</p>
+        <p class="text-sm font-bold text-gray-800">10:00 - 11:00</p>
+        <p class="text-xs text-gray-500 mt-0.5">Rp 100.000</p>
+    </div>
+
+    <div class="schedule-card border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-green-400 transition"
+         onclick="selectSchedule(this)">
+        <p class="text-xs text-gray-400 mb-0.5">60 menit</p>
+        <p class="text-sm font-bold text-gray-800">11:00 - 12:00</p>
+        <p class="text-xs text-gray-500 mt-0.5">Rp 50.000</p>
+    </div>
+
+<!-- BUTTON BOOKING -->
+<div class="col-span-full flex justify-end pt-2">
+
+    <a href="{{ route('payment.index') }}"
+       id="bookingButton"
+       class="inline-flex justify-center items-center
+              bg-gray-300 text-white text-sm font-semibold
+              px-5 py-2.5 rounded-lg
+              cursor-not-allowed pointer-events-none transition">
+
+        Booking Sekarang
+
+    </a>
+
+</div>
+</div>
                 <!-- Lapangan 2 -->
                 <div class="border border-gray-200 rounded-xl overflow-hidden">
                     <div class="flex items-center gap-4 p-4 cursor-pointer hover:bg-gray-50 transition" onclick="toggleField('field2', this)">
@@ -263,15 +285,33 @@
         }
     }
 
-    function selectSchedule(card) {
-        const parent = card.closest('.field-schedules');
-        parent.querySelectorAll('.schedule-card').forEach(c => {
-            c.classList.remove('selected', 'border-green-500', 'bg-green-50');
-            c.classList.add('border-gray-200');
-        });
-        card.classList.add('selected', 'border-green-500', 'bg-green-50');
-        card.classList.remove('border-gray-200');
-    }
+   function selectSchedule(card) {
+
+    const parent = card.closest('.field-schedules');
+
+    parent.querySelectorAll('.schedule-card').forEach(c => {
+        c.classList.remove('border-green-500', 'bg-green-50');
+        c.classList.add('border-gray-200');
+    });
+
+    // active selected card
+    card.classList.add('border-green-500', 'bg-green-50');
+    card.classList.remove('border-gray-200');
+
+    // ACTIVE BUTTON BOOKING
+    const bookingButton = document.getElementById('bookingButton');
+
+    bookingButton.classList.remove(
+        'bg-gray-300',
+        'cursor-not-allowed',
+        'pointer-events-none'
+    );
+
+    bookingButton.classList.add(
+        'bg-[#0b3d0b]',
+        'hover:bg-[#145214]'
+    );
+}
 
     // Init: show field1, hide field2
     document.getElementById('field1').style.display = 'grid';

@@ -9,13 +9,11 @@ use Illuminate\Support\Facades\Auth;
 class MatchController extends Controller
 {
     /** GET /matches — daftar public match (public) */
-    public function index(Request $request)
+   public function index()
     {
-        $matches = GameMatch::with(['booking', 'creator'])
-            ->latest()
-            ->paginate(12);
+        $matches = GameMatch::latest()->get();
 
-        return view('matches.index', compact('matches'));
+        return view('pubmatch.list', compact('matches'));
     }
 
     /** GET /matches/{match} — detail public match (public) */
@@ -23,13 +21,13 @@ class MatchController extends Controller
     {
         $match->load(['booking', 'creator']);
 
-        return view('matches.show', compact('match'));
+        return view('pubmatch.detail', compact('match'));
     }
 
     /** GET /matches/create — form buat public match (user login) */
     public function create()
     {
-        return view('matches.create');
+        return view('pubmatch.create');
     }
 
     /** POST /matches — simpan public match (user login) */

@@ -42,28 +42,40 @@
 
                 <div>
                     <label class="text-sm font-medium">Nama Venue</label>
-                    <input class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none">
+                    <input
+                        value="{{ $booking?->field?->venue?->name }}"
+                        class="w-full border rounded-lg p-3 mt-1">
                 </div>
 
                 <div>
                     <label class="text-sm font-medium">Nama Lapangan</label>
-                    <input class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none">
+                    <input
+                        value="{{ $booking?->field?->name }}"
+                        class="w-full border rounded-lg p-3 mt-1">
                 </div>
 
                 <div>
                     <label class="text-sm font-medium">Jenis Olahraga</label>
-                    <input class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none">
+                    <input
+                        value="{{ $booking?->field?->sport?->name }}"
+                        class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none">
                 </div>
 
                 <div class="grid md:grid-cols-2 gap-4">
                     <div>
                         <label class="text-sm font-medium">Tanggal</label>
-                        <input type="date" class="w-full border rounded-lg p-3 mt-1">
+                        <input
+                            value="{{ $booking?->date }}"
+                            type="date"
+                            class="w-full border rounded-lg p-3 mt-1">
                     </div>
 
                     <div>
                         <label class="text-sm font-medium">Jam</label>
-                        <input type="time" class="w-full border rounded-lg p-3 mt-1">
+                        <input
+                            value="{{ $booking?->time }}"
+                            type="time"
+                            class="w-full border rounded-lg p-3 mt-1">
                     </div>
                 </div>
 
@@ -95,6 +107,12 @@
         <div id="section-match" class="hidden">
 
             <div class="space-y-5">
+                <div>
+                    <label class="text-sm font-medium">
+                        Title <span class="text-red-500">*</span>
+                    </label>
+                     <input class="w-full border rounded-lg p-3 mt-1 outline-none">
+                </div>
 
                 <div>
                     <label class="text-sm font-medium">

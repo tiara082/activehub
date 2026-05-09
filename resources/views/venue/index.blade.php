@@ -168,10 +168,10 @@
 
             <div class="p-4">
                 <p class="font-anton text-xl uppercase tracking-tight mb-0.5 text-gray-900">
-                    {{ $mainSport }}
+                    {{$venue->name}}
                 </p>
                 <p class="font-bold text-gray-800 text-sm mb-3">
-                    {{ $venue->name }}
+                    {{$mainSport }}
                 </p>
 
                 <div class="space-y-1.5 text-sm text-gray-500">

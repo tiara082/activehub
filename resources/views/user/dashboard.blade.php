@@ -23,14 +23,23 @@
     {{-- ================= LEFT SIDE ================= --}}
     <div class="lg:col-span-2 space-y-6">
 
-        {{-- ===== STATS ===== --}}
-<div class="grid grid-cols-3 gap-4">
+       {{-- ===== STATS ===== --}}
+<div class="grid grid-cols-2 gap-4">
 
     @php
     $stats = [
-        ['label'=>'Total Booking','value'=>'12','icon'=>'calendar-check','color'=>'green'],
-        ['label'=>'Match Booking','value'=>'7','icon'=>'users','color'=>'blue'],
-        ['label'=>'Match Dibuat','value'=>'3','icon'=>'trophy','color'=>'yellow'],
+        [
+            'label'=>'Total Booking',
+            'value'=>'12',
+            'icon'=>'calendar-check',
+            'color'=>'green'
+        ],
+        [
+            'label'=>'Total Match',
+            'value'=>'7',
+            'icon'=>'users',
+            'color'=>'blue'
+        ],
     ];
     @endphp
 
@@ -40,6 +49,7 @@
         {{-- TEXT --}}
         <div>
             <p class="text-xs text-gray-500">{{ $s['label'] }}</p>
+
             <p class="text-lg font-semibold text-gray-900 mt-1">
                 {{ $s['value'] }}
             </p>

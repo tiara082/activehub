@@ -17,8 +17,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
             <!-- CARD -->
-            <a href="{{ auth()->check() ? route('matches.index') : route('login') }}"
-               class="group relative overflow-hidden rounded-xl h-[360px] cursor-pointer">
+            <div class="group relative overflow-hidden rounded-xl h-[360px] cursor-pointer">
 
                 <!-- IMAGE -->
                 <img src="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=500&q=80"
@@ -72,11 +71,10 @@
                     sisa 1 slot
                 </span>
 
-            </a>
+            </div>
 
             <!-- DUPLICATE CARD -->
-            <a href="{{ auth()->check() ? route('matches.index') : route('login') }}"
-               class="group relative overflow-hidden rounded-xl h-[360px] cursor-pointer">
+            <div class="group relative overflow-hidden rounded-xl h-[360px] cursor-pointer">
 
                 <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=500&q=80"
                      class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
@@ -125,9 +123,7 @@
             </div>
 
             <!-- CARD 3 -->
-            <!-- THIRD CARD -->
-            <a href="{{ auth()->check() ? route('matches.index') : route('login') }}"
-               class="group relative overflow-hidden rounded-xl h-[360px] cursor-pointer">
+            <div class="group relative overflow-hidden rounded-xl h-[360px] cursor-pointer">
 
                 <img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?w=500&q=80"
                      class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
@@ -173,13 +169,13 @@
                     sisa 3 slot
                 </span>
 
-            </a>
+            </div>
 
         </div>
 
         <!-- CTA -->
         <div class="flex justify-center mt-12">
-            <a href="{{ auth()->check() ? route('matches.index') : route('login') }}"
+            <a href="{{ route('matches.index') }}"
                class="bg-yellow-300 text-[#1c3a0c] font-bold text-sm px-8 py-3 rounded-xl
                       hover:bg-yellow-400 transition">
                 Lihat Semua →
