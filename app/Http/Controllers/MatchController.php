@@ -30,6 +30,13 @@ class MatchController extends Controller
         return view('pubmatch.create');
     }
 
+    public function join($id)
+        {
+            // logic join match
+
+            return back()->with('success', 'Berhasil join match');
+        }
+
     /** POST /matches — simpan public match (user login) */
     public function store(Request $request)
     {

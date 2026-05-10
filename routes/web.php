@@ -26,6 +26,15 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 });
 
+Route::get('/profile/edit', [AuthController::class, 'editProfile'])
+    ->name('profile.edit');
+
+Route::put('/profile/update', [AuthController::class, 'updateProfile'])
+    ->name('profile.update');
+
+ Route::put('/profile/password', [AuthController::class, 'updatePassword'])
+        ->name('profile.password');
+
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 // ==========================
@@ -102,6 +111,9 @@ Route::get('/payment/qr', fn () => view('booking.qr'))
     ->name('payment.qr');
 Route::get('/payment/success', fn () => view('booking.success'))
     ->name('payment.success');
+
+Route::post('/matches/{id}/join',[MatchController::class, 'join']
+)->name('match.join');
 
 // ==========================
 // USER AREA

@@ -97,6 +97,50 @@ class AuthController extends Controller
             ->with('success', 'Registrasi berhasil. Silakan login dulu.');
     }
 
+  public function updateProfile(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . Auth::id(),
+            'phone' => 'nullable|string|max:20',
+        ]);
+
+        $user = User::findOrFail(Auth::id());
+
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+        ]);
+
+        return back()->with('success', 'Profile berhasil diperbarui');
+    }
+
+    public function editProfile()
+    {
+        return view('user.edit-profile');
+    }
+
+    public function updatePassword(Request $request)
+        {
+            $request->validate([
+                'old_password' => 'required',
+                'new_password' => 'required|min:6|confirmed',
+            ]);
+
+            $user = User::findOrFail(Auth::id());
+
+            if (!Hash::check($request->old_password, $user->password)) {
+                return back()->with('error', 'Password lama salah');
+            }
+
+            $user->update([
+                'password' => Hash::make($request->new_password)
+            ]);
+
+            return back()->with('success', 'Password berhasil diubah');
+        }
+
     // ─── Logout ─────────────────────────────────────────────────────────────
 
     public function logout(Request $request)

@@ -40,16 +40,23 @@
     </div>
 
         {{-- EDIT --}}
-        <button
-            class="inline-flex items-center gap-2
-                   px-4 py-2 rounded-xl
-                   bg-[#0b3d0b] hover:bg-[#145214]
-                   text-white text-sm font-medium transition">
+            <div class="flex lg:justify-end">
 
-            <i class="fas fa-pen text-xs"></i>
-            Edit Profile
+                <a href="{{ route('profile.edit') }}"
+                class="inline-flex items-center gap-2
+                        px-4 py-2 rounded-xl
+                        bg-[#0b3d0b] hover:bg-[#145214]
+                        text-white text-sm font-medium transition">
 
-        </button>
+                    <i class="fas fa-pen text-xs"></i>
+
+                    Edit Profile
+
+                </a>
+
+            </div>
+
+        </div>
 
     </div>
 
@@ -232,19 +239,61 @@
         {{-- FORM --}}
         <div class="p-6">
 
-            <div class="grid md:grid-cols-3 gap-4">
+            <form action="{{ route('profile.password') }}" method="POST">
 
-                {{-- OLD --}}
-                <div>
+                @csrf
+                @method('PUT')
 
-                    <label class="text-sm font-medium text-gray-700 mb-2 block">
-                        Password Lama
-                    </label>
+                <div class="grid md:grid-cols-3 gap-4">
 
-                    <div class="relative">
+                    {{-- OLD --}}
+                    <div>
+
+                        <label class="text-sm font-medium text-gray-700 mb-2 block">
+                            Password Lama
+                        </label>
 
                         <input
                             type="password"
+                            name="old_password"
+                            placeholder="••••••••"
+                            class="w-full border border-gray-200
+                                   rounded-xl px-4 py-3 text-sm
+                                   focus:outline-none
+                                   focus:ring-2 focus:ring-[#0b3d0b]/20
+                                   focus:border-[#0b3d0b]">
+
+                    </div>
+
+                    {{-- NEW --}}
+                    <div>
+
+                        <label class="text-sm font-medium text-gray-700 mb-2 block">
+                            Password Baru
+                        </label>
+
+                        <input
+                            type="password"
+                            name="new_password"
+                            placeholder="••••••••"
+                            class="w-full border border-gray-200
+                                   rounded-xl px-4 py-3 text-sm
+                                   focus:outline-none
+                                   focus:ring-2 focus:ring-[#0b3d0b]/20
+                                   focus:border-[#0b3d0b]">
+
+                    </div>
+
+                    {{-- CONFIRM --}}
+                    <div>
+
+                        <label class="text-sm font-medium text-gray-700 mb-2 block">
+                            Konfirmasi Password
+                        </label>
+
+                        <input
+                            type="password"
+                            name="new_password_confirmation"
                             placeholder="••••••••"
                             class="w-full border border-gray-200
                                    rounded-xl px-4 py-3 text-sm
@@ -256,58 +305,23 @@
 
                 </div>
 
-                {{-- NEW --}}
-                <div>
+                {{-- BUTTON --}}
+                <div class="flex justify-end mt-6">
 
-                    <label class="text-sm font-medium text-gray-700 mb-2 block">
-                        Password Baru
-                    </label>
+                    <button
+                        type="submit"
+                        class="inline-flex items-center gap-2
+                               px-4 py-2 rounded-xl
+                               bg-[#0b3d0b] hover:bg-[#145214]
+                               text-white text-sm font-medium transition">
 
-                    <input
-                        type="password"
-                        placeholder="••••••••"
-                        class="w-full border border-gray-200
-                               rounded-xl px-4 py-3 text-sm
-                               focus:outline-none
-                               focus:ring-2 focus:ring-[#0b3d0b]/20
-                               focus:border-[#0b3d0b]">
+                        Simpan Password
+
+                    </button>
 
                 </div>
 
-                {{-- CONFIRM --}}
-                <div>
-
-                    <label class="text-sm font-medium text-gray-700 mb-2 block">
-                        Konfirmasi Password
-                    </label>
-
-                    <input
-                        type="password"
-                        placeholder="••••••••"
-                        class="w-full border border-gray-200
-                               rounded-xl px-4 py-3 text-sm
-                               focus:outline-none
-                               focus:ring-2 focus:ring-[#0b3d0b]/20
-                               focus:border-[#0b3d0b]">
-
-                </div>
-
-            </div>
-
-            {{-- BUTTON --}}
-            <div class="flex justify-end mt-6">
-
-                <button
-            class="inline-flex items-center gap-2
-                   px-4 py-2 rounded-xl
-                   bg-[#0b3d0b] hover:bg-[#145214]
-                   text-white text-sm font-medium transition">
-            Simpan Password
-
-        </button>
-                
-
-            </div>
+            </form>
 
         </div>
 
