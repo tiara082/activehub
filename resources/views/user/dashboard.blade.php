@@ -80,7 +80,7 @@
         {{-- ===== CHART ===== --}}
         <div class="bg-white rounded-2xl border border-gray-100 p-6">
 
-            <div class="mb-6">
+            <div class="mb-4">
 
                 <p class="text-sm font-semibold text-gray-800">
                     Aktivitas Booking
@@ -92,69 +92,66 @@
 
             </div>
 
+            @php
+            $deskripsi = [
+                'Aktivitas booking bulan ini',
+                'Jumlah booking meningkat',
+                'Aktivitas cukup stabil',
+                'Booking mengalami kenaikan',
+                'Aktivitas pengguna aktif',
+                'Booking tertinggi bulan ini'
+            ];
+
+            $max = max($chart) > 0 ? max($chart) : 1;
+            @endphp
+
             {{-- BAR AREA --}}
-            <div class="absolute inset-0 flex items-end justify-between px-10 pb-6">
+            <div class="flex items-end gap-4 h-56 border-b border-gray-100 pb-2">
+
+                @foreach($chart as $i => $val)
 
                 @php
-                $deskripsi = [
-                    'Aktivitas booking bulan ini',
-                    'Jumlah booking meningkat',
-                    'Aktivitas cukup stabil',
-                    'Booking mengalami kenaikan',
-                    'Aktivitas pengguna aktif',
-                    'Booking tertinggi bulan ini'
-                ];
-
-                $max = max($chart) > 0 ? max($chart) : 1;
+                    $height = ($val / $max) * 180;
+                    if ($height < 4 && $val > 0) $height = 4;
                 @endphp
 
-                <div class="flex items-end gap-4 h-64 border-b border-gray-100 pb-3">
+                <div class="flex-1 flex flex-col items-center gap-2 group relative">
 
-                    @foreach($chart as $i => $val)
+                    {{-- TOOLTIP --}}
+                    <div class="absolute -top-20 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition duration-300 z-10 pointer-events-none">
 
-                    @php
-                        $height = ($val / $max) * 180;
-                    @endphp
+                        <div class="bg-gray-900 text-white text-[11px] rounded-xl px-3 py-2 shadow-xl w-40 text-center">
 
-                    <div class="flex-1 flex flex-col items-center gap-2 group relative">
+                            <p class="font-semibold">
+                                {{ $months[$i] }}
+                            </p>
 
-                        {{-- TOOLTIP --}}
-                        <div class="absolute -top-20 opacity-0 group-hover:opacity-100 transition duration-300 z-10">
+                            <p class="mt-1">
+                                {{ $val }} Booking
+                            </p>
 
-                            <div class="bg-gray-900 text-white text-[11px] rounded-xl px-3 py-2 shadow-xl w-40 text-center">
-
-                                <p class="font-semibold">
-                                    {{ $months[$i] }}
-                                </p>
-
-                                <p class="mt-1">
-                                    {{ $val }} Booking
-                                </p>
-
-                                <p class="text-gray-300 mt-1">
-                                    {{ $deskripsi[$i] }}
-                                </p>
-
-                            </div>
+                            <p class="text-gray-300 mt-1">
+                                {{ $deskripsi[$i] ?? '' }}
+                            </p>
 
                         </div>
-
-                        {{-- BATANG --}}
-                        <div 
-                            class="w-full rounded-t-2xl bg-gradient-to-t from-green-500 to-green-300 hover:scale-105 hover:from-green-600 hover:to-green-400 transition-all duration-300 shadow-md"
-                            style="height: {{ $height }}px">
-                        </div>
-
-                        {{-- BULAN --}}
-                        <span class="text-xs text-gray-400">
-                            {{ $months[$i] }}
-                        </span>
 
                     </div>
 
-                    @endforeach
+                    {{-- BATANG --}}
+                    <div
+                        class="w-full rounded-t-2xl bg-gradient-to-t from-green-500 to-green-300 hover:scale-105 hover:from-green-600 hover:to-green-400 transition-all duration-300 shadow-md cursor-pointer"
+                        style="height: {{ $height }}px; min-height: 4px;">
+                    </div>
+
+                    {{-- BULAN --}}
+                    <span class="text-[11px] text-gray-400 font-medium">
+                        {{ $months[$i] }}
+                    </span>
 
                 </div>
+
+                @endforeach
 
             </div>
 

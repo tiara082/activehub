@@ -25,7 +25,7 @@ User::firstOrCreate(
 
     [
         'name' => 'User 3',
-        'password' => bcrypt('12345678'),
+        'password' => bcrypt('user1234'),
         'role' => 'user',
     ]
 );
