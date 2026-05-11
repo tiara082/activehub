@@ -14,77 +14,82 @@ class DashboardController extends Controller
         $userId = Auth::id();
 
         // =========================
-        // TOTAL BOOKING
+        // TOTAL
         // =========================
         $totalBooking = Booking::where('user_id', $userId)->count();
 
         // =========================
-        // MATCH BOOKING
+        // MATCH
         // =========================
         $matchBooking = Booking::where('user_id', $userId)
             ->where('is_public_match', true)
             ->count();
 
         // =========================
-        // CHART 6 BULAN
+        // ✅ FIX: CEK ADA BOOKING
         // =========================
-        $chart = [];
+        $hasBooking = Booking::where('user_id', $userId)->exists();
+
+        // =========================
+        // CHART STACKED
+        // =========================
         $months = [];
+        $pendingData = [];
+        $confirmedData = [];
+        $completedData = [];
 
         for ($i = 5; $i >= 0; $i--) {
 
             $date = Carbon::now()->subMonths($i);
 
-            $total = Booking::where('user_id', $userId)
+            $months[] = $date->translatedFormat('M');
+
+            $pendingData[] = Booking::where('user_id', $userId)
+                ->where('status', 'pending')
                 ->whereYear('created_at', $date->year)
                 ->whereMonth('created_at', $date->month)
                 ->count();
 
-            $chart[] = $total;
+            $confirmedData[] = Booking::where('user_id', $userId)
+                ->where('status', 'confirmed')
+                ->whereYear('created_at', $date->year)
+                ->whereMonth('created_at', $date->month)
+                ->count();
 
-            $months[] = $date->translatedFormat('M');
+            $completedData[] = Booking::where('user_id', $userId)
+                ->where('status', 'completed')
+                ->whereYear('created_at', $date->year)
+                ->whereMonth('created_at', $date->month)
+                ->count();
         }
 
         // =========================
-        // BOOKING TERDEKAT
+        // TERDEKAT
         // =========================
         $nearestBooking = Booking::with(['field', 'timeSlot'])
             ->where('user_id', $userId)
             ->latest()
             ->first();
 
-        // =========================
-        // MATCH TERDEKAT
-        // =========================
         $nearestMatch = Booking::with(['field', 'timeSlot'])
             ->where('user_id', $userId)
             ->where('is_public_match', true)
             ->latest()
             ->first();
 
+        // =========================
+        // RETURN VIEW
+        // =========================
         return view('user.dashboard', compact(
             'totalBooking',
             'matchBooking',
-            'chart',
+            'hasBooking', // 🔥 INI YANG BIKIN ERROR HILANG
             'months',
+            'pendingData',
+            'confirmedData',
+            'completedData',
             'nearestBooking',
             'nearestMatch'
         ));
-    }
-
-    public function bookings()
-    {
-        $userId = Auth::id();
-
-        $bookings = Booking::with(['field', 'timeSlot'])
-            ->where('user_id', $userId)
-            ->get();
-
-        return view('user.bookings', [
-            'pendingBookings'   => $bookings->where('status', 'pending'),
-            'ongoingBookings'   => $bookings->where('status', 'confirmed'),
-            'completedBookings' => $bookings->where('status', 'completed'),
-            'cancelledBookings' => $bookings->where('status', 'cancelled'),
-        ]);
     }
 }
