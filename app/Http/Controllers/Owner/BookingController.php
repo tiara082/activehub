@@ -67,7 +67,8 @@ class BookingController extends Controller
             'Berlangsung' => 0,
             'Selesai' => 0,
             'Dibatalkan' => 0,
-            'Pending' => 0
+            'Pending' => 0,
+            'Blokir' => 0
         ];
 
         foreach ($bookingsData as $b) {
@@ -80,6 +81,8 @@ class BookingController extends Controller
                 $statusStr = 'Pending';
             } elseif ($b->status === 'completed') {
                 $statusStr = 'Selesai';
+            } elseif ($b->status === 'blocked') {
+                $statusStr = 'Blokir';
             } elseif (in_array($b->status, ['confirmed', 'paid'])) {
                 if (!$ts || !$ts->date) {
                     $statusStr = 'Terjadwal';
@@ -136,6 +139,7 @@ class BookingController extends Controller
             ['key' => 'Selesai', 'label' => 'Selesai', 'count' => $counts['Selesai']],
             ['key' => 'Dibatalkan', 'label' => 'Dibatalkan', 'count' => $counts['Dibatalkan']],
             ['key' => 'Pending', 'label' => 'Pending', 'count' => $counts['Pending']],
+            ['key' => 'Blokir', 'label' => 'Blokir', 'count' => $counts['Blokir']],
         ];
 
         // 6 Months Stats
@@ -192,6 +196,7 @@ class BookingController extends Controller
             ['key' => 'Selesai', 'label' => 'Selesai', 'count' => 0],
             ['key' => 'Dibatalkan', 'label' => 'Dibatalkan', 'count' => 0],
             ['key' => 'Pending', 'label' => 'Pending', 'count' => 0],
+            ['key' => 'Blokir', 'label' => 'Blokir', 'count' => 0],
         ];
     }
 

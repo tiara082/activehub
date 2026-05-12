@@ -95,6 +95,20 @@
             </div>
             @endif
 
+            {{-- FACILITIES TAGS --}}
+            @if(!empty($activeVenue->facilities))
+            <div class="pt-1">
+                <p class="text-xs text-gray-400 mb-2">Fasilitas</p>
+                <div class="flex flex-wrap gap-2">
+                    @foreach($activeVenue->facilities as $facility)
+                    <span class="text-xs font-medium bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg">
+                        {{ $facility }}
+                    </span>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
         </div>
 
 

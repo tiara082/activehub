@@ -26,27 +26,10 @@
             <div class="flex items-center gap-2">
                 <a href="{{ route('owner.calendar', ['month' => \Carbon\Carbon::parse($date)->subMonth()->format('m'), 'year' => \Carbon\Carbon::parse($date)->subMonth()->format('Y')]) }}" class="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200">&lt;</a>
                 <a href="{{ route('owner.calendar', ['month' => \Carbon\Carbon::parse($date)->addMonth()->format('m'), 'year' => \Carbon\Carbon::parse($date)->addMonth()->format('Y')]) }}" class="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200">&gt;</a>
-                @if(isset($isFullDayBlocked) && $isFullDayBlocked)
-                    <form action="{{ route('owner.calendar.unblock') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="date" value="{{ $selectedDate }}">
-                        <button type="submit" class="px-3 py-1.5 text-[11px] rounded-xl bg-gray-100 text-gray-600
-                                       hover:bg-gray-200 transition font-semibold"
-                                onclick="return confirm('Buka kembali blokir jadwal untuk seharian penuh pada tanggal ini?')">
-                            Unblock Full Day
-                        </button>
-                    </form>
-                @else
-                    <form action="{{ route('owner.calendar.block') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="date" value="{{ $selectedDate }}">
-                        <button type="submit" class="px-3 py-1.5 text-[11px] rounded-xl bg-red-50 text-red-600
-                                       hover:bg-red-100 transition font-semibold"
-                                onclick="return confirm('Block semua lapangan seharian penuh pada tanggal ini?')">
-                            Block Full Day
-                        </button>
-                    </form>
-                @endif
+                
+                <button onclick="openManageBlockModal()" class="px-3 py-1.5 text-[11px] rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition font-semibold">
+                    Kelola Blokir
+                </button>
             </div>
 
         </div>
@@ -258,7 +241,79 @@
     </div>
 </div>
 
+{{-- MODAL MANAGE BLOCK --}}
+<div id="manageBlockModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="font-semibold text-gray-900">Kelola Blokir Lapangan</h3>
+            <button onclick="closeManageBlockModal()" class="text-gray-400 hover:text-gray-600 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-width="2" stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <form method="POST" id="manageBlockForm" action="{{ route('owner.calendar.block') }}" class="space-y-4">
+            @csrf
+            <div>
+                <label class="text-xs text-gray-500 mb-1 block">Tanggal</label>
+                <input type="date" name="date" value="{{ \Carbon\Carbon::parse($selectedDate)->format('Y-m-d') }}" readonly
+                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none bg-gray-50 text-gray-500">
+            </div>
+            
+            <div>
+                <label class="text-xs text-gray-500 mb-1 block">Pilih Lapangan</label>
+                <select name="field_id" required
+                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0b3d0b] bg-white">
+                    <option value="all">Semua Lapangan</option>
+                    @if($venue && $venue->fields)
+                        @foreach($venue->fields as $field)
+                            <option value="{{ $field->id }}">{{ $field->name }}</option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
+
+            <div>
+                <label class="text-xs text-gray-500 mb-1 block">Aksi</label>
+                <div class="flex items-center gap-4 mt-2">
+                    <label class="flex items-center gap-2 text-sm cursor-pointer">
+                        <input type="radio" name="action_type" value="block" checked class="text-[#0b3d0b] focus:ring-[#0b3d0b]" 
+                            onchange="document.getElementById('manageBlockForm').action = '{{ route('owner.calendar.block') }}'">
+                        <span>Block</span>
+                    </label>
+                    <label class="flex items-center gap-2 text-sm cursor-pointer">
+                        <input type="radio" name="action_type" value="unblock" class="text-[#0b3d0b] focus:ring-[#0b3d0b]"
+                            onchange="document.getElementById('manageBlockForm').action = '{{ route('owner.calendar.unblock') }}'">
+                        <span>Unblock</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="flex gap-3 pt-4">
+                <button type="button" onclick="closeManageBlockModal()"
+                    class="flex-1 border border-gray-200 text-gray-600 text-sm font-medium py-2.5 rounded-xl hover:bg-gray-50 transition">
+                    Batal
+                </button>
+                <button type="submit"
+                    class="flex-1 bg-red-600 hover:bg-red-700 text-white text-sm font-medium py-2.5 rounded-xl transition"
+                    onclick="return confirm('Apakah Anda yakin ingin melakukan aksi ini pada tanggal dan lapangan yang dipilih?')">
+                    Terapkan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+    function openManageBlockModal() {
+        document.getElementById('manageBlockModal').classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+    }
+    function closeManageBlockModal() {
+        document.getElementById('manageBlockModal').classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    }
+
     function openAddBookingModal() {
         document.getElementById('addBookingModal').classList.remove('hidden');
         document.body.classList.add('overflow-hidden');

@@ -40,8 +40,8 @@ class CalendarController extends Controller
             ->whereMonth('date', $month)
             ->whereYear('date', $year)
             ->with(['bookings' => function($q) {
-                // we care about paid or confirmed bookings
-                $q->whereIn('status', ['paid', 'confirmed', 'pending']);
+                // we care about paid, confirmed, pending, or blocked bookings
+                $q->whereIn('status', ['paid', 'confirmed', 'pending', 'blocked']);
             }])
             ->get();
 
@@ -63,7 +63,7 @@ class CalendarController extends Controller
                 $dailyStats[$d] = ['booked_count' => 0];
             }
             // Check if there is an active booking
-            $hasActiveBooking = $ts->bookings->whereIn('status', ['paid', 'confirmed', 'pending'])->count() > 0;
+            $hasActiveBooking = $ts->bookings->whereIn('status', ['paid', 'confirmed', 'pending', 'blocked'])->count() > 0;
             if ($hasActiveBooking) {
                 $dailyStats[$d]['booked_count']++;
             }
@@ -127,10 +127,12 @@ class CalendarController extends Controller
                     
                     if ($ts && $ts->bookings->count() > 0) {
                         // find first valid booking
-                        $activeBooking = $ts->bookings->whereIn('status', ['paid', 'confirmed', 'pending'])->first();
+                        $activeBooking = $ts->bookings->whereIn('status', ['paid', 'confirmed', 'pending', 'blocked'])->first();
                         if ($activeBooking) {
                             if ($activeBooking->status === 'pending') {
                                 $status = 'pending';
+                            } elseif ($activeBooking->status === 'blocked') {
+                                $status = 'blocked';
                             } else {
                                 $status = 'booked';
                             }
@@ -154,7 +156,8 @@ class CalendarController extends Controller
     public function blockFullDay(Request $request)
     {
         $request->validate([
-            'date' => 'required|date'
+            'date' => 'required|date',
+            'field_id' => 'required'
         ]);
 
         $user = Auth::user();
@@ -170,7 +173,15 @@ class CalendarController extends Controller
         $endHour = max($startHour + 1, $endHour);
         $hours = range($startHour, $endHour - 1);
 
-        foreach ($venue->fields as $field) {
+        $fieldsToBlock = $request->field_id === 'all' 
+            ? $venue->fields 
+            : $venue->fields->where('id', $request->field_id);
+
+        if ($fieldsToBlock->isEmpty()) {
+            return back()->with('error', 'Lapangan tidak valid.');
+        }
+
+        foreach ($fieldsToBlock as $field) {
             foreach ($hours as $h) {
                 $startStr = sprintf("%02d:00:00", $h);
                 $endStr = sprintf("%02d:00:00", $h + 1);
@@ -182,13 +193,13 @@ class CalendarController extends Controller
                     'end_time' => $endStr,
                 ]);
 
-                $hasActiveBooking = $ts->bookings()->whereIn('status', ['paid', 'confirmed', 'pending'])->exists();
+                $hasActiveBooking = $ts->bookings()->whereIn('status', ['paid', 'confirmed', 'pending', 'blocked'])->exists();
                 if (!$hasActiveBooking) {
                     $ts->bookings()->create([
                         'user_id' => $user->id,
                         'field_id' => $field->id,
-                        'total_price' => $field->price_per_hour,
-                        'status' => 'confirmed',
+                        'total_price' => 0,
+                        'status' => 'blocked',
                         'is_public_match' => 0,
                     ]);
                 }
@@ -201,7 +212,8 @@ class CalendarController extends Controller
     public function unblockFullDay(Request $request)
     {
         $request->validate([
-            'date' => 'required|date'
+            'date' => 'required|date',
+            'field_id' => 'required'
         ]);
 
         $user = Auth::user();
@@ -211,9 +223,14 @@ class CalendarController extends Controller
         }
 
         $date = Carbon::parse($request->date)->format('Y-m-d');
-        $fieldIds = $venue->fields->pluck('id');
+        
+        $fieldsToUnblock = $request->field_id === 'all'
+            ? $venue->fields->pluck('id')
+            : collect([$request->field_id]);
 
-        $timeSlots = TimeSlot::where('date', $date)->whereIn('field_id', $fieldIds)->with('bookings')->get();
+        $timeSlots = TimeSlot::where('date', $date)
+            ->whereIn('field_id', $fieldsToUnblock)
+            ->with('bookings')->get();
         foreach ($timeSlots as $ts) {
             foreach ($ts->bookings as $booking) {
                 if ($booking->user_id === $user->id) {
@@ -251,6 +268,8 @@ class CalendarController extends Controller
             return back()->with('error', 'Jam selesai harus lebih besar dari jam mulai.');
         }
 
+        // Validate availability for all selected hours first
+        $requestedSlots = [];
         for ($h = $startHour; $h < $endHour; $h++) {
             $startStr = sprintf("%02d:00:00", $h);
             $endStr = sprintf("%02d:00:00", $h + 1);
@@ -262,16 +281,22 @@ class CalendarController extends Controller
                 'end_time' => $endStr,
             ]);
 
-            $hasActiveBooking = $ts->bookings()->whereIn('status', ['paid', 'confirmed', 'pending'])->exists();
-            if (!$hasActiveBooking) {
-                $ts->bookings()->create([
-                    'user_id' => $user->id,
-                    'field_id' => $field->id,
-                    'total_price' => $field->price_per_hour,
-                    'status' => 'confirmed',
-                    'is_public_match' => 0,
-                ]);
+            $hasActiveBooking = $ts->bookings()->whereIn('status', ['paid', 'confirmed', 'pending', 'blocked'])->exists();
+            if ($hasActiveBooking) {
+                return back()->with('error', "Gagal! Jam $startStr - $endStr sudah dipesan atau diblokir.");
             }
+            $requestedSlots[] = $ts;
+        }
+
+        // If all requested slots are available, create the bookings
+        foreach ($requestedSlots as $ts) {
+            $ts->bookings()->create([
+                'user_id' => $user->id,
+                'field_id' => $field->id,
+                'total_price' => $field->price_per_hour,
+                'status' => 'confirmed',
+                'is_public_match' => 0,
+            ]);
         }
 
         return back()->with('success', 'Booking offline berhasil ditambahkan.');

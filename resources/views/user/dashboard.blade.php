@@ -164,21 +164,13 @@
                     @if($nearestBooking)
                     <div class="border border-gray-100 rounded-xl p-4">
 
-                        <p class="text-xs text-green-600 mb-1 font-medium">
-                            Booking Terdekat
-                        </p>
-
-                        <p class="text-sm font-semibold text-gray-800">
-                            {{ $nearestBooking->field->name ?? 'Lapangan' }}
-                        </p>
-
-                        <p class="text-xs text-gray-500">
-                            {{ $nearestBooking->field->type ?? 'Futsal' }}
-                        </p>
-
-                        <p class="text-xs text-gray-400 mt-1">
-                            {{ \Carbon\Carbon::parse($nearestBooking->timeSlot->start_time)->translatedFormat('l, d M • H:i') }}
-                        </p>
+                <div class="border rounded-xl p-3">
+                    <p class="text-xs text-green-600 mb-1">Booking Terdekat</p>
+                    <p class="text-sm font-medium">Champion Futsal</p>
+                    <p class="text-xs text-gray-500">Lapangan Futsal A</p>
+                    <p class="text-xs text-gray-400 mt-1">
+                        Status: {{ ucfirst($nearestBooking->status) }}
+                    </p>
 
                     </div>
                     @endif

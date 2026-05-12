@@ -35,10 +35,7 @@
                     <div class="mb-5">
                         <h2 class="text-lg font-bold text-gray-800 mb-2">Deskripsi</h2>
                         <p class="text-gray-600 leading-relaxed text-sm">
-                            Samator Tennis Court merupakan lapangan tennis indoor tertutup dengan lantai khusus tenis
-                            yang mendukung pergerakan cepat dan aman. Area ini memiliki pencahayaan buatan yang stabil,
-                            dinding pelindung, serta ruang yang cukup luas untuk aktivitas bermain. Lapangan ini
-                            memungkinkan permainan tenis dilakukan kapan saja tanpa terpengaruh kondisi cuaca.
+                            {{ $venue->description ?? 'Deskripsi venue belum tersedia.' }}
                         </p>
                     </div>
                     <hr class="border-gray-200 mb-5">
@@ -101,13 +98,22 @@
             <div class="mb-6">
                 <div class="flex items-center justify-between flex-wrap gap-3">
                     <div class="flex gap-2 flex-wrap ">
-                        <button onclick="selectDay(this)" class="day-btn active px-5 py-2.5 rounded-lg border border-green-500 text-sm bg-gray-100 text-gray-600 hover:bg-gray-200">Senin<br><span class="text-xs font-normal">13 Apr</span></button>
-                        <button onclick="selectDay(this)" class="day-btn px-5 py-2.5 rounded-lg border text-sm bg-gray-100 text-gray-600 hover:bg-gray-200">Selasa<br><span class="text-xs font-normal">14 Apr</span></button>
-                        <button onclick="selectDay(this)" class="day-btn px-5 py-2.5 rounded-lg border text-sm bg-gray-100 text-gray-600 hover:bg-gray-200">Rabu<br><span class="text-xs font-normal">15 Apr</span></button>
-                        <button onclick="selectDay(this)" class="day-btn px-5 py-2.5 rounded-lg border text-sm bg-gray-100 text-gray-600 hover:bg-gray-200">Kamis<br><span class="text-xs font-normal">16 Apr</span></button>
-                        <button onclick="selectDay(this)" class="day-btn px-5 py-2.5 rounded-lg border text-sm bg-gray-100 text-gray-600 hover:bg-gray-200">Jumat<br><span class="text-xs font-normal">17 Apr</span></button>
-                        <button onclick="selectDay(this)" class="day-btn px-5 py-2.5 rounded-lg border text-sm bg-gray-100 text-gray-600 hover:bg-gray-200">Sabtu<br><span class="text-xs font-normal">18 Apr</span></button>
-                        <button onclick="selectDay(this)" class="day-btn px-5 py-2.5 rounded-lg text-sm bg-gray-100 text-gray-600 hover:bg-gray-200">Minggu<br><span class="text-xs font-normal">19 Apr</span></button>
+                        @php
+                            use Carbon\Carbon;
+                            $today = Carbon::today();
+                            $selectedDate = request('date', $today->format('Y-m-d'));
+                        @endphp
+                        @for($i=0; $i<7; $i++)
+                            @php
+                                $d = $today->copy()->addDays($i);
+                                $dateStr = $d->format('Y-m-d');
+                                $isActive = $dateStr === $selectedDate;
+                            @endphp
+                            <a href="?date={{ $dateStr }}" class="day-btn px-5 py-2.5 rounded-lg border text-sm text-center {{ $isActive ? 'active border-green-500 bg-white text-[#1c3a0c] shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border-transparent' }}">
+                                {{ $d->translatedFormat('l') }}<br>
+                                <span class="text-xs font-normal">{{ $d->translatedFormat('d M') }}</span>
+                            </a>
+                        @endfor
                     </div>
                     <div class="flex gap-2">
                         <button class="px-4 py-2 rounded-lg text-sm border border-gray-300 text-gray-600 hover:bg-gray-50">
@@ -122,135 +128,45 @@
 
             <!-- Daftar Lapangan -->
             <div class="space-y-4">
-
-                <!-- Lapangan 1 -->
+                @foreach($venue->fields as $idx => $field)
+                <!-- Lapangan {{ $idx + 1 }} -->
                 <div class="border border-gray-200 rounded-xl overflow-hidden">
-                    <div class="flex items-center gap-4 p-4 cursor-pointer hover:bg-gray-50 transition" onclick="toggleField('field1', this)">
+                    <div class="flex items-center gap-4 p-4 cursor-pointer hover:bg-gray-50 transition" onclick="toggleField('field{{ $field->id }}', this)">
                         <!-- Thumbnail -->
                         <div class="w-28 h-20 bg-green-800 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <i class=" text-white text-3xl"></i>
+                            <i class="fas fa-running text-white text-3xl"></i>
                         </div>
                         <!-- Info -->
                         <div class="flex-1">
-                            <h3 class="text-lg font-bold text-gray-800 mb-1">Lapangan 1</h3>
+                            <h3 class="text-lg font-bold text-gray-800 mb-1">{{ $field->name }}</h3>
                             <div class="flex items-center gap-3 text-sm text-gray-500 mb-2">
-                                <span class="flex items-center gap-1"><i class="fas fa-tennis-ball text-gray-400 text-xs"></i> Tennis</span>
-                                <span class="flex items-center gap-1"><i class="fas fa-expand-arrows-alt text-gray-400 text-xs"></i> Outdoor</span>
+                                <span class="flex items-center gap-1"><i class="fas fa-futbol text-gray-400 text-xs"></i> {{ $field->sport_type }}</span>
+                                <span class="flex items-center gap-1"><i class="fas fa-expand-arrows-alt text-gray-400 text-xs"></i> {{ $field->is_indoor ? 'Indoor' : 'Outdoor' }}</span>
                             </div>
                             <button class="bg-yellow-500 text-white text-xs font-semibold px-4 py-1.5 rounded-full flex items-center gap-1">
-                                2 Jadwal Tersedia <i class="fas fa-chevron-up text-xs" id="arrow-field1"></i>
+                                {{ count($field->timeSlots) }} Jadwal Tersedia <i class="fas fa-chevron-{{ $idx === 0 ? 'up' : 'down' }} text-xs" id="arrow-field{{ $field->id }}"></i>
                             </button>
                         </div>
                     </div>
                     <!-- Jadwal Grid -->
-<div id="field1" class="field-schedules open grid-cols-2 md:grid-cols-4 gap-3 px-4 pb-4 border-t border-gray-100 pt-4">
-
-    <div class="schedule-card border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-green-400 transition"
-         onclick="selectSchedule(this)">
-        <p class="text-xs text-gray-400 mb-0.5">60 menit</p>
-        <p class="text-sm font-bold text-gray-800">08:00 - 09:00</p>
-        <p class="text-xs text-gray-500 mt-0.5">Rp 100.000</p>
-    </div>
-
-    <div class="schedule-card border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-green-400 transition"
-         onclick="selectSchedule(this)">
-        <p class="text-xs text-gray-400 mb-0.5">60 menit</p>
-        <p class="text-sm font-bold text-gray-800">09:00 - 10:00</p>
-        <p class="text-xs text-gray-500 mt-0.5">Rp 100.000</p>
-    </div>
-
-    <div class="schedule-card border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-green-400 transition"
-         onclick="selectSchedule(this)">
-        <p class="text-xs text-gray-400 mb-0.5">60 menit</p>
-        <p class="text-sm font-bold text-gray-800">10:00 - 11:00</p>
-        <p class="text-xs text-gray-500 mt-0.5">Rp 100.000</p>
-    </div>
-
-    <div class="schedule-card border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-green-400 transition"
-         onclick="selectSchedule(this)">
-        <p class="text-xs text-gray-400 mb-0.5">60 menit</p>
-        <p class="text-sm font-bold text-gray-800">11:00 - 12:00</p>
-        <p class="text-xs text-gray-500 mt-0.5">Rp 50.000</p>
-    </div>
-
-<!-- BUTTON BOOKING -->
-<div class="col-span-full flex justify-end pt-2">
-
-    <a href="{{ route('payment.index') }}"
-       id="bookingButton"
-       class="inline-flex justify-center items-center
-              bg-gray-300 text-white text-sm font-semibold
-              px-5 py-2.5 rounded-lg
-              cursor-not-allowed pointer-events-none transition">
-
-        Booking Sekarang
-
-    </a>
-
-</div>
-</div>
-                <!-- Lapangan 2 -->
-                <div class="border border-gray-200 rounded-xl overflow-hidden">
-                    <div class="flex items-center gap-4 p-4 cursor-pointer hover:bg-gray-50 transition" onclick="toggleField('field2', this)">
-                        <div class="w-28 h-20 bg-green-800 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <i class="text-white text-3xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="text-lg font-bold text-gray-800 mb-1">Lapangan 2</h3>
-                            <div class="flex items-center gap-3 text-sm text-gray-500 mb-2">
-                                <span class="flex items-center gap-1"><i class="fas fa-tennis-ball text-gray-400 text-xs"></i> Tennis</span>
-                                <span class="flex items-center gap-1"><i class="fas fa-expand-arrows-alt text-gray-400 text-xs"></i> Outdoor</span>
-                            </div>
-                            <button class="bg-yellow-500 text-white text-xs font-semibold px-4 py-1.5 rounded-full flex items-center gap-1">
-                                6 Jadwal Tersedia <i class="fas fa-chevron-down text-xs" id="arrow-field2"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Jadwal Grid (hidden by default) -->
-                    <div id="field2" class="field-schedules grid-cols-2 md:grid-cols-4 gap-3 px-4 pb-4 border-t border-gray-100 pt-4">
+                    <div id="field{{ $field->id }}" class="field-schedules {{ $idx === 0 ? 'open' : '' }} grid-cols-2 md:grid-cols-4 gap-3 px-4 pb-4 border-t border-gray-100 pt-4" style="display: {{ $idx === 0 ? 'grid' : 'none' }}">
+                        @forelse($field->timeSlots as $slot)
+                        @php
+                            $st = \Carbon\Carbon::parse($slot->start_time);
+                            $et = \Carbon\Carbon::parse($slot->end_time);
+                            $dur = $st->diffInMinutes($et);
+                        @endphp
                         <div class="schedule-card border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-green-400" onclick="selectSchedule(this)">
-                            <p class="text-xs text-gray-400 mb-0.5">60 menit</p>
-                            <p class="text-sm font-bold text-gray-800">12:00 - 13:00</p>
-                            <p class="text-xs text-gray-500 mt-0.5">Rp 50.000</p>
+                            <p class="text-xs text-gray-400 mb-0.5">{{ $dur }} menit</p>
+                            <p class="text-sm font-bold text-gray-800">{{ $st->format('H:i') }} - {{ $et->format('H:i') }}</p>
+                            <p class="text-xs text-gray-500 mt-0.5">Rp {{ number_format($field->price_per_hour, 0, ',', '.') }}</p>
                         </div>
-                        <div class="schedule-card border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-green-400" onclick="selectSchedule(this)">
-                            <p class="text-xs text-gray-400 mb-0.5">60 menit</p>
-                            <p class="text-sm font-bold text-gray-800">13:00 - 14:00</p>
-                            <p class="text-xs text-gray-500 mt-0.5">Rp 50.000</p>
-                        </div>
-                        <div class="schedule-card border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-green-400" onclick="selectSchedule(this)">
-                            <p class="text-xs text-gray-400 mb-0.5">60 menit</p>
-                            <p class="text-sm font-bold text-gray-800">14:00 - 15:00</p>
-                            <p class="text-xs text-gray-500 mt-0.5">Rp 50.000</p>
-                        </div>
-                        <div class="schedule-card border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-green-400" onclick="selectSchedule(this)">
-                            <p class="text-xs text-gray-400 mb-0.5">60 menit</p>
-                            <p class="text-sm font-bold text-gray-800">15:00 - 16:00</p>
-                            <p class="text-xs text-gray-500 mt-0.5">Rp 100.000</p>
-                        </div>
-                        <div class="schedule-card border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-green-400" onclick="selectSchedule(this)">
-                            <p class="text-xs text-gray-400 mb-0.5">60 menit</p>
-                            <p class="text-sm font-bold text-gray-800">16:00 - 17:00</p>
-                            <p class="text-xs text-gray-500 mt-0.5">Rp 100.000</p>
-                        </div>
-                        <div class="schedule-card border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-green-400" onclick="selectSchedule(this)">
-                            <p class="text-xs text-gray-400 mb-0.5">60 menit</p>
-                            <p class="text-sm font-bold text-gray-800">17:00 - 18:00</p>
-                            <p class="text-xs text-gray-500 mt-0.5">Rp 100.000</p>
-                        </div>
-                        <div class="schedule-card border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-green-400" onclick="selectSchedule(this)">
-                            <p class="text-xs text-gray-400 mb-0.5">60 menit</p>
-                            <p class="text-sm font-bold text-gray-800">18:00 - 19:00</p>
-                            <p class="text-xs text-gray-500 mt-0.5">Rp 100.000</p>
-                        </div>
-                        <div class="schedule-card border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-green-400" onclick="selectSchedule(this)">
-                            <p class="text-xs text-gray-400 mb-0.5">60 menit</p>
-                            <p class="text-sm font-bold text-gray-800">19:00 - 20:00</p>
-                            <p class="text-xs text-gray-500 mt-0.5">Rp 100.000</p>
-                        </div>
+                        @empty
+                        <div class="col-span-full text-center py-4 text-gray-500 text-sm">Tidak ada jadwal tersedia di tanggal ini.</div>
+                        @endforelse
                     </div>
                 </div>
-
+                @endforeach
             </div>
         </div>
     </div>
@@ -258,17 +174,6 @@
 </div>
 
 <script>
-    function selectDay(btn) {
-        document.querySelectorAll('.day-btn').forEach(b => {
-            b.classList.remove('active');
-            b.classList.add('bg-gray-100', 'text-gray-600');
-            b.classList.remove('bg-white', 'text-[#1c3a0c]');
-        });
-        btn.classList.add('active');
-        btn.classList.remove('bg-gray-100', 'text-gray-600');
-        btn.classList.add('bg-white', 'text-[#1c3a0c]');
-    }
-
     function toggleField(id, header) {
         const panel = document.getElementById(id);
         const arrowId = 'arrow-' + id;
@@ -285,37 +190,15 @@
         }
     }
 
-   function selectSchedule(card) {
-
-    const parent = card.closest('.field-schedules');
-
-    parent.querySelectorAll('.schedule-card').forEach(c => {
-        c.classList.remove('border-green-500', 'bg-green-50');
-        c.classList.add('border-gray-200');
-    });
-
-    // active selected card
-    card.classList.add('border-green-500', 'bg-green-50');
-    card.classList.remove('border-gray-200');
-
-    // ACTIVE BUTTON BOOKING
-    const bookingButton = document.getElementById('bookingButton');
-
-    bookingButton.classList.remove(
-        'bg-gray-300',
-        'cursor-not-allowed',
-        'pointer-events-none'
-    );
-
-    bookingButton.classList.add(
-        'bg-[#0b3d0b]',
-        'hover:bg-[#145214]'
-    );
-}
-
-    // Init: show field1, hide field2
-    document.getElementById('field1').style.display = 'grid';
-    document.getElementById('field2').style.display = 'none';
+    function selectSchedule(card) {
+        const parent = card.closest('.field-schedules');
+        parent.querySelectorAll('.schedule-card').forEach(c => {
+            c.classList.remove('selected', 'border-green-500', 'bg-green-50');
+            c.classList.add('border-gray-200');
+        });
+        card.classList.add('selected', 'border-green-500', 'bg-green-50');
+        card.classList.remove('border-gray-200');
+    }
 </script>
 
 </body>

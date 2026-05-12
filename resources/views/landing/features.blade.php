@@ -38,7 +38,7 @@
                         <div class="max-w-xs">
                             <h3 class="text-white text-2xl tracking-tight"
                                 style="font-family:'Bebas Neue',sans-serif;">
-                                Booking Lapangan
+                                Pesan Lapangan
                             </h3>
 
                             <p class="text-white/70 text-sm mt-2 leading-relaxed">
@@ -89,7 +89,7 @@
                             </h3>
 
                             <p class="text-white/70 text-sm mt-2 leading-relaxed">
-                                Temukan match terbuka dan gabung main bareng pemain lain.
+                                Temukan pertandingan terbuka dan gabung main bareng pemain lain.
                             </p>
 
                             <div class="w-0 h-[2px] bg-yellow-300 mt-4 

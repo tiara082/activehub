@@ -31,7 +31,7 @@
         </h1>
 
         <a href="{{ route('matches.create') }}"
-        class="inline-block bg-yellow-400 hover:bg-yellow-500
+        class="inline-block bg-yellow-400 hover:bg-yellow-400
                 text-black font-bold px-12 py-4 rounded-xl transition">
             Buat Public Match
         </a>
@@ -103,10 +103,11 @@
     <section class="max-w-5xl mx-auto px-4 pb-16">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
 
-            {{-- CARD 1 --}}
-           @foreach($matches as $match)
-           <a href="/matches/{{ $match->id }}"
-   class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 block group">
+            @for ($i = 0; $i < 3; $i++)
+            {{-- CARD --}}
+            <a href="#"
+               class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md
+                      transition-shadow duration-200 block group">
 
                 <div class="relative">
                     <img src="https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=600&q=80"
@@ -114,7 +115,11 @@
 
                     <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm
                                 rounded-full px-3 py-1 flex items-center gap-1.5">
-                        ...
+                        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M17 20h5v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2h5 M12 12a4 4 0 100-8 4 4 0 000 8z"/>
+                        </svg>
+                        <span class="text-sm font-semibold text-gray-800">4/5</span>
                     </div>
                 </div>
 
@@ -135,61 +140,9 @@
                         </div>
 
                         <div class="flex items-center gap-2">
-                            <span>
-                                {{ $match->booking->field->venue->city ?? '-' }}
-                            </span>
-                        </div>
-
-                        <div class="flex items-center gap-2">
-                            <span>
-                                Rp {{ number_format($match->price_per_person,0,',','.') }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-            </a>
-            @endforeach
-
-            {{-- CARD 2 (FIXED ICONS) --}}
-            <a href="#"
-               class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md
-                      transition-shadow duration-200 block group">
-
-                <div class="relative">
-                    <img src="https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=600&q=80"
-                         class="w-full h-44 object-cover group-hover:scale-[1.02] transition-transform duration-300" />
-
-                    <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm
-                                rounded-full px-3 py-1 flex items-center gap-1.5">
-                        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M17 20h5v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2h5
-                                     M12 12a4 4 0 100-8 4 4 0 000 8z"/>
-                        </svg>
-                        <span class="text-sm font-semibold text-gray-800">4/5</span>
-                    </div>
-                </div>
-
-                <div class="p-4">
-                    <p class="font-anton text-xl uppercase tracking-tight mb-0.5 text-gray-900">Futsal</p>
-                    <p class="font-bold text-gray-800 text-sm mb-3">Galaxy Arena</p>
-
-                    <div class="space-y-1.5 text-sm text-gray-500">
-
-                        <div class="flex items-center gap-2">
                             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span>Rabu, 13 Apr | 07:00 - 08:00</span>
-                        </div>
-
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                                      d="M12 2C8.686 2 6 4.686 6 8c0 5.25 6 13 6 13s6-7.75
-                                         6-13c0-3.314-2.686-6-6-6z"/>
+                                      d="M12 2C8.686 2 6 4.686 6 8c0 5.25 6 13 6 13s6-7.75 6-13c0-3.314-2.686-6-6-6z"/>
                                 <circle cx="12" cy="8" r="2" stroke-width="1.8"/>
                             </svg>
                             <span>Lowokwaru, Malang</span>
@@ -198,8 +151,7 @@
                         <div class="flex items-center gap-2">
                             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                                      d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3
-                                         0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                                      d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                             </svg>
                             <span>Rp 25.000/orang</span>
                         </div>
@@ -207,63 +159,7 @@
                     </div>
                 </div>
             </a>
-
-            {{-- CARD 3 (FIXED ICONS) --}}
-            <a href="#"
-               class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md
-                      transition-shadow duration-200 block group">
-
-                <div class="relative">
-                    <img src="https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=600&q=80"
-                         class="w-full h-44 object-cover group-hover:scale-[1.02] transition-transform duration-300" />
-
-                    <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm
-                                rounded-full px-3 py-1 flex items-center gap-1.5">
-                        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M17 20h5v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2h5
-                                     M12 12a4 4 0 100-8 4 4 0 000 8z"/>
-                        </svg>
-                        <span class="text-sm font-semibold text-gray-800">4/5</span>
-                    </div>
-                </div>
-
-                <div class="p-4">
-                    <p class="font-anton text-xl uppercase tracking-tight mb-0.5 text-gray-900">Futsal</p>
-                    <p class="font-bold text-gray-800 text-sm mb-3">Galaxy Arena</p>
-
-                    <div class="space-y-1.5 text-sm text-gray-500">
-
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span>Rabu, 13 Apr | 07:00 - 08:00</span>
-                        </div>
-
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                                      d="M12 2C8.686 2 6 4.686 6 8c0 5.25 6 13 6 13s6-7.75
-                                         6-13c0-3.314-2.686-6-6-6z"/>
-                                <circle cx="12" cy="8" r="2" stroke-width="1.8"/>
-                            </svg>
-                            <span>Lowokwaru, Malang</span>
-                        </div>
-
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                                      d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3
-                                         0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                            </svg>
-                            <span>Rp 25.000/orang</span>
-                        </div>
-
-                    </div>
-                </div>
-            </a>
+            @endfor
 
         </div>
     </section>

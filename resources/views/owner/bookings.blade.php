@@ -18,6 +18,7 @@ $statusStyle = [
     'Terjadwal' => 'bg-blue-50 text-blue-700',
     'Dibatalkan' => 'bg-gray-50 text-gray-500',
     'Pending' => 'bg-orange-50 text-orange-600',
+    'Blokir' => 'bg-red-50 text-red-600',
 ];
 @endphp
 

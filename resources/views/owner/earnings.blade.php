@@ -17,7 +17,7 @@
 
         <div class="relative">
             <p class="text-white/40 text-xs uppercase tracking-widest mb-2">Total Pendapatan</p>
-            <p class="font-mono text-3xl font-semibold text-yellow-300 leading-none">Rp 2.850.000</p>
+            <p class="font-mono text-3xl font-semibold text-yellow-300 leading-none">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</p>
 
         </div>
 
@@ -25,15 +25,15 @@
             <div class="h-px bg-white/10 mb-5"></div>
             <div class="flex justify-between text-center">
                 <div>
-                    <p class="font-mono text-lg font-semibold text-white">Rp 8.1M</p>
+                    <p class="font-mono text-lg font-semibold text-white">Rp {{ number_format($thisMonthRevenue / 1000000, 1) }}M</p>
                     <p class="text-white/30 text-[11px] mt-0.5">Bulan Ini</p>
                 </div>
                 <div>
-                    <p class="font-mono text-lg font-semibold text-white">Rp 6.8M</p>
+                    <p class="font-mono text-lg font-semibold text-white">Rp {{ number_format($lastMonthRevenue / 1000000, 1) }}M</p>
                     <p class="text-white/30 text-[11px] mt-0.5">Bulan Lalu</p>
                 </div>
                 <div>
-                    <p class="font-mono text-lg font-semibold text-green-400">+19%</p>
+                    <p class="font-mono text-lg font-semibold text-green-400">{{ $growth >= 0 ? '+' : '' }}{{ number_format($growth, 1) }}%</p>
                     <p class="text-white/30 text-[11px] mt-0.5">Growth</p>
                 </div>
             </div>
@@ -49,27 +49,9 @@
                 <p class="text-xs text-gray-400 mt-0.5">Riwayat 7 bulan terakhir (Juta Rp)</p>
             </div>
             <span class="bg-green-50 text-green-700 text-[10px] font-semibold px-3 py-1 rounded-full">
-                Apr 2025
+                {{ \Carbon\Carbon::now()->translatedFormat('M Y') }}
             </span>
         </div>
-
-        @php
-        $bars = [
-        ['month'=>'Okt','val'=>4.2],
-        ['month'=>'Nov','val'=>6.1],
-        ['month'=>'Des','val'=>4.8],
-        ['month'=>'Jan','val'=>7.5],
-        ['month'=>'Feb','val'=>5.2],
-        ['month'=>'Mar','val'=>6.8],
-        ['month'=>'Apr','val'=>8.1,'current'=>true],
-        ];
-
-        $max = max(array_column($bars, 'val'));
-
-        foreach ($bars as $i => $b) {
-        $bars[$i]['pct'] = ($b['val'] / $max) * 100;
-        }
-        @endphp
 
         <div class="flex items-end gap-3 h-32">
             @foreach($bars as $bar)
@@ -106,18 +88,10 @@
     <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
         <div class="px-5 py-4 border-b border-gray-100">
             <p class="font-semibold text-gray-800 text-sm">Rincian per Lapangan</p>
-            <p class="text-xs text-gray-400 mt-0.5">April 2025</p>
+            <p class="text-xs text-gray-400 mt-0.5">{{ \Carbon\Carbon::now()->translatedFormat('F Y') }}</p>
         </div>
 
         <div class="px-5 py-3 divide-y divide-gray-50">
-            @php
-            $laps = [
-            ['name'=>'Lapangan A','booking'=>67,'jam'=>134,'total'=>2100000,'prev'=>1900000],
-            ['name'=>'Lapangan B','booking'=>54,'jam'=>108,'total'=>1700000,'prev'=>1600000],
-            ['name'=>'Lapangan C','booking'=>48,'jam'=>96,'total'=>1500000,'prev'=>1400000],
-            ['name'=>'Lapangan D','booking'=>39,'jam'=>78,'total'=>1200000,'prev'=>1100000],
-            ];
-            @endphp
 
             @foreach($laps as $lap)
             @php
@@ -146,7 +120,7 @@
 
                 <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                     <div class="h-full bg-[#1b3a1b] rounded-full"
-                        style="width: {{ ($lap['total']/2100000)*100 }}%">
+                        style="width: {{ $lap['pct'] }}%">
                     </div>
                 </div>
             </div>
@@ -162,18 +136,10 @@
                 <p class="font-semibold text-gray-800 text-sm">Riwayat Transaksi</p>
                 <p class="text-xs text-gray-400 mt-0.5">Terbaru</p>
             </div>
-            <a href="#" class="text-xs text-[#1b3a1b] font-semibold hover:underline">Lihat semua →</a>
+            <a href="{{ route('owner.bookings') }}" class="text-xs text-[#1b3a1b] font-semibold hover:underline">Lihat semua →</a>
         </div>
 
         <div class="divide-y divide-gray-50">
-            @php
-            $txns = [
-            ['date'=>'22 Apr, 14:35','name'=>'Agus Santoso','detail'=>'Lapangan A • 2 jam','amount'=>'Rp 300K','source'=>'online'],
-            ['date'=>'22 Apr, 13:10','name'=>'Tim Harimau FC','detail'=>'Lapangan B • 2 jam','amount'=>'Rp 300K','source'=>'online'],
-            ['date'=>'21 Apr, 10:00','name'=>'Budi Prakoso','detail'=>'Lapangan C • 3 jam','amount'=>'Rp 450K','source'=>'offline'],
-            ['date'=>'20 Apr, 18:00','name'=>'Andi Saputra','detail'=>'Lapangan D • 2 jam','amount'=>'Rp 300K','source'=>'offline'],
-            ];
-            @endphp
 
             @foreach($txns as $t)
             <div class="flex items-center gap-3 px-5 py-3.5 hover:bg-gray-50/40 transition-colors">

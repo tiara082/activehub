@@ -112,28 +112,18 @@
         @foreach($venues as $venue)
         @php
             $prices = [];
-            if(isset($venue->fields)) {
-                foreach($venue->fields as $field) {
-                    $prices[] = $field->price_per_hour;
-                }
-            } else {
-                if($venue->id == 1) $prices = [100000, 100000, 150000];
-                if($venue->id == 2) $prices = [200000, 180000, 250000, 250000];
+            foreach($venue->fields as $field) {
+                $prices[] = $field->price_per_hour;
             }
-            $minPrice = !empty($prices) ? min($prices) : 0;
-            $maxPrice = !empty($prices) ? max($prices) : 0;
+            $minPrice = count($prices) > 0 ? min($prices) : 0;
+            $maxPrice = count($prices) > 0 ? max($prices) : 0;
             
             $sports = [];
-            if(isset($venue->fields)) {
-                foreach($venue->fields as $field) {
-                    $sports[] = $field->sport_type;
-                }
-            } else {
-                if($venue->id == 1) $sports = ['Futsal', 'Mini Soccer'];
-                if($venue->id == 2) $sports = ['Futsal', 'Mini Soccer'];
+            foreach($venue->fields as $field) {
+                $sports[] = $field->sport_type;
             }
             $sports = array_unique($sports);
-            $mainSport = !empty($sports) ? $sports[0] : 'Olahraga';
+            $mainSport = count($sports) > 0 ? $sports[0] : 'Olahraga';
             
             $bgImages = [
                 1 => 'https://images.unsplash.com/photo-1522778119026-d647f0598c20?w=600&q=80',
@@ -168,10 +158,10 @@
 
             <div class="p-4">
                 <p class="font-anton text-xl uppercase tracking-tight mb-0.5 text-gray-900">
-                    {{$venue->name}}
+                    {{ $venue->name }}
                 </p>
                 <p class="font-bold text-gray-800 text-sm mb-3">
-                    {{$mainSport }}
+                    {{ count($sports) > 0 ? implode(', ', $sports) : 'Olahraga' }}
                 </p>
 
                 <div class="space-y-1.5 text-sm text-gray-500">
