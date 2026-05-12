@@ -9,29 +9,26 @@ use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
+    // =========================
+    // DASHBOARD PAGE
+    // =========================
     public function index()
     {
         $userId = Auth::id();
 
-        // =========================
-        // TOTAL
-        // =========================
+        // TOTAL BOOKING
         $totalBooking = Booking::where('user_id', $userId)->count();
 
-        // =========================
-        // MATCH
-        // =========================
+        // PUBLIC MATCH BOOKING
         $matchBooking = Booking::where('user_id', $userId)
             ->where('is_public_match', true)
             ->count();
 
-        // =========================
-        // ✅ FIX: CEK ADA BOOKING
-        // =========================
+        // CEK ADA BOOKING
         $hasBooking = Booking::where('user_id', $userId)->exists();
 
         // =========================
-        // CHART STACKED
+        // CHART DATA (6 BULAN)
         // =========================
         $months = [];
         $pendingData = [];
@@ -63,33 +60,63 @@ class DashboardController extends Controller
                 ->count();
         }
 
-        // =========================
-        // TERDEKAT
-        // =========================
+        // TERDEKAT BOOKING
         $nearestBooking = Booking::with(['field', 'timeSlot'])
             ->where('user_id', $userId)
             ->latest()
             ->first();
 
+        // TERDEKAT MATCH
         $nearestMatch = Booking::with(['field', 'timeSlot'])
             ->where('user_id', $userId)
             ->where('is_public_match', true)
             ->latest()
             ->first();
 
-        // =========================
-        // RETURN VIEW
-        // =========================
         return view('user.dashboard', compact(
             'totalBooking',
             'matchBooking',
-            'hasBooking', // 🔥 INI YANG BIKIN ERROR HILANG
+            'hasBooking',
             'months',
             'pendingData',
             'confirmedData',
             'completedData',
             'nearestBooking',
             'nearestMatch'
+        ));
+    }
+
+    // =========================
+    // BOOKINGS PAGE (FIX SEMUA VARIABLE BLADE)
+    // =========================
+    public function bookings()
+    {
+        $userId = Auth::id();
+
+        $allBookings = Booking::where('user_id', $userId)->get();
+
+        $pendingBookings = Booking::where('user_id', $userId)
+            ->where('status', 'pending')
+            ->get();
+
+        $ongoingBookings = Booking::where('user_id', $userId)
+            ->where('status', 'confirmed')
+            ->get();
+
+        $completedBookings = Booking::where('user_id', $userId)
+            ->where('status', 'completed')
+            ->get();
+
+        $cancelledBookings = Booking::where('user_id', $userId)
+            ->where('status', 'cancelled')
+            ->get();
+
+        return view('user.bookings', compact(
+            'allBookings',
+            'pendingBookings',
+            'ongoingBookings',
+            'completedBookings',
+            'cancelledBookings'
         ));
     }
 }
