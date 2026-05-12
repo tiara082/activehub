@@ -164,9 +164,9 @@
                     {{ count($sports) > 0 ? implode(', ', $sports) : 'Olahraga' }}
                 </p>
 
-                <div class="space-y-1.5 text-sm text-gray-500">
+                <div class="space-y-1 text-xs text-gray-500">
                     <div class="flex items-center gap-2">
-                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
@@ -174,22 +174,22 @@
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                                   d="M12 2C8.686 2 6 4.686 6 8c0 5.25 6 13 6 13s6-7.75
                                      6-13c0-3.314-2.686-6-6-6z"/>
                             <circle cx="12" cy="8" r="2" stroke-width="1.8"/>
                         </svg>
-                        <span>{{ $venue->location }}</span>
+                        <span class="truncate">{{ $venue->location }}</span>
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                                   d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3
                                      0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                         </svg>
-                        <span>Rp {{ number_format($minPrice, 0, ',', '.') }} - Rp {{ number_format($maxPrice, 0, ',', '.') }}/jam</span>
+                        <span class="font-bold text-gray-700">Rp {{ number_format($minPrice, 0, ',', '.') }} - Rp {{ number_format($maxPrice, 0, ',', '.') }}/jam</span>
                     </div>
                 </div>
             </div>

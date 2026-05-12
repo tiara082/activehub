@@ -162,40 +162,50 @@
 
                     {{-- BOOKING --}}
                     @if($nearestBooking)
-                    <div class="border border-gray-100 rounded-xl p-4">
-
-                <div class="border rounded-xl p-3">
-                    <p class="text-xs text-green-600 mb-1">Booking Terdekat</p>
-                    <p class="text-sm font-medium">Champion Futsal</p>
-                    <p class="text-xs text-gray-500">Lapangan Futsal A</p>
-                    <p class="text-xs text-gray-400 mt-1">
-                        Status: {{ ucfirst($nearestBooking->status) }}
-                    </p>
-
+                    <div class="border border-gray-100 rounded-xl p-3 bg-white hover:bg-gray-50 transition shadow-sm">
+                        <div class="flex justify-between items-start mb-1">
+                            <p class="text-[10px] font-bold text-green-600 uppercase tracking-wider">Booking Terdekat</p>
+                            @php
+                                $status = $nearestBooking->status;
+                                $statusLabel = 'Terjadwal';
+                                $statusColor = 'bg-blue-50 text-blue-600';
+                                if($status == 'confirmed' || $status == 'paid') {
+                                    $statusLabel = 'Confirmed';
+                                    $statusColor = 'bg-green-50 text-green-600';
+                                }
+                            @endphp
+                            <span class="text-[10px] px-2 py-0.5 rounded-full {{ $statusColor }}">{{ $statusLabel }}</span>
+                        </div>
+                        <p class="text-sm font-semibold text-gray-800">{{ $nearestBooking->field->venue->name ?? 'Venue' }}</p>
+                        <p class="text-xs text-gray-500">{{ $nearestBooking->field->name ?? 'Lapangan' }}</p>
+                        <p class="text-[11px] text-gray-400 mt-2 flex items-center gap-1.5">
+                            <i class="far fa-calendar text-gray-400"></i>
+                            {{ $nearestBooking->timeSlot && $nearestBooking->timeSlot->date ? $nearestBooking->timeSlot->date->format('d M Y') : '-' }}
+                        </p>
+                        <p class="text-[11px] text-gray-400 mt-1 flex items-center gap-1.5">
+                            <i class="far fa-clock text-gray-400"></i>
+                            {{ $nearestBooking->timeSlot ? date('H:i', strtotime($nearestBooking->timeSlot->start_time)) : '-' }} - {{ $nearestBooking->timeSlot ? date('H:i', strtotime($nearestBooking->timeSlot->end_time)) : '-' }}
+                        </p>
                     </div>
                     @endif
 
-
                     {{-- MATCH --}}
                     @if($nearestMatch)
-                    <div class="border border-gray-100 rounded-xl p-4">
-
-                        <p class="text-xs text-red-500 mb-1 font-medium">
-                            Match Terdekat
+                    <div class="border border-gray-100 rounded-xl p-3 bg-white hover:bg-gray-50 transition shadow-sm">
+                        <div class="flex justify-between items-start mb-1">
+                            <p class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Match Terdekat</p>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">Joined</span>
+                        </div>
+                        <p class="text-sm font-semibold text-gray-800">{{ $nearestMatch->field->venue->name ?? 'Venue' }}</p>
+                        <p class="text-xs text-gray-500">{{ $nearestMatch->field->name ?? 'Lapangan' }}</p>
+                        <p class="text-[11px] text-gray-400 mt-2 flex items-center gap-1.5">
+                            <i class="far fa-calendar text-gray-400"></i>
+                            {{ $nearestMatch->timeSlot && $nearestMatch->timeSlot->date ? $nearestMatch->timeSlot->date->format('d M Y') : '-' }}
                         </p>
-
-                        <p class="text-sm font-semibold text-gray-800">
-                            Public Match
+                        <p class="text-[11px] text-gray-400 mt-1 flex items-center gap-1.5">
+                            <i class="far fa-clock text-gray-400"></i>
+                            {{ $nearestMatch->timeSlot ? date('H:i', strtotime($nearestMatch->timeSlot->start_time)) : '-' }} - {{ $nearestMatch->timeSlot ? date('H:i', strtotime($nearestMatch->timeSlot->end_time)) : '-' }}
                         </p>
-
-                        <p class="text-xs text-gray-500">
-                            {{ $nearestMatch->field->type ?? 'Futsal' }}
-                        </p>
-
-                        <p class="text-xs text-gray-400 mt-1">
-                            {{ \Carbon\Carbon::parse($nearestMatch->timeSlot->start_time)->translatedFormat('l, d M • H:i') }}
-                        </p>
-
                     </div>
                     @endif
 

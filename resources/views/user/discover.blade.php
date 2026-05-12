@@ -65,62 +65,38 @@
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-
-                @php
-                $nearbyVenues = [
-                    ['name'=>'Araya Golf', 'sport'=>'Golf', 'distance'=>'0.8 km', 'image'=>'https://images.unsplash.com/photo-1535139262971-c51845709a48?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3'],
-                    ['name'=>'Champion Futsal', 'sport'=>'Futsal', 'distance'=>'1.2 km', 'image'=>'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3'],
-                    ['name'=>'Tlogomas Badminton', 'sport'=>'Badminton', 'distance'=>'2.5 km', 'image'=>'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3'],
-                    ['name'=>'Bima Sakti Hoops', 'sport'=>'Basket', 'distance'=>'3.1 km', 'image'=>'https://images.unsplash.com/photo-1505666287802-931dc83948e9?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3'],
-                ];
-                @endphp
-
-                @foreach($nearbyVenues as $v)
+                @forelse($nearbyVenues as $venue)
                 <div class="border border-gray-100 rounded-xl p-4 hover:shadow-sm transition">
-
-                    <div class="w-full h-24 bg-gray-100 rounded-lg mb-3 overflow-hidden">
-                        <img src="{{ $v['image'] }}" alt="{{ $v['name'] }}" class="w-full h-full object-cover">
-                    </div>
-
-                    <p class="text-sm font-medium text-gray-800">
-                        {{ $v['name'] }}
-                    </p>
-
-                    <p class="text-xs text-gray-500">
-                        {{ $v['distance'] }} • {{ $v['sport'] }}
-                    </p>
-
+                    @if($venue->photo_url)
+                        <img src="{{ $venue->photo_url }}" class="w-full h-24 object-cover rounded-lg mb-3">
+                    @else
+                        <div class="w-full h-24 bg-gray-100 rounded-lg mb-3"></div>
+                    @endif
+                    <p class="text-sm font-medium text-gray-800">{{ $venue->name }}</p>
+                    <p class="text-xs text-gray-500">{{ $venue->city }} • {{ $venue->sport_type }}</p>
                 </div>
-                @endforeach
-
+                @empty
+                <p class="text-sm text-gray-400 col-span-4">Belum ada lapangan tersedia.</p>
+                @endforelse
             </div>
         </div>
 
         {{-- LIST LAPANGAN --}}
-        @php
-        $venues = [
-            ['name'=>'Darmo Sports','location'=>'Sawojajar','sport'=>'Futsal', 'image'=>'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3'],
-            ['name'=>'Galaxy Court','location'=>'Merjosari','sport'=>'Badminton', 'image'=>'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3'],
-            ['name'=>'Suhat Tennis', 'location'=>'Soekarno Hatta', 'sport'=>'Tennis', 'image'=>'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3'],
-            ['name'=>'Metro Mini Soccer', 'location'=>'Klojen', 'sport'=>'Mini Soccer', 'image'=>'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3']
-        ];
-        @endphp
-
         <div class="space-y-4">
             @forelse($venues as $v)
             <div class="bg-white border border-gray-100 rounded-2xl p-5 flex justify-between items-center hover:shadow-sm transition">
                 <div class="flex gap-4">
-                    <div class="w-28 h-20 bg-gray-100 rounded-xl overflow-hidden shrink-0">
-                        <img src="{{ $v['image'] }}" alt="{{ $v['name'] }}" class="w-full h-full object-cover">
-                    </div>
-
-                    <div class="flex flex-col justify-center">
-                        <p class="font-medium text-gray-900">
-                            {{ $v['name'] }}
-                        </p>
-
-                        <p class="text-sm text-gray-500">
-                            {{ $v['sport'] }} • {{ $v['location'] }}
+                    @if($v->photo_url)
+                        <img src="{{ $v->photo_url }}" class="w-28 h-20 object-cover rounded-xl">
+                    @else
+                        <div class="w-28 h-20 bg-gray-100 rounded-xl"></div>
+                    @endif
+                    <div>
+                        <p class="text-sm font-semibold text-gray-900 leading-none mb-1">{{ $v->name }}</p>
+                        <p class="text-xs text-gray-400">{{ $v->sport_type }} • {{ $v->city }}</p>
+                        @if($v->price_per_hour)
+                        <p class="text-xs text-[#0b3d0b] font-bold mt-1.5">
+                            Rp {{ number_format($v->price_per_hour, 0, ',', '.') }}/jam
                         </p>
                         @endif
                     </div>
@@ -146,96 +122,45 @@
                 </div>
             </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
-        @php
-        $nearMatches = [
-            [
-                'title'=>'Night Futsal',
-                'venue'=>'Champion Futsal',
-                'time'=>'20:00',
-                'day'=>'Sabtu, 25 Mei',
-                'players'=>'8/12'
-            ],
-            [
-                'title'=>'Morning Badminton',
-                'venue'=>'Galaxy Court',
-                'time'=>'08:00',
-                'day'=>'Minggu, 26 Mei',
-                'players'=>'5/8'
-            ],
-            [
-                'title'=>'Weekend Basket',
-                'venue'=>'Bima Sakti Hoops',
-                'time'=>'16:00',
-                'day'=>'Minggu, 26 Mei',  
-                'players'=>'7/10'
-            ],
-        ];
-        @endphp
-
-        @foreach($nearMatches as $m)
-        <div class="border border-gray-100 rounded-xl p-4 hover:shadow-sm transition">
-
-            {{-- HEADER --}}
-            <div class="flex justify-between items-start mb-2">
-                <p class="text-sm font-medium text-gray-900">
-                    {{ $m['title'] }}
-                </p>
-
-                {{-- SLOT BADGE --}}
-                <span class="text-[10px] px-2 py-1 rounded-full 
-                    {{ explode('/', $m['players'])[0] < explode('/', $m['players'])[1] 
-                        ? 'bg-green-50 text-green-600' 
-                        : 'bg-red-50 text-red-500' }}">
-                    {{ $m['players'] }}
-                </span>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                @forelse($nearbyMatches as $m)
+                <div class="border border-gray-100 rounded-xl p-4 hover:shadow-sm transition">
+                    <div class="flex justify-between items-start mb-2">
+                        <p class="text-sm font-medium text-gray-900">{{ $m->title }}</p>
+                        <span class="text-[10px] px-2 py-1 rounded-full
+                            {{ $m->current_players < $m->max_players ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500' }}">
+                            {{ $m->current_players }}/{{ $m->max_players }}
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-500">{{ $m->venue->name ?? '-' }}</p>
+                    <p class="text-xs text-gray-400 mt-1">
+                        {{ $m->scheduled_at->translatedFormat('l, d F') }} • {{ $m->scheduled_at->format('H:i') }}
+                    </p>
+                    <button class="mt-3 w-full text-xs bg-[#0b3d0b] text-white py-2 rounded-lg hover:bg-[#145214] transition">
+                        Join Match
+                    </button>
+                </div>
+                @empty
+                <p class="text-sm text-gray-400 col-span-3">Belum ada match tersedia.</p>
+                @endforelse
             </div>
-
-            {{-- INFO --}}
-            <p class="text-xs text-gray-500">
-                {{ $m['venue'] }}
-            </p>
-
-            <p class="text-xs text-gray-400 mt-1">
-                 {{ $m['day'] }} •  {{ $m['time'] }}
-            </p>
-
-            {{-- CTA --}}
-            <button class="mt-3 w-full text-xs bg-[#0b3d0b] text-white py-2 rounded-lg hover:bg-[#145214] transition">
-                Join Match
-            </button>
-
         </div>
-        @endforeach
-    </div>
 
-</div>
-        @php
-        $matches = [
-            ['title'=>'Night Futsal','players'=>'8 / 14','day'=>'Sabtu, 25 Mei','time'=>'20:00', 'location'=>'Malang', 'image'=>'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3'],
-            ['title'=>'Morning Badminton','players'=>'5 / 8','day'=>'Minggu, 26 Mei','time'=>'08:00', 'location'=>'Blitar', 'image'=>'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3'],
-            ['title'=>'Weekend Basket','players'=>'7 / 10','day'=>'Minggu, 26 Mei','time'=>'16:00', 'location'=>'Batu', 'image'=>'https://images.unsplash.com/photo-1505666287802-931dc83948e9?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3'],
-        ];
-        @endphp
-
+        {{-- LIST MATCH --}}
         <div class="space-y-4">
             @forelse($matches as $m)
             <div class="bg-white border border-gray-100 rounded-2xl p-5 flex justify-between items-center hover:shadow-sm transition">
                 <div class="flex gap-4">
-                    <div class="w-28 h-20 bg-gray-100 rounded-xl overflow-hidden shrink-0">
-                        <img src="{{ $m['image'] }}" alt="{{ $m['title'] }}" class="w-full h-full object-cover">
-                    </div>
-
-                    <div class="flex flex-col justify-center">
-                        <p class="font-medium text-gray-900">
-                            {{ $m['title'] }}
-                        </p>
-
-                        <p class="text-sm text-gray-500">
-                            {{ $m->scheduled_at->translatedFormat('l, d F') }} | {{ $m->scheduled_at->format('H:i') }}
-                        </p>
-                        <p class="text-sm text-gray-500">{{ $m->city }}</p>
+                    <div class="w-28 h-20 bg-gray-100 rounded-xl"></div>
+                    <div>
+                        <p class="text-sm font-semibold text-gray-900 leading-none mb-1">{{ $m->title }}</p>
+                        <p class="text-xs text-gray-400">{{ $m->current_players }}/{{ $m->max_players }} pemain</p>
+                        <div class="flex flex-col mt-1.5 space-y-0.5">
+                            <p class="text-xs text-gray-500 font-medium">
+                                {{ $m->scheduled_at->translatedFormat('l, d F') }} | {{ $m->scheduled_at->format('H:i') }}
+                            </p>
+                            <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">{{ $m->city }}</p>
+                        </div>
                     </div>
                 </div>
                 <button class="text-sm border px-4 py-1.5 rounded-lg hover:bg-gray-100">Join</button>

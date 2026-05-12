@@ -50,7 +50,9 @@ class VenueController extends Controller
     {
         $data = $request->validate([
             'name'        => 'required|string|max:255',
+            'sport_type'  => 'nullable|array',
             'location'    => 'required|string|max:255',
+            'city'        => 'nullable|string|max:100',
             'description' => 'nullable|string',
             'latitude'    => 'nullable|numeric',
             'longitude'   => 'nullable|numeric',
@@ -71,7 +73,9 @@ class VenueController extends Controller
         // 1. create venue
         $venue = Auth::user()->venues()->create([
             'name'        => $data['name'],
+            'sport_type'  => $data['sport_type'] ?? [],
             'location'    => $data['location'],
+            'city'        => $data['city'] ?? null,
             'description' => $data['description'] ?? null,
             'latitude'    => $data['latitude'] ?? null,
             'longitude'   => $data['longitude'] ?? null,
@@ -98,7 +102,9 @@ class VenueController extends Controller
 
         $data = $request->validate([
             'name'        => 'required|string|max:255',
+            'sport_type'  => 'nullable|array',
             'location'    => 'required|string|max:255',
+            'city'        => 'nullable|string|max:100',
             'description' => 'nullable|string',
             'latitude'    => 'nullable|numeric',
             'longitude'   => 'nullable|numeric',
@@ -118,7 +124,9 @@ class VenueController extends Controller
         // update venue
         $venue->update([
             'name'        => $data['name'],
+            'sport_type'  => $data['sport_type'] ?? [],
             'location'    => $data['location'],
+            'city'        => $data['city'] ?? null,
             'description' => $data['description'] ?? null,
             'latitude'    => $data['latitude'] ?? null,
             'longitude'   => $data['longitude'] ?? null,

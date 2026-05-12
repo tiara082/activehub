@@ -8,13 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Venue extends Model
 {
-   protected $fillable = ['owner_id', 'name', 'location', 'latitude', 'longitude', 'description', 'open_time', 'close_time', 'facilities'];
+    protected $fillable = [
+        'owner_id', 'name', 'sport_type', 'location', 'city', 
+        'latitude', 'longitude', 'description', 
+        'open_time', 'close_time', 'facilities', 'photo_url', 'price_per_hour'
+    ];
 
-   protected $casts = [
-      'latitude' => 'decimal:6',
-      'longitude' => 'decimal:6',
-      'facilities' => 'array',
-   ];
+    protected $casts = [
+        'latitude' => 'decimal:6',
+        'longitude' => 'decimal:6',
+        'facilities' => 'array',
+        'sport_type' => 'array',
+    ];
 
    public function owner(): BelongsTo
    {

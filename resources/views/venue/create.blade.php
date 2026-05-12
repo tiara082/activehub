@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daftarkan Venue</title>
+<title>Daftarkan Venue - ActiveHub</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
@@ -53,6 +53,28 @@
         font-weight:bold;
         color:#123012;
     }
+
+    #map {
+        height: 300px;
+        width: 100%;
+        border-radius: 12px;
+    }
+
+    /* Autocomplete Styles */
+    .pac-container {
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        font-family: 'DM Sans', sans-serif;
+        margin-top: 5px;
+    }
+    .pac-item {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+    .pac-item:hover {
+        background-color: #f2f6f2;
+    }
 </style>
 </head>
 
@@ -67,162 +89,307 @@
 
 <div class="max-w-4xl mx-auto px-6 py-10">
 
-    <div class="grid grid-cols-2 rounded-xl overflow-hidden shadow-md mb-8">
-        <button id="tabV" onclick="showTab('venue')" class="py-3 bg-[#123012] text-white font-semibold">
-            Detail Venue
-        </button>
+    <form action="{{ route('owner.venue.store') }}" method="POST" id="venueForm">
+        @csrf
 
-        <button id="tabL" onclick="showTab('lapangan')" class="py-3 bg-gray-400 text-white font-semibold">
-            Detail Lapangan
-        </button>
-    </div>
-
-    <div class="bg-white rounded-2xl shadow-md p-8">
-
-        <div id="venue" class="space-y-5">
-            <div>
-                <label>Nama Venue <span class="req">*</span></label>
-                <input class="w-full border rounded-lg p-3 mt-1">
-            </div>
-
-            <div>
-                <label>Deskripsi <span class="req">*</span></label>
-                <textarea class="w-full border rounded-lg p-3 h-28 mt-1"></textarea>
-            </div>
-
-            <div>
-                <label>Kota <span class="req">*</span></label>
-                <input class="w-full border rounded-lg p-3 mt-1">
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-4">
-                <div>
-                    <label>Alamat <span class="req">*</span></label>
-                    <textarea class="w-full border rounded-lg p-3 h-32 mt-1"></textarea>
-                </div>
-                <div class="rounded-lg border bg-gray-100 flex items-center justify-center text-gray-400">
-                    Map Preview
-                </div>
-            </div>
-
-            <div>
-                <label>Fasilitas <span class="req">*</span></label>
-                <input id="facilityInput" class="w-full border rounded-lg p-3 mt-1" placeholder="Ketik lalu Enter">
-                <div id="facilityTags" class="flex flex-wrap gap-2 mt-2"></div>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-4">
-                <div>
-                    <label>Jam Buka <span class="req">*</span></label>
-                    <input type="time" class="w-full border rounded-lg p-3 mt-1">
-                </div>
-                <div>
-                    <label>Jam Tutup <span class="req">*</span></label>
-                    <input type="time" class="w-full border rounded-lg p-3 mt-1">
-                </div>
-                <div>
-                    <label>Durasi Sewa <span class="req">*</span></label>
-                    <input class="w-full border rounded-lg p-3 mt-1" placeholder="Misal: 1 Jam">
-                </div>
-            </div>
-
-            <div class="dropdown">
-                <label>Olahraga (Pilih Multi) <span class="req">*</span></label>
-                <button type="button" onclick="toggleDropdown('venueSportBox')" class="w-full border rounded-lg p-3 mt-1 flex justify-between items-center bg-white">
-                    <span>Pilih Olahraga</span>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
-                </button>
-                <div id="venueSportBox" class="dropdown-box">
-                    <div onclick="selectSportVenue('Futsal')">Futsal</div>
-                    <div onclick="selectSportVenue('Basket')">Basket</div>
-                    <div onclick="selectSportVenue('Badminton')">Badminton</div>
-                </div>
-                <div id="venueSportTags" class="flex flex-wrap gap-2 mt-2"></div>
-            </div>
-
-            <div class="flex justify-end pt-6">
-                <button onclick="showTab('lapangan')" class="bg-[#123012] text-white px-6 py-3 rounded-lg font-semibold">
-                    Next →
-                </button>
-            </div>
+        <div class="grid grid-cols-2 rounded-xl overflow-hidden shadow-md mb-8">
+            <button type="button" id="tabV" onclick="showTab('venue')" class="py-3 bg-[#123012] text-white font-semibold transition-all">
+                Detail Venue
+            </button>
+            <button type="button" id="tabL" onclick="showTab('lapangan')" class="py-3 bg-gray-400 text-white font-semibold transition-all">
+                Detail Lapangan
+            </button>
         </div>
 
-        <div id="lapangan" class="hidden space-y-6">
-            <div class="flex justify-between items-center border-b pb-4">
-                <h2 class="font-bold text-lg">Manajemen Lapangan</h2>
-                <button onclick="addLapangan()" class="bg-yellow-400 px-5 py-2 rounded-lg font-bold">
-                    + ADD
-                </button>
+        <div class="bg-white rounded-2xl shadow-md p-8">
+
+            {{-- STEP 1: VENUE DETAILS --}}
+            <div id="venueSection" class="space-y-5">
+                <div>
+                    <label class="text-sm font-semibold text-gray-700">Nama Venue <span class="req">*</span></label>
+                    <input name="name" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none" placeholder="Masukkan nama venue">
+                </div>
+
+                <div>
+                    <label class="text-sm font-semibold text-gray-700">Deskripsi <span class="req">*</span></label>
+                    <textarea name="description" required class="w-full border rounded-lg p-3 h-28 mt-1 focus:ring-2 focus:ring-[#123012] outline-none" placeholder="Ceritakan tentang venue Anda..."></textarea>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm font-semibold text-gray-700">Kota <span class="req">*</span></label>
+                        <input name="city" id="cityInput" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none" placeholder="Masukkan kota">
+                    </div>
+                    <div>
+                        <label class="text-sm font-semibold text-gray-700">Alamat Lengkap <span class="req">*</span></label>
+                        <input name="location" id="locationAutocomplete" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none" placeholder="Cari lokasi atau ketik alamat...">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-sm font-semibold text-gray-700 mb-2 block">Pilih Lokasi di Peta <span class="req">*</span></label>
+                    <div id="map"></div>
+                    <p class="text-xs text-gray-400 mt-2 italic">Geser marker untuk menentukan titik lokasi yang tepat.</p>
+                    <input type="hidden" name="latitude" id="latInput">
+                    <input type="hidden" name="longitude" id="lngInput">
+                </div>
+
+                <div>
+                    <label class="text-sm font-semibold text-gray-700">Fasilitas <span class="req">*</span></label>
+                    <input id="facilityInput" class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none" placeholder="Ketik lalu tekan Enter">
+                    <div id="facilityTags" class="flex flex-wrap gap-2 mt-2"></div>
+                    <div id="facilityHiddenInputs"></div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm font-semibold text-gray-700">Jam Buka <span class="req">*</span></label>
+                        <input type="time" name="open_time" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none">
+                    </div>
+                    <div>
+                        <label class="text-sm font-semibold text-gray-700">Jam Tutup <span class="req">*</span></label>
+                        <input type="time" name="close_time" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none">
+                    </div>
+                </div>
+
+                <div class="dropdown">
+                    <label class="text-sm font-semibold text-gray-700">Olahraga (Pilih Multi) <span class="req">*</span></label>
+                    <button type="button" onclick="toggleDropdown('venueSportBox')" class="w-full border rounded-lg p-3 mt-1 flex justify-between items-center bg-white hover:bg-gray-50 transition">
+                        <span id="sportPlaceholder">Pilih Olahraga</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div id="venueSportBox" class="dropdown-box">
+                        <div onclick="selectSportVenue('Futsal')">Futsal</div>
+                        <div onclick="selectSportVenue('Basket')">Basket</div>
+                        <div onclick="selectSportVenue('Badminton')">Badminton</div>
+                        <div onclick="selectSportVenue('Tennis')">Tennis</div>
+                        <div onclick="selectSportVenue('Volley')">Volley</div>
+                    </div>
+                    <div id="venueSportTags" class="flex flex-wrap gap-2 mt-2"></div>
+                    <div id="venueSportHiddenInputs"></div>
+                </div>
+
+                <div class="flex justify-end pt-6 border-t">
+                    <button type="button" onclick="showTab('lapangan')" class="bg-[#123012] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition shadow-lg">
+                        Lanjut ke Lapangan →
+                    </button>
+                </div>
             </div>
 
-            <div id="lapanganContainer" class="space-y-6">
-                <div class="border rounded-xl p-5 space-y-4">
+            {{-- STEP 2: FIELD DETAILS --}}
+            <div id="lapanganSection" class="hidden space-y-6">
+                <div class="flex justify-between items-center border-b pb-4">
                     <div>
-                        <label class="font-medium">Nama Lapangan <span class="req">*</span></label>
-                        <input class="w-full border rounded-lg p-3 mt-1">
+                        <h2 class="font-bold text-xl text-gray-800">Manajemen Lapangan</h2>
+                        <p class="text-sm text-gray-500">Tambahkan setidaknya satu lapangan.</p>
                     </div>
+                    <button type="button" onclick="addLapangan()" class="bg-yellow-400 hover:bg-yellow-500 px-6 py-2 rounded-xl font-bold transition shadow-sm">
+                        + Tambah Lapangan
+                    </button>
+                </div>
 
-                    <div class="dropdown">
-                        <label class="font-medium">Jenis Olahraga <span class="req">*</span></label>
-                        <button type="button" onclick="toggleDropdown(this.nextElementSibling.id)" class="w-full border rounded-lg p-3 mt-1 flex justify-between items-center bg-white">
-                            <span class="selected-val">Pilih 1 Olahraga</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
-                        </button>
-                        <div id="drop-1" class="dropdown-box">
-                            <div onclick="selectSingleSport(this, 'Futsal')">Futsal</div>
-                            <div onclick="selectSingleSport(this, 'Basket')">Basket</div>
-                            <div onclick="selectSingleSport(this, 'Badminton')">Badminton</div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="font-medium">Harga per Jam <span class="req">*</span></label>
-                        <div class="flex mt-1">
-                            <span class="inline-flex items-center px-4 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 font-semibold">
-                                Rp
+                <div id="lapanganContainer" class="space-y-6">
+                    {{-- First Field Card --}}
+                    <div class="field-card border rounded-2xl p-6 space-y-4 bg-gray-50/50">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-[#123012] flex items-center gap-2">
+                                <span class="w-6 h-6 bg-[#123012] text-white rounded-full flex items-center justify-center text-[10px]">1</span>
+                                Lapangan Utama
                             </span>
-                            <input type="number" class="w-full border rounded-r-lg p-3 outline-none focus:ring-1 focus:ring-[#123012]" placeholder="0">
                         </div>
-                    </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Nama Lapangan <span class="req">*</span></label>
+                                <input name="fields[0][name]" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none bg-white" placeholder="Misal: Lapangan A">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="dropdown">
+                                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Tipe <span class="req">*</span></label>
+                                    <button type="button" onclick="toggleDropdown('dropType-0')" class="w-full border border-gray-200 rounded-lg p-3 mt-1 flex justify-between items-center bg-white hover:bg-gray-50 transition shadow-sm">
+                                        <span class="selected-val">Indoor</span>
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                                    </button>
+                                    <input type="hidden" name="fields[0][is_indoor]" value="1" required>
+                                    <div id="dropType-0" class="dropdown-box">
+                                        <div onclick="selectCustom(this, '1', 'Indoor')">Indoor</div>
+                                        <div onclick="selectCustom(this, '0', 'Outdoor')">Outdoor</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Kapasitas <span class="req">*</span></label>
+                                    <input type="number" name="fields[0][capacity]" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none bg-white" placeholder="0">
+                                </div>
+                            </div>
+                        </div>
 
-                    <div>
-                        <label class="font-medium">Foto Lapangan <span class="req">*</span></label>
-                        <div class="border-2 border-dashed rounded-xl h-32 flex items-center justify-center text-gray-400 mt-1 cursor-pointer hover:bg-gray-50">
-                            Upload Foto
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="dropdown">
+                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Jenis Olahraga <span class="req">*</span></label>
+                                <button type="button" onclick="toggleDropdown('drop-0')" class="w-full border rounded-lg p-3 mt-1 flex justify-between items-center bg-white hover:bg-gray-50 transition shadow-sm">
+                                    <span class="selected-val">Pilih Olahraga</span>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                                <input type="hidden" name="fields[0][sport_type]" class="sport-hidden-input" required>
+                                <div id="drop-0" class="dropdown-box">
+                                    <div onclick="selectSingleSport(this, 'Futsal')">Futsal</div>
+                                    <div onclick="selectSingleSport(this, 'Basket')">Basket</div>
+                                    <div onclick="selectSingleSport(this, 'Badminton')">Badminton</div>
+                                    <div onclick="selectSingleSport(this, 'Tennis')">Tennis</div>
+                                    <div onclick="selectSingleSport(this, 'Volley')">Volley</div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Harga per Jam <span class="req">*</span></label>
+                                <div class="flex mt-1">
+                                    <span class="inline-flex items-center px-4 rounded-l-lg border border-r-0 border-gray-300 bg-gray-100 text-gray-500 font-bold">
+                                        Rp
+                                    </span>
+                                    <input type="number" name="fields[0][price_per_hour]" required class="w-full border rounded-r-lg p-3 outline-none focus:ring-2 focus:ring-[#123012] bg-white" placeholder="0">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <div class="flex justify-between pt-8 border-t">
+                    <button type="button" onclick="showTab('venue')" class="flex items-center gap-2 text-gray-500 font-bold hover:text-gray-900 transition group">
+                        <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition">←</span>
+                        Kembali ke Detail Venue
+                    </button>
+                    <button type="submit" class="bg-[#fbbf24] hover:bg-[#d97706] text-[#123012] px-8 py-3 rounded-xl font-bold transition-all hover:scale-105 active:scale-95 shadow-md uppercase tracking-wider text-sm">
+                        Publish Venue
+                    </button>
+                </div>
             </div>
 
-            <div class="flex justify-between pt-4">
-                <button onclick="showTab('venue')" class="text-gray-500">
-                    ← Back
-                </button>
-                <button class="bg-yellow-400 px-6 py-3 rounded-lg font-bold">
-                    Publish
-                </button>
-            </div>
         </div>
-
-    </div>
+    </form>
 </div>
 
+{{-- LEAFLET CSS & JS --}}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script>
+let map, marker;
+
+function initMap() {
+    const defaultLat = -6.2088;
+    const defaultLng = 106.8456; // Jakarta
+    
+    map = L.map('map').setView([defaultLat, defaultLng], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    marker = L.marker([defaultLat, defaultLng], {
+        draggable: true
+    }).addTo(map);
+
+    // Update coordinates on drag
+    marker.on('dragend', function(e) {
+        const position = marker.getLatLng();
+        updateCoords(position.lat, position.lng);
+    });
+
+    // Update coordinates on click
+    map.on('click', function(e) {
+        marker.setLatLng(e.latlng);
+        updateCoords(e.latlng.lat, e.latlng.lng);
+    });
+
+    // Initialize with default coords
+    updateCoords(defaultLat, defaultLng);
+
+    // Setup Autocomplete (Search)
+    setupSearch();
+}
+
+function updateCoords(lat, lng) {
+    document.getElementById('latInput').value = lat.toFixed(6);
+    document.getElementById('lngInput').value = lng.toFixed(6);
+}
+
+function setupSearch() {
+    const input = document.getElementById("locationAutocomplete");
+    const suggestionBox = document.createElement('div');
+    suggestionBox.className = 'absolute z-50 w-full bg-white border rounded-lg mt-1 shadow-xl hidden overflow-hidden';
+    input.parentNode.style.position = 'relative';
+    input.parentNode.appendChild(suggestionBox);
+
+    let timeout;
+    input.addEventListener('input', function() {
+        clearTimeout(timeout);
+        const query = input.value.trim();
+        if (query.length < 3) {
+            suggestionBox.classList.add('hidden');
+            return;
+        }
+
+        timeout = setTimeout(() => {
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`)
+                .then(res => res.json())
+                .then(data => {
+                    suggestionBox.innerHTML = '';
+                    if (data.length > 0) {
+                        data.forEach(item => {
+                            const div = document.createElement('div');
+                            div.className = 'p-3 hover:bg-gray-50 cursor-pointer border-b last:border-0 text-sm';
+                            div.innerText = item.display_name;
+                            div.onclick = () => {
+                                input.value = item.display_name;
+                                const lat = parseFloat(item.lat);
+                                const lng = parseFloat(item.lon);
+                                
+                                map.setView([lat, lng], 16);
+                                marker.setLatLng([lat, lng]);
+                                updateCoords(lat, lng);
+                                suggestionBox.classList.add('hidden');
+
+                                // Try to extract city
+                                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                                    .then(res => res.json())
+                                    .then(revData => {
+                                        const city = revData.address.city || revData.address.town || revData.address.municipality || revData.address.county;
+                                        if (city) document.getElementById('cityInput').value = city;
+                                    });
+                            };
+                            suggestionBox.appendChild(div);
+                        });
+                        suggestionBox.classList.remove('hidden');
+                    } else {
+                        suggestionBox.classList.add('hidden');
+                    }
+                });
+        }, 500);
+    });
+
+    // Close suggestions on outside click
+    document.addEventListener('click', (e) => {
+        if (!input.contains(e.target)) suggestionBox.classList.add('hidden');
+    });
+}
+
+// Load map
+window.onload = initMap;
+
 function showTab(tab){
-    const v = document.getElementById('venue');
-    const l = document.getElementById('lapangan');
+    const vSection = document.getElementById('venueSection');
+    const lSection = document.getElementById('lapanganSection');
     const tabV = document.getElementById('tabV');
     const tabL = document.getElementById('tabL');
 
     if(tab === 'venue'){
-        v.classList.remove('hidden');
-        l.classList.add('hidden');
+        vSection.classList.remove('hidden');
+        lSection.classList.add('hidden');
         tabV.classList.add('tab-active');
         tabL.classList.remove('tab-active');
         tabL.classList.add('bg-gray-400');
     } else {
-        l.classList.remove('hidden');
-        v.classList.add('hidden');
+        lSection.classList.remove('hidden');
+        vSection.classList.add('hidden');
         tabL.classList.add('tab-active');
         tabV.classList.remove('tab-active');
         tabV.classList.add('bg-gray-400');
@@ -234,14 +401,11 @@ function showTab(tab){
 function toggleDropdown(id){
     const box = document.getElementById(id);
     const isVisible = box.style.display === 'block';
-    
-    // Close all other boxes first
     document.querySelectorAll('.dropdown-box').forEach(b => b.style.display = 'none');
-    
     box.style.display = isVisible ? 'none' : 'block';
 }
 
-// MULTI SELECT (VENUE)
+// MULTI SELECT (VENUE SPORTS)
 let venueSports = [];
 function selectSportVenue(val){
     if(!venueSports.includes(val)){
@@ -253,12 +417,21 @@ function selectSportVenue(val){
 
 function renderVenueSports(){
     const container = document.getElementById('venueSportTags');
+    const hiddenContainer = document.getElementById('venueSportHiddenInputs');
     container.innerHTML = '';
+    hiddenContainer.innerHTML = '';
+    
     venueSports.forEach((s, idx) => {
         const t = document.createElement('div');
-        t.className = 'tag';
-        t.innerHTML = `${s} <button onclick="removeVenueSport(${idx})">x</button>`;
+        t.className = 'tag animate-in fade-in duration-300';
+        t.innerHTML = `${s} <button type="button" onclick="removeVenueSport(${idx})">x</button>`;
         container.appendChild(t);
+
+        const hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = 'sport_type[]';
+        hidden.value = s;
+        hiddenContainer.appendChild(hidden);
     });
 }
 
@@ -271,6 +444,14 @@ function removeVenueSport(idx){
 function selectSingleSport(el, val){
     const parent = el.closest('.dropdown');
     parent.querySelector('.selected-val').innerText = val;
+    parent.querySelector('.sport-hidden-input').value = val;
+    parent.querySelector('.dropdown-box').style.display = 'none';
+}
+
+function selectCustom(el, val, label){
+    const parent = el.closest('.dropdown');
+    parent.querySelector('.selected-val').innerText = label;
+    parent.querySelector('input[type="hidden"]').value = val;
     parent.querySelector('.dropdown-box').style.display = 'none';
 }
 
@@ -281,7 +462,7 @@ document.addEventListener('click', function(e){
     }
 });
 
-/* FACILITY */
+/* FACILITIES LOGIC */
 const facilityInput = document.getElementById('facilityInput');
 let facilities = [];
 facilityInput.addEventListener('keydown', function(e){
@@ -298,12 +479,21 @@ facilityInput.addEventListener('keydown', function(e){
 
 function renderFacilities(){
     const container = document.getElementById('facilityTags');
+    const hiddenContainer = document.getElementById('facilityHiddenInputs');
     container.innerHTML = '';
+    hiddenContainer.innerHTML = '';
+    
     facilities.forEach((f, idx) => {
         const t = document.createElement('div');
-        t.className = 'tag';
-        t.innerHTML = `${f} <button onclick="removeFacility(${idx})">x</button>`;
+        t.className = 'tag animate-in fade-in duration-300';
+        t.innerHTML = `${f} <button type="button" onclick="removeFacility(${idx})">x</button>`;
         container.appendChild(t);
+
+        const hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = 'facilities[]';
+        hidden.value = f;
+        hiddenContainer.appendChild(hidden);
     });
 }
 
@@ -312,214 +502,80 @@ function removeFacility(idx){
     renderFacilities();
 }
 
-/* ADD LAPANGAN */
-let lapCount = 1;
+/* ADD LAPANGAN DYNAMICALLY */
+let lapCount = 0;
 function addLapangan(){
     lapCount++;
     const container = document.getElementById('lapanganContainer');
     const card = document.createElement('div');
-    card.className = "border rounded-xl p-5 space-y-4";
+    card.className = "field-card border rounded-2xl p-6 space-y-4 bg-gray-50/50 animate-in slide-in-from-bottom duration-500";
     
     const dropId = `drop-${lapCount}`;
 
     card.innerHTML = `
         <div class="flex justify-between items-center">
-            <span class="font-bold text-[#123012]">Lapangan Baru</span>
-            <button onclick="this.parentElement.parentElement.remove()" class="text-red-500 text-sm font-bold">Hapus</button>
+            <span class="font-bold text-[#123012] flex items-center gap-2">
+                <span class="w-6 h-6 bg-[#123012] text-white rounded-full flex items-center justify-center text-[10px]">${lapCount + 1}</span>
+                Lapangan Tambahan
+            </span>
+            <button type="button" onclick="this.closest('.field-card').remove()" class="text-red-500 text-sm font-bold hover:underline">Hapus Lapangan</button>
         </div>
-        <div>
-            <label class="font-medium text-sm">Nama Lapangan <span class="req">*</span></label>
-            <input class="w-full border rounded-lg p-3 mt-1" placeholder="Nama Lapangan">
-        </div>
-        <div class="dropdown">
-            <label class="font-medium text-sm">Jenis Olahraga <span class="req">*</span></label>
-            <button type="button" onclick="toggleDropdown('${dropId}')" class="w-full border rounded-lg p-3 mt-1 flex justify-between items-center bg-white">
-                <span class="selected-val">Pilih 1 Olahraga</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
-            </button>
-            <div id="${dropId}" class="dropdown-box">
-                <div onclick="selectSingleSport(this, 'Futsal')">Futsal</div>
-                <div onclick="selectSingleSport(this, 'Basket')">Basket</div>
-                <div onclick="selectSingleSport(this, 'Badminton')">Badminton</div>
+        
+        <div class="grid md:grid-cols-2 gap-4">
+            <div>
+                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Nama Lapangan <span class="req">*</span></label>
+                <input name="fields[${lapCount}][name]" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none bg-white" placeholder="Misal: Lapangan B">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="dropdown">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Tipe <span class="req">*</span></label>
+                    <button type="button" onclick="toggleDropdown('dropType-${lapCount}')" class="w-full border border-gray-200 rounded-lg p-3 mt-1 flex justify-between items-center bg-white hover:bg-gray-50 transition shadow-sm">
+                        <span class="selected-val">Indoor</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <input type="hidden" name="fields[${lapCount}][is_indoor]" value="1" required>
+                    <div id="dropType-${lapCount}" class="dropdown-box">
+                        <div onclick="selectCustom(this, '1', 'Indoor')">Indoor</div>
+                        <div onclick="selectCustom(this, '0', 'Outdoor')">Outdoor</div>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Kapasitas <span class="req">*</span></label>
+                    <input type="number" name="fields[${lapCount}][capacity]" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none bg-white" placeholder="0">
+                </div>
             </div>
         </div>
-        <div>
-            <label class="font-medium text-sm">Harga per Jam <span class="req">*</span></label>
-            <div class="flex mt-1">
-                <span class="inline-flex items-center px-4 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 font-semibold">
-                    Rp
-                </span>
-                <input type="number" class="w-full border rounded-r-lg p-3 outline-none focus:ring-1 focus:ring-[#123012]" placeholder="0">
+
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="dropdown">
+                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Jenis Olahraga <span class="req">*</span></label>
+                <button type="button" onclick="toggleDropdown('${dropId}')" class="w-full border rounded-lg p-3 mt-1 flex justify-between items-center bg-white hover:bg-gray-50 transition shadow-sm">
+                    <span class="selected-val">Pilih Olahraga</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <input type="hidden" name="fields[${lapCount}][sport_type]" class="sport-hidden-input" required>
+                <div id="${dropId}" class="dropdown-box">
+                    <div onclick="selectSingleSport(this, 'Futsal')">Futsal</div>
+                    <div onclick="selectSingleSport(this, 'Basket')">Basket</div>
+                    <div onclick="selectSingleSport(this, 'Badminton')">Badminton</div>
+                    <div onclick="selectSingleSport(this, 'Tennis')">Tennis</div>
+                    <div onclick="selectSingleSport(this, 'Volley')">Volley</div>
+                </div>
             </div>
-        </div>
-        <div class="border-2 border-dashed rounded-xl h-32 flex items-center justify-center text-gray-400 mt-1">
-            Upload Foto
+            <div>
+                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Harga per Jam <span class="req">*</span></label>
+                <div class="flex mt-1">
+                    <span class="inline-flex items-center px-4 rounded-l-lg border border-r-0 border-gray-300 bg-gray-100 text-gray-500 font-bold">
+                        Rp
+                    </span>
+                    <input type="number" name="fields[${lapCount}][price_per_hour]" required class="w-full border rounded-r-lg p-3 outline-none focus:ring-2 focus:ring-[#123012] bg-white" placeholder="0">
+                </div>
+            </div>
         </div>
     `;
     container.appendChild(card);
 }
 </script>
-
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const latInput = document.getElementById('latInput');
-    const lngInput = document.getElementById('lngInput');
-
-    if(!latInput || !lngInput) return;
-
-    // Default center (Jakarta) or existing venue coordinates
-    let initialLat = latInput.value ? parseFloat(latInput.value) : -6.200000;
-    let initialLng = lngInput.value ? parseFloat(lngInput.value) : 106.816666;
-
-    const mapElement = document.getElementById('map');
-    if(!mapElement) return;
-
-    const map = L.map('map').setView([initialLat, initialLng], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
-
-    const marker = L.marker([initialLat, initialLng], {draggable: true}).addTo(map);
-
-    // If no existing value, try to get user's current location
-    if (!latInput.value) {
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                initialLat = position.coords.latitude;
-                initialLng = position.coords.longitude;
-                map.setView([initialLat, initialLng], 15);
-                marker.setLatLng([initialLat, initialLng]);
-                latInput.value = initialLat;
-                lngInput.value = initialLng;
-            });
-        }
-    }
-
-    // Update hidden inputs when marker is dragged
-    marker.on('dragend', function(e) {
-        const pos = marker.getLatLng();
-        latInput.value = pos.lat;
-        lngInput.value = pos.lng;
-    });
-
-    // Move marker and update inputs when map is clicked
-    map.on('click', function(e) {
-        marker.setLatLng(e.latlng);
-        latInput.value = e.latlng.lat;
-        lngInput.value = e.latlng.lng;
-    });
-
-    // Address Search (Geocoding)
-    const searchBtn = document.getElementById('searchAddressBtn');
-    const addressInput = document.getElementById('addressInput');
-    const searchMsg = document.getElementById('searchAddressMsg');
-    const suggestionsBox = document.getElementById('addressSuggestions');
-
-    // Autocomplete on type (Debounced)
-    let typingTimer;
-    if(addressInput && suggestionsBox) {
-        addressInput.addEventListener('input', function() {
-            clearTimeout(typingTimer);
-            const query = addressInput.value.trim();
-            
-            if(!query || query.length < 3) {
-                suggestionsBox.classList.add('hidden');
-                return;
-            }
-
-            typingTimer = setTimeout(() => {
-                fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=${encodeURIComponent(query)}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        suggestionsBox.innerHTML = '';
-                        if(data && data.length > 0) {
-                            data.forEach(item => {
-                                const div = document.createElement('div');
-                                div.className = 'p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 text-sm text-gray-700';
-                                div.innerText = item.display_name;
-                                
-                                div.addEventListener('click', () => {
-                                    // Set value and close
-                                    addressInput.value = item.display_name;
-                                    suggestionsBox.classList.add('hidden');
-                                    
-                                    // Update Map
-                                    const lat = parseFloat(item.lat);
-                                    const lon = parseFloat(item.lon);
-                                    map.setView([lat, lon], 16);
-                                    marker.setLatLng([lat, lon]);
-                                    latInput.value = lat;
-                                    lngInput.value = lon;
-                                });
-                                
-                                suggestionsBox.appendChild(div);
-                            });
-                            suggestionsBox.classList.remove('hidden');
-                        } else {
-                            suggestionsBox.classList.add('hidden');
-                        }
-                    })
-                    .catch(err => console.error('Autocomplete error:', err));
-            }, 600); // Wait 600ms after user stops typing
-        });
-
-        // Hide suggestions when clicking outside
-        document.addEventListener('click', function(e) {
-            if(!addressInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
-                suggestionsBox.classList.add('hidden');
-            }
-        });
-    }
-
-    if(searchBtn && addressInput) {
-        searchBtn.addEventListener('click', function() {
-            const query = addressInput.value.trim();
-            if(!query) return;
-
-            searchBtn.innerText = 'Mencari...';
-            searchMsg.classList.add('hidden');
-            suggestionsBox.classList.add('hidden');
-
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
-                .then(res => res.json())
-                .then(data => {
-                    if(data && data.length > 0) {
-                        const lat = parseFloat(data[0].lat);
-                        const lon = parseFloat(data[0].lon);
-                        
-                        map.setView([lat, lon], 16);
-                        marker.setLatLng([lat, lon]);
-                        latInput.value = lat;
-                        lngInput.value = lon;
-                    } else {
-                        searchMsg.classList.remove('hidden');
-                    }
-                })
-                .catch(err => {
-                    console.error('Geocoding error:', err);
-                    searchMsg.innerText = 'Terjadi kesalahan jaringan';
-                    searchMsg.classList.remove('hidden');
-                })
-                .finally(() => {
-                    searchBtn.innerText = '📍 Cari Titik di Peta';
-                });
-        });
-    }
-    
-    // Invalidate size when tab changes to fix map rendering issues when hidden
-    const tabVBtn = document.getElementById('tabV');
-    if(tabVBtn) {
-        tabVBtn.addEventListener('click', () => {
-            setTimeout(() => { map.invalidateSize(); }, 100);
-        });
-    }
-});
-</script>
-=======
->>>>>>> Stashed changes
 
 </body>
 </html>

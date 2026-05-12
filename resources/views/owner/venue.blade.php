@@ -47,7 +47,7 @@
 
                 {{-- DELETE VENUE --}}
                 <div class="relative group">
-                    <button onclick="openModal('deleteVenueModal')"
+                    <button type="button" onclick="openDeleteVenue({{ $activeVenue->id }}, '{{ addslashes($activeVenue->name) }}')"
                         class="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center transition">
                         <svg class="w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -420,14 +420,14 @@
         </div>
         <h3 class="font-semibold text-gray-900 mb-1">Hapus Venue?</h3>
         <p class="text-sm text-gray-500 mb-6">
-            Venue <strong>{{ $activeVenue->name }}</strong> dan semua lapangannya akan dihapus permanen.
+            Venue <strong id="deleteVenueName"></strong> dan semua lapangannya akan dihapus permanen.
         </p>
         <div class="flex gap-3">
-            <button onclick="closeModal('deleteVenueModal')"
+            <button type="button" onclick="closeModal('deleteVenueModal')"
                 class="flex-1 border border-gray-200 text-gray-600 text-sm font-medium py-2.5 rounded-xl hover:bg-gray-50 transition">
                 Batal
             </button>
-            <form method="POST" action="{{ route('owner.venue.destroy', $activeVenue) }}" class="flex-1">
+            <form id="deleteVenueForm" method="POST" action="" class="flex-1">
                 @csrf
                 @method('DELETE')
                 <button type="submit"
@@ -496,6 +496,14 @@
             if (e.target === this) closeModal(this.id);
         });
     });
+
+    // Populate delete venue modal
+    function openDeleteVenue(id, name) {
+        const baseUrl = "{{ url('owner/venue') }}/";
+        document.getElementById('deleteVenueForm').action = baseUrl + id;
+        document.getElementById('deleteVenueName').textContent = name;
+        openModal('deleteVenueModal');
+    }
 
     // Populate delete field modal
     function openDeleteField(id, name) {

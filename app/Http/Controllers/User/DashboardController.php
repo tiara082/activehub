@@ -15,6 +15,7 @@ class DashboardController extends Controller
     public function index()
     {
         $userId = Auth::id();
+        $now = Carbon::now();
 
         // TOTAL BOOKING
         $totalBooking = Booking::where('user_id', $userId)->count();
@@ -60,17 +61,41 @@ class DashboardController extends Controller
                 ->count();
         }
 
-        // TERDEKAT BOOKING
-        $nearestBooking = Booking::with(['field', 'timeSlot'])
+        // TERDEKAT BOOKING (Actual upcoming)
+        $nearestBooking = Booking::with(['field.venue', 'timeSlot'])
             ->where('user_id', $userId)
-            ->latest()
+            ->whereIn('status', ['confirmed', 'paid', 'pending'])
+            ->whereHas('timeSlot', function($q) use ($now) {
+                $q->where('date', '>=', $now->toDateString());
+            })
+            ->get()
+            ->filter(function($b) use ($now) {
+                if (!$b->timeSlot) return false;
+                $end = Carbon::parse($b->timeSlot->date->format('Y-m-d') . ' ' . $b->timeSlot->end_time);
+                return $end->isFuture();
+            })
+            ->sortBy(function($b) {
+                return $b->timeSlot->date->format('Y-m-d') . ' ' . $b->timeSlot->start_time;
+            })
             ->first();
 
-        // TERDEKAT MATCH
-        $nearestMatch = Booking::with(['field', 'timeSlot'])
+        // TERDEKAT MATCH (Actual upcoming)
+        $nearestMatch = Booking::with(['field.venue', 'timeSlot'])
             ->where('user_id', $userId)
             ->where('is_public_match', true)
-            ->latest()
+            ->whereIn('status', ['confirmed', 'paid', 'pending'])
+            ->whereHas('timeSlot', function($q) use ($now) {
+                $q->where('date', '>=', $now->toDateString());
+            })
+            ->get()
+            ->filter(function($b) use ($now) {
+                if (!$b->timeSlot) return false;
+                $end = Carbon::parse($b->timeSlot->date->format('Y-m-d') . ' ' . $b->timeSlot->end_time);
+                return $end->isFuture();
+            })
+            ->sortBy(function($b) {
+                return $b->timeSlot->date->format('Y-m-d') . ' ' . $b->timeSlot->start_time;
+            })
             ->first();
 
         return view('user.dashboard', compact(
@@ -83,40 +108,6 @@ class DashboardController extends Controller
             'completedData',
             'nearestBooking',
             'nearestMatch'
-        ));
-    }
-
-    // =========================
-    // BOOKINGS PAGE (FIX SEMUA VARIABLE BLADE)
-    // =========================
-    public function bookings()
-    {
-        $userId = Auth::id();
-
-        $allBookings = Booking::where('user_id', $userId)->get();
-
-        $pendingBookings = Booking::where('user_id', $userId)
-            ->where('status', 'pending')
-            ->get();
-
-        $ongoingBookings = Booking::where('user_id', $userId)
-            ->where('status', 'confirmed')
-            ->get();
-
-        $completedBookings = Booking::where('user_id', $userId)
-            ->where('status', 'completed')
-            ->get();
-
-        $cancelledBookings = Booking::where('user_id', $userId)
-            ->where('status', 'cancelled')
-            ->get();
-
-        return view('user.bookings', compact(
-            'allBookings',
-            'pendingBookings',
-            'ongoingBookings',
-            'completedBookings',
-            'cancelledBookings'
         ));
     }
 }
