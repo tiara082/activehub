@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
 
 class GameMatch extends Model
@@ -33,5 +34,10 @@ class GameMatch extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
+    }
+
+    public function participants(): HasMany
+    {
+        return $this->hasMany(MatchParticipant::class, 'match_id');
     }
 }

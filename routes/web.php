@@ -9,6 +9,7 @@ use App\Http\Controllers\Owner\VenueController as OwnerVenueController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\MatchController;
+use App\Http\Controllers\PaymentController;
 
 // ==========================
 // PUBLIC
@@ -54,7 +55,7 @@ Route::middleware('auth')->group(function () {
         $booking = \App\Models\Booking::with([
             'field',
             'field.venue',
-            'field.sport'
+            'timeSlot',
         ])->find($bookingId);
 
         return view('pubmatch.create', compact('booking'));
@@ -97,6 +98,26 @@ Route::get('/fields/{id}', function ($id) {
     return view('field.detail', compact('id'));
 })->name('fields.detail');
 
+// Booking dari venue (create booking lalu redirect ke create match)
+Route::post('/venues/book', function (\Illuminate\Http\Request $request) {
+    $request->validate([
+        'time_slot_id' => ['required', 'exists:time_slots,id'],
+    ]);
+
+    $slot = \App\Models\TimeSlot::with('field')->findOrFail($request->time_slot_id);
+
+    $booking = \App\Models\Booking::create([
+        'user_id'         => auth()->id(),
+        'field_id'        => $slot->field_id,
+        'time_slot_id'    => $slot->id,
+        'total_price'     => $slot->field->price_per_hour,
+        'status'          => 'confirmed',
+        'is_public_match' => 0,
+    ]);
+
+    return redirect()->route('matches.create', ['booking' => $booking->id]);
+})->name('venues.book')->middleware('auth');
+
 // ==========================
 // CHECKOUT
 // ==========================
@@ -111,6 +132,16 @@ Route::get('/payment/qr', fn () => view('booking.qr'))
     ->name('payment.qr');
 Route::get('/payment/success', fn () => view('booking.success'))
     ->name('payment.success');
+
+// Midtrans payment routes
+Route::post('/payment/match', [PaymentController::class, 'createMatchPayment'])
+    ->name('payment.match.create');
+Route::post('/payment/match/finish', [PaymentController::class, 'matchFinish'])
+    ->name('payment.match.finish');
+Route::post('/payment/match/join', [PaymentController::class, 'joinMatch'])
+    ->name('payment.match.join');
+Route::post('/payment/notification', [PaymentController::class, 'notification'])
+    ->name('payment.notification');
 
 Route::post('/matches/{id}/join',[MatchController::class, 'join']
 )->name('match.join');

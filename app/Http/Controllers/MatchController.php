@@ -11,7 +11,12 @@ class MatchController extends Controller
     /** GET /matches — daftar public match (public) */
    public function index()
     {
-        $matches = GameMatch::latest()->get();
+        $matches = GameMatch::with([
+            'booking.field.venue',
+            'booking.timeSlot',
+            'creator',
+            'participants',
+        ])->latest()->get();
 
         return view('pubmatch.list', compact('matches'));
     }
@@ -19,7 +24,14 @@ class MatchController extends Controller
     /** GET /matches/{match} — detail public match (public) */
     public function show(GameMatch $match)
     {
-        $match->load(['booking', 'creator']);
+        $match->load([
+            'creator',
+            'booking',
+            'booking.field',
+            'booking.field.venue',
+            'booking.timeSlot',
+            'participants',
+        ]);
 
         return view('pubmatch.detail', compact('match'));
     }
@@ -42,23 +54,31 @@ class MatchController extends Controller
     {
         $validated = $request->validate([
             'booking_id'        => ['required', 'exists:bookings,id'],
-            'title'             => ['nullable', 'string', 'max:255'],
-            'description'       => ['nullable', 'string'],
-            'total_players'     => ['nullable', 'integer', 'min:2'],
-            'price_per_person'  => ['nullable', 'integer', 'min:0'],
+            'title'             => ['required', 'string', 'max:255'],
+            'description'       => ['required', 'string'],
+            'total_players'     => ['required', 'integer', 'min:2'],
+            'price_per_person'  => ['required', 'integer', 'min:0'],
             'gender_preference' => ['required', 'in:mixed,male,female'],
         ]);
 
-        GameMatch::create([
+        $match = GameMatch::create([
             'booking_id'        => $validated['booking_id'],
             'creator_id'        => Auth::id(),
-            'title'             => $validated['title'] ?? null,
-            'description'       => $validated['description'] ?? null,
-            'total_players'     => $validated['total_players'] ?? null,
-            'price_per_person'  => $validated['price_per_person'] ?? null,
+            'title'             => $validated['title'],
+            'description'       => $validated['description'],
+            'total_players'     => $validated['total_players'],
+            'price_per_person'  => $validated['price_per_person'],
             'gender_preference' => $validated['gender_preference'],
             'status'            => 'open',
         ]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success'  => true,
+                'match_id' => $match->id,
+                'message'  => 'Match berhasil dibuat!',
+            ]);
+        }
 
         return redirect()->route('matches.index')->with('success', 'Match berhasil dibuat!');
     }

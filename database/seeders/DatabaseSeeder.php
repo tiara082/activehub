@@ -10,30 +10,16 @@ class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // =========================
-        // USER DUMMY
-        // =========================
-User::firstOrCreate(
-    [
-        'email' => 'user3@mail.com'
-    ],
+        // Pastikan user ada
+        User::firstOrCreate(
+            ['email' => 'user3@mail.com'],
+            ['name' => 'User 3', 'password' => bcrypt('user1234'), 'role' => 'user']
+        );
 
-    [
-        'name' => 'User 3',
-        'password' => bcrypt('user1234'),
-        'role' => 'user',
-    ]
-);
-
-        // =========================
-        // BOOKING SEEDER
-        // =========================
         $this->call([
+            FieldSeeder::class,
             BookingSeeder::class,
         ]);
     }
