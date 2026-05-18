@@ -35,13 +35,13 @@
 
                             <div class="flex-1">
                                 <p class="title text-white font-semibold transition">
-                                    Booking real-time tanpa ribet
+                                    Pemesanan real-time tanpa ribet
                                 </p>
 
                                 <!-- DESC -->
                                 <div class="accordion-content overflow-hidden max-h-0 opacity-0 transition-all duration-500">
                                     <p class="text-white/60 text-sm mt-2 leading-relaxed">
-                                        Cek jadwal langsung dan booking dalam hitungan detik tanpa perlu konfirmasi manual.
+                                        Cek jadwal langsung dan pesan dalam hitungan detik tanpa perlu konfirmasi manual.
                                     </p>
                                 </div>
                             </div>
@@ -71,7 +71,7 @@
 
                                 <div class="accordion-content overflow-hidden max-h-0 opacity-0 transition-all duration-500">
                                     <p class="text-white/60 text-sm mt-2 leading-relaxed">
-                                        Jelajahi berbagai venue di sekitarmu dengan informasi lengkap dan akurat.
+                                        Jelajahi berbagai tempat di sekitarmu dengan informasi lengkap dan akurat.
                                     </p>
                                 </div>
                             </div>
@@ -101,7 +101,7 @@
 
                                 <div class="accordion-content overflow-hidden max-h-0 opacity-0 transition-all duration-500">
                                     <p class="text-white/60 text-sm mt-2 leading-relaxed">
-                                        Gabung public match dan temukan partner bermain kapan saja.
+                                        Gabung pertandingan terbuka dan temukan teman bermain kapan saja.
                                     </p>
                                 </div>
                             </div>

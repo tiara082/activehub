@@ -11,7 +11,7 @@
                 </h2>
 
                 <p class="text-yellow-300/60 text-sm mt-4 leading-relaxed max-w-xs">
-                    Platform booking lapangan dan cari teman main dengan mudah, cepat, dan tanpa ribet.
+                    Platform pemesanan lapangan dan cari teman main dengan mudah, cepat, dan tanpa ribet.
                 </p>
             </div>
 
@@ -20,24 +20,24 @@
 
                 <!-- COLUMN 1 -->
                 <div>
-                    <p class="text-yellow-300/40 uppercase mb-3 text-xs">Explore</p>
+                    <p class="text-yellow-300/40 uppercase mb-3 text-xs">Jelajahi</p>
 
                     <div class="flex flex-col gap-2">
                         <a href="{{ route('fields.index') }}" class="text-yellow-300/70 hover:text-yellow-300 transition">
                             Cari Lapangan
                         </a>
                         <a href="{{ route('matches.index') }}" class="text-yellow-300/70 hover:text-yellow-300 transition">
-                            Public Match
+                            Pertandingan Terbuka
                         </a>
                         <a href="{{ route('fields.index') }}" class="text-yellow-300/70 hover:text-yellow-300 transition">
-                            Match Saya
+                            Pertandingan Saya
                         </a>
                     </div>
                 </div>
 
                 <!-- COLUMN 2 -->
                 <div>
-                    <p class="text-yellow-300/40 uppercase mb-3 text-xs">Account</p>
+                    <p class="text-yellow-300/40 uppercase mb-3 text-xs">Akun</p>
 
                     <div class="flex flex-col gap-2">
                         <a href="{{ route('login') }}" class="text-yellow-300/70 hover:text-yellow-300 transition">
@@ -61,7 +61,7 @@
 
             <!-- COPYRIGHT -->
             <p class="text-yellow-300/40 text-xs">
-                © 2026 ActiveHub. All rights reserved.
+                © 2026 ActiveHub. Hak cipta dilindungi.
             </p>
 
             <!-- MINI CTA -->

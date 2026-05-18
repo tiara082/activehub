@@ -45,7 +45,7 @@
                         class="text-yellow-300 uppercase leading-[0.9]">
 
                         <span class="block whitespace-nowrap text-[clamp(1.8rem,5vw,3.8rem)]">
-                            Kelola Venue Lebih Praktis
+                            Kelola Lapangan Lebih Praktis
                         </span>
 
                         <span class="block whitespace-nowrap text-[clamp(1.8rem,5vw,3.8rem)]">
@@ -74,13 +74,13 @@
                         </span>
 
                         <span class="block whitespace-nowrap text-[clamp(1.8rem,5vw,3.8rem)]">
-                            Atau Booking Lapangan
+                            Atau Pesan Lapangan
                         </span>
 
                     </h1>
 
                     <p class="text-yellow-300/60 mt-5 max-w-md text-sm leading-relaxed">
-                        Gak perlu ribet chat admin. Pilih lapangan favoritmu, join public match yang tersedia,
+                        Gak perlu ribet chat admin. Pilih lapangan favoritmu, gabung pertandingan terbuka yang tersedia,
                         dan bayar instan tanpa drama. Olahraga jadi makin gampang!
                     </p>
                 </div>
@@ -96,10 +96,10 @@
                     <div style="font-family:'Bebas Neue',sans-serif;"
                          class="leading-none text-right">
                         <div class="text-4xl md:text-6xl transition group-hover:translate-x-1">
-                            LEARN
+                            PELAJARI
                         </div>
                         <div class="text-4xl md:text-6xl transition group-hover:translate-x-1">
-                            MORE
+                            LEBIH LANJUT
                         </div>
                     </div>
 

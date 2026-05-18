@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ActiveHub – Platform Cari Lapangan dan Teman Main</title>
-    <meta name="description" content="Temukan lapangan olahraga terdekat, booking real-time, dan cari teman main di ActiveHub.">
+    <meta name="description" content="Temukan lapangan olahraga terdekat, pesan langsung secara real-time, dan cari teman main di ActiveHub.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

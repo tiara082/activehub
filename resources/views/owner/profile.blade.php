@@ -50,7 +50,7 @@
 
                     <i class="fas fa-pen text-xs"></i>
 
-                    Edit Profile
+                    Edit Profil
 
                 </a>
 
@@ -348,7 +348,7 @@
         <div>
 
             <p class="font-medium text-gray-800 group-hover:text-red-600 transition">
-                Logout
+                Keluar
             </p>
 
             <p class="text-sm text-gray-500">

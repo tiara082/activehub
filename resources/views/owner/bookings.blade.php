@@ -1,8 +1,8 @@
 {{-- resources/views/owner/pages/bookings.blade.php --}}
 @extends('partials.app')
 
-@section('title', 'Booking Management')
-@section('page-title', 'Booking Management')
+@section('title', 'Kelola Booking')
+@section('page-title', 'Kelola Booking')
 @section('page-subtitle', 'Kelola semua reservasi lapangan Anda')
 @section('cta-label', 'Booking Manual')
 @section('cta-href', '#')
@@ -208,12 +208,12 @@ $statusStyle = [
     {{-- HEADER --}}
     <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
         <div>
-            <p class="text-sm font-semibold text-gray-800">Booking Overview</p>
+                <p class="text-sm font-semibold text-gray-800">Ringkasan Booking</p>
             <p class="text-xs text-gray-400">{{ $todayLabel }}</p>
         </div>
 
         <button class="px-4 py-2 text-sm rounded-xl border border-gray-200 hover:border-[#1b3a1b] hover:text-[#1b3a1b] transition">
-            Export
+            Ekspor
         </button>
     </div>
 

@@ -3,7 +3,7 @@
 
         <h2 class="text-center mb-12"
             style="font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,7vw,3.8rem);color:#1c3a0c;">
-            Our Features
+            Fitur Kami
         </h2>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -42,7 +42,7 @@
                             </h3>
 
                             <p class="text-white/70 text-sm mt-2 leading-relaxed">
-                                Pilih jadwal, cek ketersediaan, dan booking lapangan tanpa ribet.
+                                Pilih jadwal, cek ketersediaan, dan pesan lapangan tanpa ribet.
                             </p>
 
                             <div class="w-0 h-[2px] bg-yellow-300 mt-4 
@@ -85,7 +85,7 @@
                         <div class="max-w-xs">
                             <h3 class="text-white text-2xl tracking-tight"
                                 style="font-family:'Bebas Neue',sans-serif;">
-                                Public Match
+                                Pertandingan Terbuka
                             </h3>
 
                             <p class="text-white/70 text-sm mt-2 leading-relaxed">

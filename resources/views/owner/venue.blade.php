@@ -1,6 +1,6 @@
 @extends('partials.app')
 
-@section('title', 'My Venue')
+@section('title', 'Venue Saya')
 
 @section('content')
 
@@ -214,8 +214,8 @@
         {{-- LIVE FIELD STATUS --}}
         <div class="bg-white rounded-2xl border border-gray-100">
             <div class="px-5 py-4 border-b flex items-center justify-between">
-                <h3 class="font-semibold text-gray-800 text-sm">Live Field Status</h3>
-                <span class="text-xs text-gray-400">Now</span>
+                <h3 class="font-semibold text-gray-800 text-sm">Status Lapangan Langsung</h3>
+                <span class="text-xs text-gray-400">Sekarang</span>
             </div>
             <div class="divide-y">
                 @forelse($activeVenue->fields as $field)
@@ -232,7 +232,7 @@
                         ->first();
                     $isInUse     = (bool) $activeBooking;
                     $statusClass = $isInUse ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-500';
-                    $label       = $isInUse ? 'In Use' : 'Available';
+                    $label       = $isInUse ? 'Digunakan' : 'Tersedia';
                 @endphp
                 <div class="px-5 py-4 flex items-center justify-between hover:bg-gray-50 transition">
                     <div>
@@ -243,7 +243,7 @@
                                 {{ \Carbon\Carbon::parse($activeBooking->start_time)->format('H:i') }} -
                                 {{ \Carbon\Carbon::parse($activeBooking->end_time)->format('H:i') }}
                             @else
-                                Available
+                                Tersedia
                             @endif
                         </p>
                     </div>
@@ -259,8 +259,8 @@
         {{-- PAYMENT OVERVIEW --}}
         <div class="bg-white rounded-2xl border border-gray-100 p-5">
             <div class="flex items-center justify-between mb-4">
-                <p class="text-sm font-semibold text-gray-800">Payment Overview</p>
-                <span class="text-xs text-gray-400">This month</span>
+                <p class="text-sm font-semibold text-gray-800">Ringkasan Pembayaran</p>
+                <span class="text-xs text-gray-400">Bulan ini</span>
             </div>
             @php
                 $venueFieldIds = $activeVenue->fields->pluck('id');
@@ -278,21 +278,21 @@
                 <div class="flex items-center justify-between p-3 rounded-xl bg-green-50/50 hover:bg-green-50 transition">
                     <div class="flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-green-500"></span>
-                        <span class="text-sm text-gray-600">Paid</span>
+                        <span class="text-sm text-gray-600">Lunas</span>
                     </div>
                     <span class="text-sm font-semibold text-green-600">{{ $paid }}</span>
                 </div>
                 <div class="flex items-center justify-between p-3 rounded-xl bg-yellow-50/50 hover:bg-yellow-50 transition">
                     <div class="flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
-                        <span class="text-sm text-gray-600">Pending Payment</span>
+                        <span class="text-sm text-gray-600">Menunggu Pembayaran</span>
                     </div>
                     <span class="text-sm font-semibold text-yellow-600">{{ $pending }}</span>
                 </div>
                 <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition">
                     <div class="flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-gray-400"></span>
-                        <span class="text-sm text-gray-600">Expired</span>
+                        <span class="text-sm text-gray-600">Kadaluarsa</span>
                     </div>
                     <span class="text-sm font-semibold text-gray-500">{{ $expired }}</span>
                 </div>

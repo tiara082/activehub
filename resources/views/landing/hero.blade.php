@@ -18,7 +18,7 @@
         </h1>
 
         <p class="text-white/70 text-sm md:text-base mt-4 tracking-wide max-w-md mx-auto leading-relaxed">
-            Booking lapangan, cari teman main, dan mulai olahraga
+            Pemesanan lapangan, cari teman main, dan mulai olahraga
             tanpa ribet dalam satu platform.
         </p>
     </div>
@@ -55,7 +55,7 @@
                             transition-all duration-200 ease-out
                             pointer-events-none group-hover:pointer-events-auto z-50">
 
-                    <button class="w-full text-left px-4 py-3 hover:bg-[#FEF9C3]">Public Match</button>
+                    <button class="w-full text-left px-4 py-3 hover:bg-[#FEF9C3]">Pertandingan Terbuka</button>
                     <button class="w-full text-left px-4 py-3 hover:bg-[#FEF9C3]">Sewa Lapangan</button>
 
                 </div>
@@ -136,7 +136,7 @@
 
     <!-- SCROLL -->
     <div class="absolute bottom-6 flex flex-col items-center text-white/40 text-xs tracking-wider">
-        <span>SCROLL</span>
+        <span>GULIR</span>
         <div class="w-px h-6 bg-white/30 mt-1 animate-pulse"></div>
     </div>
 

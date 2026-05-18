@@ -1,8 +1,8 @@
 {{-- resources/views/owner/pages/calendar.blade.php --}}
 @extends('partials.app')
 
-@section('title', 'Calendar Slot')
-@section('page-title', 'Calendar Slot')
+@section('title', 'Slot Kalender')
+@section('page-title', 'Slot Kalender')
 @section('page-subtitle', 'Atur ketersediaan dan blokir waktu lapangan')
 @section('cta-label', 'Block Tanggal')
 @section('cta-href', '#')
@@ -108,7 +108,7 @@
             </div>
 
             <button onclick="openAddBookingModal()" class="px-4 py-2 text-sm rounded-xl bg-[#0b3d0b] text-white hover:bg-[#163016] transition">
-                + Add Booking
+                + Tambah Booking
             </button>
 
         </div>
@@ -141,9 +141,9 @@
                     ];
 
                     $slotLabel = [
-                        'booked'  => 'Booked',
+                        'booked'  => 'Dipesan',
                         'free'    => 'Kosong',
-                        'active'  => 'Now',
+                        'active'  => 'Sekarang',
                         'pending' => 'Pending',
                         'blocked' => 'Blokir',
                     ];
@@ -181,7 +181,7 @@
 <div id="addBookingModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
         <div class="flex items-center justify-between mb-5">
-            <h3 class="font-semibold text-gray-900">Add Offline Booking</h3>
+            <h3 class="font-semibold text-gray-900">Tambah Booking Offline</h3>
             <button onclick="closeAddBookingModal()" class="text-gray-400 hover:text-gray-600 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-width="2" stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/>
@@ -279,12 +279,12 @@
                     <label class="flex items-center gap-2 text-sm cursor-pointer">
                         <input type="radio" name="action_type" value="block" checked class="text-[#0b3d0b] focus:ring-[#0b3d0b]" 
                             onchange="document.getElementById('manageBlockForm').action = '{{ route('owner.calendar.block') }}'">
-                        <span>Block</span>
+                        <span>Blokir</span>
                     </label>
                     <label class="flex items-center gap-2 text-sm cursor-pointer">
                         <input type="radio" name="action_type" value="unblock" class="text-[#0b3d0b] focus:ring-[#0b3d0b]"
                             onchange="document.getElementById('manageBlockForm').action = '{{ route('owner.calendar.unblock') }}'">
-                        <span>Unblock</span>
+                        <span>Buka Blokir</span>
                     </label>
                 </div>
             </div>

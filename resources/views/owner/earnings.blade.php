@@ -1,7 +1,7 @@
 @extends('partials.app')
 
-@section('title', 'Earnings')
-@section('page-title', 'Earnings')
+@section('title', 'Pendapatan')
+@section('page-title', 'Pendapatan')
 @section('page-subtitle', 'Rekap pendapatan dan penarikan dana')
 @section('cta-label', 'Tarik Dana')
 @section('cta-href', '#')
@@ -34,7 +34,7 @@
                 </div>
                 <div>
                     <p class="font-mono text-lg font-semibold text-green-400">{{ $growth >= 0 ? '+' : '' }}{{ number_format($growth, 1) }}%</p>
-                    <p class="text-white/30 text-[11px] mt-0.5">Growth</p>
+                    <p class="text-white/30 text-[11px] mt-0.5">Pertumbuhan</p>
                 </div>
             </div>
         </div>

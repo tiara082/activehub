@@ -53,7 +53,7 @@
                             </p>
 
                             <p class="text-yellow-300 text-sm font-semibold mt-1">
-                                25k / orang
+                                Rp 25.000 / orang
                             </p>
 
                             <div class="w-0 h-[2px] bg-yellow-300 mt-2 
@@ -104,7 +104,7 @@
                             </p>
 
                             <p class="text-yellow-300 text-sm font-semibold mt-1">
-                                20k / orang
+                                Rp 20.000 / orang
                             </p>
 
                             <div class="w-0 h-[2px] bg-yellow-300 mt-2 
@@ -153,7 +153,7 @@
                             </p>
 
                             <p class="text-yellow-300 text-sm font-semibold mt-1">
-                                15k / orang
+                                Rp 15.000 / orang
                             </p>
 
                             <div class="w-0 h-[2px] bg-yellow-300 mt-2 

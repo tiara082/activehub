@@ -108,7 +108,7 @@
             <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
             </svg>
-            <span>My Venue</span>
+            <span>Venue Saya</span>
         </a>
 
         <a href="{{ route('owner.bookings') }}"
@@ -128,7 +128,7 @@
                 <circle cx="12" cy="12" r="9" stroke-width="2"/>
                 <path stroke-width="2" d="M12 7v5l3 3"/>
             </svg>
-            <span>Calendar</span>
+            <span>Kalender</span>
         </a>
 
         <a href="{{ route('owner.earnings') }}"
@@ -137,7 +137,7 @@
             <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-width="2" d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
             </svg>
-            <span>Earnings</span>
+            <span>Pendapatan</span>
         </a>
 
         @endif
@@ -160,7 +160,7 @@
                 <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                 </svg>
-                Logout
+                Keluar
             </button>
         </form>
 
