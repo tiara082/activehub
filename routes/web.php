@@ -66,7 +66,10 @@ Route::middleware('auth')->group(function () {
         ->name('matches.store');
 });
 
-// DETAIL (WAJIB PALING BAWAH)
+// ==========================
+// PUBLIC MATCH
+// ==========================
+Route::get('/matches/nearby', [MatchController::class, 'nearbyAjax'])->name('matches.nearby');
 Route::get('/matches/{match}', [MatchController::class, 'show'])
     ->name('matches.show');
 
@@ -79,6 +82,7 @@ Route::get('/fields', [FieldController::class, 'index'])->name('fields.index');
 // VENUE
 // ==========================
 Route::get('/venues', [VenueController::class, 'index'])->name('venues.index');
+Route::get('/venues/nearby', [VenueController::class, 'nearbyAjax'])->name('venues.nearby');
 Route::get('/venues/{id}', [VenueController::class, 'show'])->name('venues.show');
 
 Route::middleware('auth')->group(function () {

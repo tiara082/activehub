@@ -24,7 +24,7 @@
         {{-- Cari Lapangan --}}
         <a href="{{ route('venues.index') }}"
            class="text-white/80 text-sm font-medium hover:text-white transition-colors">
-            Cari Lapangan
+            Cari Venue
 
         </a>
 

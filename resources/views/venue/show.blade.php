@@ -42,19 +42,16 @@
                             {{ $venue->description ?? 'Deskripsi venue belum tersedia.' }}
                         </p>
                     </div>
+
+                    @if($venue->rules)
                     <hr class="border-gray-200 mb-5">
-                    <div>
-                        <h2 class="text-lg font-bold text-gray-800 mb-2">Jenis Olahraga</h2>
-                        <div class="flex gap-2 flex-wrap">
-                            @if(is_array($venue->sport_type))
-                                @foreach($venue->sport_type as $sport)
-                                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">{{ $sport }}</span>
-                                @endforeach
-                            @elseif($venue->sport_type)
-                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">{{ $venue->sport_type }}</span>
-                            @endif
-                        </div>
+                    <div class="mb-5">
+                        <h2 class="text-lg font-bold text-gray-800 mb-2">Peraturan</h2>
+                        <div class="text-gray-600 leading-relaxed text-sm whitespace-pre-line">{{ $venue->rules }}</div>
                     </div>
+                    @endif
+
+
                 </div>
 
                 <!-- KANAN: Fasilitas + Map -->
@@ -72,12 +69,19 @@
                         </div>
                     </div>
                     <!-- Map -->
-                    <div class="rounded-xl overflow-hidden border border-gray-200 h-44 bg-gray-100 flex items-center justify-center">
-                        <div class="text-center text-gray-400">
-                            <i class="fas fa-map-marker-alt text-2xl mb-1 block text-[#1b3a1b]"></i>
-                            <p class="text-sm">Peta Lokasi</p>
-                            <p class="text-xs">{{ $venue->location ?? 'Malang, Jawa Timur' }}</p>
-                        </div>
+                    <div class="rounded-xl overflow-hidden border border-gray-200 h-44 bg-gray-100 flex items-center justify-center relative">
+                        @if($venue->latitude && $venue->longitude)
+                            <iframe width="100%" height="100%" frameborder="0" style="border:0; position:absolute; top:0; left:0;"
+                                src="https://maps.google.com/maps?q={{ $venue->latitude }},{{ $venue->longitude }}&z=15&output=embed"
+                                allowfullscreen>
+                            </iframe>
+                        @else
+                            <div class="text-center text-gray-400">
+                                <i class="fas fa-map-marker-alt text-2xl mb-1 block text-[#1b3a1b]"></i>
+                                <p class="text-sm">Peta Lokasi</p>
+                                <p class="text-xs">{{ $venue->location ?? 'Malang, Jawa Timur' }}</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -195,6 +199,378 @@
         </div>
     </div>
 
+    <!-- ULASAN SECTION (DUMMY DATA) -->
+    <div class="bg-white rounded-xl p-6 mb-8 shadow-sm border border-gray-100">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center">
+                    <i class="fas fa-play text-red-600 text-[10px] ml-0.5"></i>
+                </div>
+                <h2 class="text-xl font-bold text-gray-800">Ulasan</h2>
+            </div>
+            <button onclick="document.getElementById('allReviewsModal').classList.remove('hidden')" class="text-red-700 font-semibold text-sm hover:underline">Lihat semua ulasan</button>
+        </div>
+
+        <!-- Rating Summary -->
+        <div class="flex items-end gap-3 mb-8">
+            <div class="flex items-baseline">
+                <span class="text-4xl font-extrabold text-gray-900 leading-none">4.8</span>
+                <span class="text-gray-400 text-lg ml-1 font-medium">/5</span>
+            </div>
+            <div class="flex gap-1 text-yellow-400 text-xl mb-1">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+            </div>
+            <div class="text-gray-400 text-sm mb-1.5 ml-2 font-medium">
+                59 rating • 14 ulasan
+            </div>
+        </div>
+
+        <!-- Category Progress Bars -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <!-- Kebersihan -->
+            <div>
+                <div class="flex justify-between items-center mb-1.5">
+                    <span class="text-sm font-semibold text-gray-700">Kebersihan</span>
+                    <span class="text-sm font-bold text-gray-700">4.93</span>
+                </div>
+                <div class="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-red-800 h-1.5 rounded-full" style="width: 98%"></div>
+                </div>
+            </div>
+            
+            <!-- Kondisi Lapangan -->
+            <div>
+                <div class="flex justify-between items-center mb-1.5">
+                    <span class="text-sm font-semibold text-gray-700">Kondisi Lapangan</span>
+                    <span class="text-sm font-bold text-gray-700">4.69</span>
+                </div>
+                <div class="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-red-800 h-1.5 rounded-full" style="width: 94%"></div>
+                </div>
+            </div>
+
+            <!-- Komunikasi -->
+            <div>
+                <div class="flex justify-between items-center mb-1.5">
+                    <span class="text-sm font-semibold text-gray-700">Komunikasi</span>
+                    <span class="text-sm font-bold text-gray-700">4.81</span>
+                </div>
+                <div class="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-red-800 h-1.5 rounded-full" style="width: 96%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Cards Container (Horizontal Scroll) -->
+        <div class="relative group">
+            
+            <!-- Left/Right Nav Buttons -->
+            <button onclick="document.getElementById('reviewsContainer').scrollBy({left: -1098, behavior: 'smooth'})" class="absolute -left-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-white border border-gray-200 rounded-full shadow-sm flex items-center justify-center z-10 text-gray-500 hover:text-gray-800 hover:bg-gray-50 opacity-0 group-hover:opacity-100 transition-opacity">
+                <i class="fas fa-chevron-left text-xs"></i>
+            </button>
+            <button onclick="document.getElementById('reviewsContainer').scrollBy({left: 1098, behavior: 'smooth'})" class="absolute -right-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-white border border-gray-200 rounded-full shadow-sm flex items-center justify-center z-10 text-gray-500 hover:text-gray-800 hover:bg-gray-50 opacity-0 group-hover:opacity-100 transition-opacity">
+                <i class="fas fa-chevron-right text-xs"></i>
+            </button>
+
+            <div id="reviewsContainer" class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbar" style="scrollbar-width: none;">
+                <style>.hide-scrollbar::-webkit-scrollbar { display: none; }</style>
+
+                <!-- Card 1 -->
+                <div class="snap-start shrink-0 w-[350px] border border-gray-200 rounded-xl p-5 bg-white">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-pink-400 text-white font-bold flex items-center justify-center text-sm">
+                                AA
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-sm leading-tight">Ade Aria</h3>
+                                <p class="text-[11px] text-gray-400">Diulas: 15 April 2026</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 border border-gray-200 px-2 py-0.5 rounded text-xs font-bold text-gray-700">
+                            <i class="fas fa-star text-yellow-400 text-[10px]"></i> 5.0
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-700 mb-2 leading-relaxed">
+                        netnya mulai bolong2 di bagian tengah, kalo ujan deres bgt ada bocor sedikit di bagian kiri lapangan. mohon diperbaiki <a href="#" class="text-red-700 font-semibold hover:underline">Selengkapnya</a>
+                    </p>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-4">PADEL</p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="snap-start shrink-0 w-[350px] border border-gray-200 rounded-xl p-5 bg-white">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-purple-400 text-white font-bold flex items-center justify-center text-sm">
+                                SW
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-sm leading-tight">Satya Windy</h3>
+                                <p class="text-[11px] text-gray-400">Diulas: 15 April 2026</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 border border-gray-200 px-2 py-0.5 rounded text-xs font-bold text-gray-700">
+                            <i class="fas fa-star text-yellow-400 text-[10px]"></i> 4.3
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-700 mb-2 leading-relaxed">
+                        kipasnya kurang naik jadi panas banget nyelekep dan ada pembangunan bau cat banget
+                    </p>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-4">PADEL</p>
+                </div>
+                
+                <!-- Card 3 -->
+                <div class="snap-start shrink-0 w-[350px] border border-gray-200 rounded-xl p-5 bg-white">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-blue-500 text-white font-bold flex items-center justify-center text-sm">
+                                BR
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-sm leading-tight">Budi Raharjo</h3>
+                                <p class="text-[11px] text-gray-400">Diulas: 10 April 2026</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 border border-gray-200 px-2 py-0.5 rounded text-xs font-bold text-gray-700">
+                            <i class="fas fa-star text-yellow-400 text-[10px]"></i> 4.8
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-700 mb-2 leading-relaxed">
+                        Tempatnya bersih, parkir luas, dan rumput sintetisnya masih sangat empuk. Recomended banget buat main malam karena lampunya terang!
+                    </p>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-4">MINI SOCCER</p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="snap-start shrink-0 w-[350px] border border-gray-200 rounded-xl p-5 bg-white">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-green-500 text-white font-bold flex items-center justify-center text-sm">
+                                DF
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-sm leading-tight">Dinda Fauziah</h3>
+                                <p class="text-[11px] text-gray-400">Diulas: 2 April 2026</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 border border-gray-200 px-2 py-0.5 rounded text-xs font-bold text-gray-700">
+                            <i class="fas fa-star text-yellow-400 text-[10px]"></i> 5.0
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-700 mb-2 leading-relaxed">
+                        Sering main di sini sama teman kantor. Lapangannya terawat dan penjaganya ramah banget. Kamar mandinya juga lumayan bersih.
+                    </p>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-4">BASKET</p>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="snap-start shrink-0 w-[350px] border border-gray-200 rounded-xl p-5 bg-white">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-orange-400 text-white font-bold flex items-center justify-center text-sm">
+                                RA
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-sm leading-tight">Rizky Aditya</h3>
+                                <p class="text-[11px] text-gray-400">Diulas: 28 Maret 2026</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 border border-gray-200 px-2 py-0.5 rounded text-xs font-bold text-gray-700">
+                            <i class="fas fa-star text-yellow-400 text-[10px]"></i> 4.5
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-700 mb-2 leading-relaxed">
+                        Akses ke lokasi gampang banget karena di pinggir jalan raya. Cuma sayangnya ruang gantinya agak sempit pas lagi rame.
+                    </p>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-4">FUTSAL</p>
+                </div>
+                
+                <!-- Card 6 -->
+                <div class="snap-start shrink-0 w-[350px] border border-gray-200 rounded-xl p-5 bg-white">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-teal-500 text-white font-bold flex items-center justify-center text-sm">
+                                TS
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-sm leading-tight">Tania Safitri</h3>
+                                <p class="text-[11px] text-gray-400">Diulas: 20 Maret 2026</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 border border-gray-200 px-2 py-0.5 rounded text-xs font-bold text-gray-700">
+                            <i class="fas fa-star text-yellow-400 text-[10px]"></i> 4.9
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-700 mb-2 leading-relaxed">
+                        Fasilitas air minum gratisnya ngebantu banget! Harga sewa sepadan dengan kualitas lapangan yang didapatkan. Mantap.
+                    </p>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-4">BADMINTON</p>
+                </div>
+                
+                <!-- Card 7 -->
+                <div class="snap-start shrink-0 w-[350px] border border-gray-200 rounded-xl p-5 bg-white">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-red-400 text-white font-bold flex items-center justify-center text-sm">
+                                MK
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-sm leading-tight">Muhammad Kevin</h3>
+                                <p class="text-[11px] text-gray-400">Diulas: 15 Maret 2026</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 border border-gray-200 px-2 py-0.5 rounded text-xs font-bold text-gray-700">
+                            <i class="fas fa-star text-yellow-400 text-[10px]"></i> 4.2
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-700 mb-2 leading-relaxed">
+                        Suka banget main voli di sini. Bola yang disewakan masih baru dan jaringnya kencang. Pasti balik lagi minggu depan.
+                    </p>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-4">VOLI</p>
+                </div>
+                
+                <!-- Card 8 -->
+                <div class="snap-start shrink-0 w-[350px] border border-gray-200 rounded-xl p-5 bg-white">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-indigo-500 text-white font-bold flex items-center justify-center text-sm">
+                                LN
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-sm leading-tight">Lutfi Nugroho</h3>
+                                <p class="text-[11px] text-gray-400">Diulas: 10 Maret 2026</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 border border-gray-200 px-2 py-0.5 rounded text-xs font-bold text-gray-700">
+                            <i class="fas fa-star text-yellow-400 text-[10px]"></i> 4.7
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-700 mb-2 leading-relaxed">
+                        Lapangan tenisnya standar nasional, pantulan bola sangat konsisten. Pengelola juga fast response saat ditanya jadwal kosong.
+                    </p>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-4">TENIS</p>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Modal Semua Ulasan -->
+<div id="allReviewsModal" class="fixed inset-0 z-50 hidden bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl">
+        <!-- Modal Header -->
+        <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 rounded-t-xl">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800">Semua Ulasan</h2>
+                <p class="text-sm text-gray-500 mt-1"><i class="fas fa-star text-yellow-400 mr-1"></i> 4.8 dari 14 ulasan</p>
+            </div>
+            <button onclick="document.getElementById('allReviewsModal').classList.add('hidden')" class="w-8 h-8 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-500 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Modal Body (Scrollable List) -->
+        <div class="p-6 overflow-y-auto flex-1 space-y-4 bg-gray-50">
+            
+            <!-- List Card 1 -->
+            <div class="border border-gray-200 rounded-xl p-5 bg-white shadow-sm">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-pink-400 text-white font-bold flex items-center justify-center text-sm">
+                            AA
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-sm leading-tight">Ade Aria</h3>
+                            <p class="text-[11px] text-gray-400">Diulas: 15 April 2026</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1 border border-gray-200 px-2 py-0.5 rounded text-xs font-bold text-gray-700 bg-gray-50">
+                        <i class="fas fa-star text-yellow-400 text-[10px]"></i> 5.0
+                    </div>
+                </div>
+                <p class="text-sm text-gray-700 mb-2 leading-relaxed">
+                    netnya mulai bolong2 di bagian tengah, kalo ujan deres bgt ada bocor sedikit di bagian kiri lapangan. mohon diperbaiki <a href="#" class="text-red-700 font-semibold hover:underline">Selengkapnya</a>
+                </p>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-4">PADEL</p>
+            </div>
+
+            <!-- List Card 2 -->
+            <div class="border border-gray-200 rounded-xl p-5 bg-white shadow-sm">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-purple-400 text-white font-bold flex items-center justify-center text-sm">
+                            SW
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-sm leading-tight">Satya Windy</h3>
+                            <p class="text-[11px] text-gray-400">Diulas: 15 April 2026</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1 border border-gray-200 px-2 py-0.5 rounded text-xs font-bold text-gray-700 bg-gray-50">
+                        <i class="fas fa-star text-yellow-400 text-[10px]"></i> 4.3
+                    </div>
+                </div>
+                <p class="text-sm text-gray-700 mb-2 leading-relaxed">
+                    kipasnya kurang naik jadi panas banget nyelekep dan ada pembangunan bau cat banget
+                </p>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-4">PADEL</p>
+            </div>
+            
+            <!-- List Card 3 -->
+            <div class="border border-gray-200 rounded-xl p-5 bg-white shadow-sm">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-500 text-white font-bold flex items-center justify-center text-sm">
+                            BR
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-sm leading-tight">Budi Raharjo</h3>
+                            <p class="text-[11px] text-gray-400">Diulas: 10 April 2026</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1 border border-gray-200 px-2 py-0.5 rounded text-xs font-bold text-gray-700 bg-gray-50">
+                        <i class="fas fa-star text-yellow-400 text-[10px]"></i> 4.8
+                    </div>
+                </div>
+                <p class="text-sm text-gray-700 mb-2 leading-relaxed">
+                    Tempatnya bersih, parkir luas, dan rumput sintetisnya masih sangat empuk. Recomended banget buat main malam karena lampunya terang!
+                </p>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-4">MINI SOCCER</p>
+            </div>
+
+            <!-- List Card 4 (Extra dummy) -->
+            <div class="border border-gray-200 rounded-xl p-5 bg-white shadow-sm">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-green-500 text-white font-bold flex items-center justify-center text-sm">
+                            DF
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-sm leading-tight">Dinda Fauziah</h3>
+                            <p class="text-[11px] text-gray-400">Diulas: 2 April 2026</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1 border border-gray-200 px-2 py-0.5 rounded text-xs font-bold text-gray-700 bg-gray-50">
+                        <i class="fas fa-star text-yellow-400 text-[10px]"></i> 5.0
+                    </div>
+                </div>
+                <p class="text-sm text-gray-700 mb-2 leading-relaxed">
+                    Sering main di sini sama teman kantor. Lapangannya terawat dan penjaganya ramah banget. Kamar mandinya juga lumayan bersih.
+                </p>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-4">BASKET</p>
+            </div>
+
+        </div>
+    </div>
 </div>
 
 <script>

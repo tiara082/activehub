@@ -60,6 +60,7 @@ class VenueController extends Controller
             'close_time'  => 'nullable|date_format:H:i',
             'facilities'  => 'nullable|array',
             'facilities.*'=> 'string|max:100',
+            'rules'       => 'nullable|string',
 
             // fields
             'fields'                   => 'required|array|min:1',
@@ -82,6 +83,7 @@ class VenueController extends Controller
             'open_time'   => $data['open_time'] ?? '07:00',
             'close_time'  => $data['close_time'] ?? '22:00',
             'facilities'  => $data['facilities'] ?? [],
+            'rules'       => $data['rules'] ?? null,
         ]);
 
         // 2. create fields
@@ -112,6 +114,7 @@ class VenueController extends Controller
             'close_time'  => 'nullable|date_format:H:i',
             'facilities'  => 'nullable|array',
             'facilities.*'=> 'string|max:100',
+            'rules'       => 'nullable|string',
 
             'fields'                   => 'required|array|min:1',
             'fields.*.name'           => 'required|string|max:255',
@@ -133,6 +136,7 @@ class VenueController extends Controller
             'open_time'   => $data['open_time'] ?? '07:00',
             'close_time'  => $data['close_time'] ?? '22:00',
             'facilities'  => $data['facilities'] ?? [],
+            'rules'       => $data['rules'] ?? null,
         ]);
 
         // reset fields (simple & aman)

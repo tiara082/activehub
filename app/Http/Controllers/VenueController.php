@@ -10,10 +10,82 @@ use App\Models\Booking;
 class VenueController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $venues = Venue::with('fields')->withCount('fields')->get();
+        $query = Venue::with('fields')->withCount('fields');
+
+        // Filter: Pencarian nama venue
+        if ($request->filled('q')) {
+            $q = strtolower($request->q);
+            $query->whereRaw('LOWER(name) LIKE ?', ["%{$q}%"]);
+        }
+
+        // Filter: Jenis Olahraga
+        if ($request->filled('sport')) {
+            $sport = strtolower($request->sport);
+            $query->whereHas('fields', function ($qField) use ($sport) {
+                $qField->whereRaw('LOWER(sport_type) = ?', [$sport]);
+            });
+        }
+
+        // Filter: Kota atau Lokasi Berdasarkan Koordinat
+        if ($request->filled('lat') && $request->filled('lon')) {
+            $lat = $request->lat;
+            $lon = $request->lon;
+            $radius = 30; // Radius 30 KM
+
+            $query->whereNotNull('latitude')->whereNotNull('longitude')
+                  ->whereRaw(
+                      "(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) <= ?",
+                      [$lat, $lon, $lat, $radius]
+                  );
+        } elseif ($request->filled('city')) {
+            $cityStr = strtolower($request->city);
+            $cityParts = explode(',', $cityStr);
+            $city = trim($cityParts[0]);
+
+            $query->where(function($qV) use ($city) {
+                $qV->whereRaw('LOWER(city) LIKE ?', ["%{$city}%"])
+                   ->orWhereRaw('LOWER(location) LIKE ?', ["%{$city}%"]);
+            });
+        }
+
+        // Pengurutan (Sort)
+        $sort = $request->get('sort', 'terdekat');
+        if ($sort === 'terdekat') {
+            $query->latest();
+        } elseif ($sort === 'terlama') {
+            $query->oldest();
+        }
+
+        $venues = $query->get();
+
         return view('venue.index', compact('venues'));
+    }
+
+    public function nearbyAjax(Request $request)
+    {
+        $lat = $request->lat;
+        $lon = $request->lon;
+        
+        if (!$lat || !$lon) {
+            return response()->json(['html' => '']);
+        }
+
+        $radius = 30; // 30 KM
+
+        $distanceRaw = "(6371 * acos(least(1.0, cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))))";
+
+        $venues = Venue::with('fields')->withCount('fields')
+            ->select('*')
+            ->selectRaw("{$distanceRaw} AS distance", [$lat, $lon, $lat])
+            ->whereNotNull('latitude')->whereNotNull('longitude')
+            ->whereRaw("{$distanceRaw} <= ?", [$lat, $lon, $lat, $radius])
+            ->orderBy('distance', 'asc')
+            ->take(3)
+            ->get();
+
+        return view('venue.partials.nearby', compact('venues'));
     }
 
     public function show(Request $request, $id)
