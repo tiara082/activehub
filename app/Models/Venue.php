@@ -10,7 +10,7 @@ class Venue extends Model
 {
     protected $fillable = [
         'owner_id', 'name', 'sport_type', 'location', 'city', 
-        'latitude', 'longitude', 'description', 
+        'latitude', 'longitude', 'description', 'rules',
         'open_time', 'close_time', 'facilities', 'photo_url', 'price_per_hour'
     ];
 

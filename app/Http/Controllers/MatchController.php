@@ -9,19 +9,126 @@ use Illuminate\Support\Facades\Auth;
 class MatchController extends Controller
 {
     /** GET /matches — daftar public match (public) */
-   public function index()
+   public function index(Request $request)
     {
-        $matches = GameMatch::with([
+        $query = GameMatch::with([
             'booking.field.venue',
             'booking.timeSlot',
             'creator',
             'participants',
-        ])->latest()->get();
+        ])->whereHas('booking.timeSlot', function($q) {
+            $q->where('date', '>=', now()->format('Y-m-d'));
+        });
+
+        // Filter: Pencarian nama lapangan atau judul match
+        if ($request->filled('q')) {
+            $q = strtolower($request->q);
+            $query->where(function ($sq) use ($q) {
+                $sq->whereRaw('LOWER(title) LIKE ?', ["%{$q}%"])
+                   ->orWhereHas('booking.field', function ($qField) use ($q) {
+                       $qField->whereRaw('LOWER(name) LIKE ?', ["%{$q}%"])
+                              ->orWhereHas('venue', function ($qVenue) use ($q) {
+                                  $qVenue->whereRaw('LOWER(name) LIKE ?', ["%{$q}%"])
+                                         ->orWhereRaw('LOWER(city) LIKE ?', ["%{$q}%"])
+                                         ->orWhereRaw('LOWER(location) LIKE ?', ["%{$q}%"]);
+                              });
+                   });
+            });
+        }
+
+        // Filter: Jenis Olahraga
+        if ($request->filled('sport')) {
+            $sport = strtolower($request->sport);
+            $query->whereHas('booking.field', function ($qField) use ($sport) {
+                $qField->whereRaw('LOWER(sport_type) = ?', [$sport]);
+            });
+        }
+
+        // Filter: Kota atau Lokasi Berdasarkan Koordinat
+        if ($request->filled('lat') && $request->filled('lon')) {
+            $lat = $request->lat;
+            $lon = $request->lon;
+            $radius = 30; // Radius 30 KM
+
+            $query->whereHas('booking.field.venue', function ($qVenue) use ($lat, $lon, $radius) {
+                // Haversine formula
+                $qVenue->whereNotNull('latitude')->whereNotNull('longitude')
+                       ->whereRaw(
+                           "(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) <= ?",
+                           [$lat, $lon, $lat, $radius]
+                       );
+            });
+        } elseif ($request->filled('city')) {
+            // Jika pencarian text manual, ambil kata pertama sebelum koma agar lebih akurat (misal: "Malang, Jawa Timur" -> "Malang")
+            $cityStr = strtolower($request->city);
+            $cityParts = explode(',', $cityStr);
+            $city = trim($cityParts[0]);
+
+            $query->whereHas('booking.field.venue', function ($qVenue) use ($city) {
+                $qVenue->where(function($qV) use ($city) {
+                    $qV->whereRaw('LOWER(city) LIKE ?', ["%{$city}%"])
+                       ->orWhereRaw('LOWER(location) LIKE ?', ["%{$city}%"]);
+                });
+            });
+        }
+
+        // Pengurutan (Sort)
+        $sort = $request->get('sort', 'terbaru');
+        
+        if ($sort === 'terdekat') {
+            // Urutkan berdasarkan waktu paling dekat dengan sekarang (menggunakan subquery/join ke time_slots)
+            $query->join('bookings', 'matches.booking_id', '=', 'bookings.id')
+                  ->join('time_slots', 'bookings.time_slot_id', '=', 'time_slots.id')
+                  ->orderBy('time_slots.date', 'asc')
+                  ->orderBy('time_slots.start_time', 'asc')
+                  ->select('matches.*');
+        } elseif ($sort === 'terlama') {
+            $query->join('bookings', 'matches.booking_id', '=', 'bookings.id')
+                  ->join('time_slots', 'bookings.time_slot_id', '=', 'time_slots.id')
+                  ->orderBy('time_slots.date', 'desc')
+                  ->orderBy('time_slots.start_time', 'desc')
+                  ->select('matches.*');
+        } else {
+            // Default: terbaru dibuat
+            $query->latest('matches.created_at');
+        }
+
+        $matches = $query->get();
 
         return view('pubmatch.list', compact('matches'));
     }
 
     /** GET /matches/{match} — detail public match (public) */
+    public function nearbyAjax(Request $request)
+    {
+        $lat = $request->lat;
+        $lon = $request->lon;
+        
+        if (!$lat || !$lon) {
+            return response()->json(['html' => '']);
+        }
+
+        $radius = 30; // 30 KM
+
+        $distanceRaw = "(6371 * acos(least(1.0, cos(radians(?)) * cos(radians(venues.latitude)) * cos(radians(venues.longitude) - radians(?)) + sin(radians(?)) * sin(radians(venues.latitude)))))";
+
+        $matches = GameMatch::select('matches.*')
+            ->selectRaw("{$distanceRaw} AS distance", [$lat, $lon, $lat])
+            ->join('bookings', 'matches.booking_id', '=', 'bookings.id')
+            ->join('fields', 'bookings.field_id', '=', 'fields.id')
+            ->join('venues', 'fields.venue_id', '=', 'venues.id')
+            ->join('time_slots', 'bookings.time_slot_id', '=', 'time_slots.id')
+            ->whereNotNull('venues.latitude')->whereNotNull('venues.longitude')
+            ->whereRaw("{$distanceRaw} <= ?", [$lat, $lon, $lat, $radius])
+            ->where('time_slots.date', '>=', now()->format('Y-m-d'))
+            ->orderBy('distance', 'asc')
+            ->with(['booking.field.venue', 'booking.timeSlot', 'participants'])
+            ->take(3)
+            ->get();
+
+        return view('pubmatch.partials.nearby', compact('matches'));
+    }
+
     public function show(GameMatch $match)
     {
         $match->load([

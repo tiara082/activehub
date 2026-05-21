@@ -115,6 +115,12 @@
                     <textarea name="description" required class="w-full border rounded-lg p-3 h-28 mt-1 focus:ring-2 focus:ring-[#123012] outline-none" placeholder="Ceritakan tentang venue Anda..."></textarea>
                 </div>
 
+                <div>
+                    <label class="text-sm font-semibold text-gray-700">Peraturan Venue</label>
+                    <textarea name="rules" class="w-full border rounded-lg p-3 h-28 mt-1 focus:ring-2 focus:ring-[#123012] outline-none" placeholder="1. Wajib memakai sepatu&#10;2. Dilarang membawa makanan dari luar&#10;3. Dilarang merokok">{{ isset($venue) ? $venue->rules : '' }}</textarea>
+                    <p class="text-xs text-gray-400 mt-1 italic">Pisahkan setiap peraturan dengan baris baru (Enter).</p>
+                </div>
+
                 <div class="grid md:grid-cols-2 gap-4">
                     <div>
                         <label class="text-sm font-semibold text-gray-700">Kota <span class="req">*</span></label>
