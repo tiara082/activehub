@@ -56,7 +56,7 @@
             <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
             </svg>
-            <span>Activity</span>
+            <span>Aktivitas</span>
         </a>
 
         {{-- Discover --}}
@@ -67,7 +67,7 @@
                 <circle cx="11" cy="11" r="8" stroke-width="2"/>
                 <path stroke-width="2" d="M21 21l-4.3-4.3"/>
             </svg>
-            <span>Discover</span>
+            <span>Jelajahi</span>
         </a>
 
         {{-- Bookings --}}
@@ -78,7 +78,7 @@
                 <rect x="3" y="4" width="18" height="18" rx="2" stroke-width="2"/>
                 <path stroke-width="2" d="M16 2v4M8 2v4M3 10h18"/>
             </svg>
-            <span>Bookings</span>
+            <span>Pemesanan</span>
         </a>
 
         {{-- Matches --}}
@@ -93,7 +93,7 @@
                     d="M5 6h2a3 3 0 01-3 3V6zM19 6h-2a3 3 0 003 3V6z"/>
             </svg>
 
-            <span>Matches</span>
+            <span>Pertandingan</span>
         </a>
 
         @endif
@@ -108,7 +108,7 @@
             <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
             </svg>
-            <span>Venue Saya</span>
+            <span>venue saya</span>
         </a>
 
         <a href="{{ route('owner.bookings') }}"
@@ -118,7 +118,7 @@
                 <rect x="3" y="4" width="18" height="18" rx="2" stroke-width="2"/>
                 <path stroke-width="2" d="M16 2v4M8 2v4M3 10h18"/>
             </svg>
-            <span>Booking</span>
+            <span>Pemesanan</span>
         </a>
 
         <a href="{{ route('owner.calendar') }}"

@@ -50,14 +50,13 @@ class DashboardController extends Controller
                 ->count();
 
             // MATCH DIIKUTI
-            $joinedMatchData[] = Booking::where('user_id', $userId)
-                ->where('is_public_match', true)
+            $joinedMatchData[] = \App\Models\MatchParticipant::where('user_id', $userId)
                 ->whereYear('created_at', $date->year)
                 ->whereMonth('created_at', $date->month)
                 ->count();
 
             // MATCH DIBUAT
-            $createdMatchData[] = GameMatch::where('creator_id', $userId)
+            $createdMatchData[] = \App\Models\GameMatch::where('creator_id', $userId)
                 ->whereYear('created_at', $date->year)
                 ->whereMonth('created_at', $date->month)
                 ->count();

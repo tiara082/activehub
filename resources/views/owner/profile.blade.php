@@ -1,52 +1,73 @@
 {{-- resources/views/owner/pages/profile.blade.php --}}
 @extends('partials.app')
 
-@section('title', 'Profile Owner')
+@section('title', 'Profil Pemilik')
 
 @section('content')
+
 @php
     $user = auth()->user();
 @endphp
 
-<div class="space-y-6">
+<div class="space-y-8">
 
+    {{-- ================= PROFILE HEADER ================= --}}
+    <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
 
-   {{-- ===== PROFILE HEADER ===== --}}
-     <div class="bg-white rounded-2xl border border-gray-100 p-6 flex items-center justify-between">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
 
-        <div class="flex items-center gap-4">
+            {{-- LEFT --}}
+            <div class="flex items-center gap-4">
 
-            {{-- AVATAR --}}
-            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-[#0b3d0b] to-[#145214]
-                        flex items-center justify-center text-white text-xl font-semibold">
-                {{ strtoupper(substr($user->name,0,2)) }}
-            </div>
+                {{-- AVATAR --}}
+                <div class="w-16 h-16 rounded-full
+                            bg-gradient-to-br from-[#0b3d0b] to-[#145214]
+                            flex items-center justify-center
+                            text-white text-xl font-semibold shadow-sm">
 
-            {{-- INFO --}}
-            <div>
-                <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                    {{ $user->name }}
-                    <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                        {{ ucfirst($user->role) }}
-                    </span>
-                </h2>
+                    {{ strtoupper(substr($user->name,0,2)) }}
 
-                <div class="text-sm text-gray-500 mt-1 space-y-1">
-                    <p><i class="fas fa-envelope mr-1"></i> {{ $user->email }}</p>
-                    <p><i class="fas fa-phone mr-1"></i> {{ $user->phone }}</p>
                 </div>
+
+                {{-- INFO --}}
+                <div>
+
+                    <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+
+                        {{ $user->name }}
+
+                        <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                            {{ ucfirst($user->role) }}
+                        </span>
+
+                    </h2>
+
+                    <div class="text-sm text-gray-500 mt-2 space-y-1.5">
+
+                        <p class="flex items-center gap-2">
+                            <i class="fas fa-envelope text-gray-400"></i>
+                            {{ $user->email }}
+                        </p>
+
+                        <p class="flex items-center gap-2">
+                            <i class="fas fa-phone text-gray-400"></i>
+                            {{ $user->phone }}
+                        </p>
+
+                    </div>
+
+                </div>
+
             </div>
 
-    </div>
-
-        {{-- EDIT --}}
+            {{-- BUTTON EDIT --}}
             <div class="flex lg:justify-end">
 
                 <a href="{{ route('profile.edit') }}"
-                class="inline-flex items-center gap-2
-                        px-4 py-2 rounded-xl
-                        bg-[#0b3d0b] hover:bg-[#145214]
-                        text-white text-sm font-medium transition">
+                   class="inline-flex items-center gap-2
+                          px-5 py-2.5 rounded-xl
+                          bg-[#0b3d0b] hover:bg-[#145214]
+                          text-white text-sm font-medium transition">
 
                     <i class="fas fa-pen text-xs"></i>
 
@@ -60,139 +81,64 @@
 
     </div>
 
-    {{-- ===== STATS ===== --}}
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+    {{-- ================= STATISTIK ================= --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
 
         @php
         $stats = [
-            ['label'=>'Jumlah Venue','value'=>'3','icon'=>'building','color'=>'blue'],
-            ['label'=>'Jumlah Lapangan','value'=>'8','icon'=>'futbol','color'=>'green'],
-            ['label'=>'Total Booking','value'=>'45','icon'=>'calendar-check','color'=>'orange'],
-            ['label'=>'Total Revenue','value'=>'Rp 12.450.000','icon'=>'money-bill-wave','color'=>'yellow'],
+            [
+                'label' => 'Jumlah Venue',
+                'value' => '3',
+                'icon'  => 'building',
+                'color' => 'blue'
+            ],
+            [
+                'label' => 'Jumlah Lapangan',
+                'value' => '8',
+                'icon'  => 'futbol',
+                'color' => 'green'
+            ],
+            [
+                'label' => 'Total Pemesanan',
+                'value' => '45',
+                'icon'  => 'calendar-check',
+                'color' => 'orange'
+            ],
+            [
+                'label' => 'Total Pendapatan',
+                'value' => 'Rp 12.450.000',
+                'icon'  => 'money-bill-wave',
+                'color' => 'yellow'
+            ],
         ];
         @endphp
 
         @foreach($stats as $s)
-        <div class="bg-white border border-gray-100 rounded-xl p-5 flex items-center justify-between transition hover:bg-gray-50">
-            
+
+        <div class="bg-white border border-gray-100 rounded-2xl p-5
+                    flex items-center justify-between
+                    shadow-sm hover:shadow-md transition">
+
             <div>
-                <p class="text-sm text-gray-500">{{ $s['label'] }}</p>
-                <p class="text-xl font-semibold text-gray-900 mt-1">
+
+                <p class="text-sm text-gray-500">
+                    {{ $s['label'] }}
+                </p>
+
+                <p class="text-2xl font-bold text-gray-900 mt-2">
                     {{ $s['value'] }}
                 </p>
+
             </div>
 
             {{-- ICON --}}
-            <div class="w-10 h-10 rounded-lg bg-{{ $s['color'] }}-50 flex items-center justify-center">
-                <i class="fas fa-{{ $s['icon'] }} text-{{ $s['color'] }}-600 text-lg"></i>
-            </div>
+            <div class="w-12 h-12 rounded-xl
+                        bg-{{ $s['color'] }}-50
+                        flex items-center justify-center">
 
-        </div>
-        @endforeach
-
-    </div>
-
-    {{-- ===== VENUE LIST ===== --}}
-<div class="bg-white rounded-2xl border border-gray-100 p-5">
-
-    {{-- HEADER --}}
-    <div class="flex items-center justify-between mb-5">
-
-        <div>
-            <h3 class="font-semibold text-gray-900 flex items-center gap-2">
-                <i class="fas fa-map-marker-alt text-green-600 text-sm"></i>
-                Venue & Lapangan
-            </h3>
-
-            <p class="text-sm text-gray-500 mt-1">
-                Daftar venue yang Anda miliki
-            </p>
-        </div>
-
-        {{-- TAMBAH VENUE --}}
-        <button
-            class="inline-flex items-center gap-2
-                   px-4 py-2 rounded-xl
-                   bg-[#0b3d0b] hover:bg-[#145214]
-                   text-white text-sm font-medium transition">
-
-            <i class="fas fa-plus text-xs"></i>
-            Tambah Venue
-
-        </button>
-
-    </div>
-
-    @php
-    $venues = [
-        [
-            'name'=>'Active Arena',
-            'fields'=>['Lapangan A','Lapangan B','Lapangan Basket'],
-        ],
-        [
-            'name'=>'Sport Center',
-            'fields'=>['Badminton 1','Tennis Court'],
-        ],
-        [
-            'name'=>'Victory Futsal',
-            'fields'=>['Lapangan Utama'],
-        ],
-    ];
-    @endphp
-
-    {{-- LIST --}}
-    <div class="space-y-3">
-
-        @foreach($venues as $v)
-
-        <div class="border border-gray-100 rounded-xl p-4 hover:bg-gray-50 transition">
-
-            {{-- TOP --}}
-            <div class="flex items-center justify-between">
-
-                <div>
-
-                    {{-- VENUE --}}
-                    <p class="font-medium text-gray-900 flex items-center gap-2">
-                        {{ $v['name'] }}
-                    </p>
-
-                    <p class="text-xs text-gray-500 mt-1">
-                        {{ count($v['fields']) }} Lapangan
-                    </p>
-
-                </div>
-
-                {{-- ACTION --}}
-                <button
-                    class="w-8 h-8 rounded-lg
-                           hover:bg-gray-100
-                           text-gray-400 hover:text-gray-700
-                           transition">
-
-                    <i class="fas fa-chevron-right text-xs"></i>
-
-                </button>
-
-            </div>
-
-            {{-- FIELD --}}
-            <div class="flex flex-wrap gap-2 mt-4">
-
-                @foreach($v['fields'] as $field)
-
-                <div
-                    class="inline-flex items-center gap-2
-                           px-3 py-1.5 rounded-lg
-                           bg-gray-100 text-gray-700 text-xs">
-
-                    <i class="fas fa-futbol text-green-700 text-[10px]"></i>
-
-                    {{ $field }}
-
-                </div>
-
-                @endforeach
+                <i class="fas fa-{{ $s['icon'] }}
+                          text-{{ $s['color'] }}-600 text-lg"></i>
 
             </div>
 
@@ -202,17 +148,134 @@
 
     </div>
 
-</div>
 
-    {{-- ================= CHANGE PASSWORD ================= --}}
-    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+    {{-- ================= DAFTAR VENUE ================= --}}
+    <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+
+        {{-- HEADER --}}
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+
+            <div>
+
+                <h3 class="font-semibold text-gray-900 flex items-center gap-2 text-lg">
+
+                    <i class="fas fa-map-marker-alt text-green-600 text-sm"></i>
+
+                    Venue & Lapangan
+
+                </h3>
+
+                <p class="text-sm text-gray-500 mt-1">
+                    Daftar venue dan lapangan yang Anda kelola
+                </p>
+
+            </div>
+
+            {{-- BUTTON --}}
+            <button
+                class="inline-flex items-center gap-2
+                       px-4 py-2.5 rounded-xl
+                       bg-[#0b3d0b] hover:bg-[#145214]
+                       text-white text-sm font-medium transition">
+
+                <i class="fas fa-plus text-xs"></i>
+
+                Tambah Venue
+
+            </button>
+
+        </div>
+
+        @php
+        $venues = [
+            [
+                'name'=>'Active Arena',
+                'fields'=>['Lapangan A','Lapangan B','Lapangan Basket'],
+            ],
+            [
+                'name'=>'Sport Center',
+                'fields'=>['Badminton 1','Lapangan Tenis'],
+            ],
+            [
+                'name'=>'Victory Futsal',
+                'fields'=>['Lapangan Utama'],
+            ],
+        ];
+        @endphp
+
+        {{-- LIST --}}
+        <div class="space-y-4">
+
+            @foreach($venues as $v)
+
+            <div class="border border-gray-100 rounded-2xl p-5 hover:bg-gray-50 transition">
+
+                {{-- TOP --}}
+                <div class="flex items-start justify-between gap-4">
+
+                    <div>
+
+                        <p class="font-semibold text-gray-900 text-base">
+                            {{ $v['name'] }}
+                        </p>
+
+                        <p class="text-sm text-gray-500 mt-1">
+                            {{ count($v['fields']) }} Lapangan
+                        </p>
+
+                    </div>
+
+                    {{-- ACTION --}}
+                    <button
+                        class="w-9 h-9 rounded-xl
+                               hover:bg-gray-100
+                               text-gray-400 hover:text-gray-700
+                               transition">
+
+                        <i class="fas fa-chevron-right text-xs"></i>
+
+                    </button>
+
+                </div>
+
+                {{-- FIELD --}}
+                <div class="flex flex-wrap gap-2 mt-5">
+
+                    @foreach($v['fields'] as $field)
+
+                    <div
+                        class="inline-flex items-center gap-2
+                               px-3 py-2 rounded-xl
+                               bg-gray-100 text-gray-700 text-xs">
+
+                        <i class="fas fa-futbol text-green-700 text-[10px]"></i>
+
+                        {{ $field }}
+
+                    </div>
+
+                    @endforeach
+
+                </div>
+
+            </div>
+
+            @endforeach
+
+        </div>
+
+    </div>
+
+
+    {{-- ================= GANTI PASSWORD ================= --}}
+    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
 
         {{-- HEADER --}}
         <div class="px-6 py-5 border-b border-gray-100">
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-4">
 
-                <div class="w-11 h-11 rounded-xl
+                <div class="w-12 h-12 rounded-xl
                             bg-yellow-50
                             flex items-center justify-center">
 
@@ -222,12 +285,12 @@
 
                 <div>
 
-                    <h3 class="font-semibold text-gray-900">
-                        Ganti Password
+                    <h3 class="font-semibold text-gray-900 text-lg">
+                        Ubah Kata Sandi
                     </h3>
 
-                    <p class="text-sm text-gray-500">
-                        Pastikan password baru lebih aman dan mudah diingat
+                    <p class="text-sm text-gray-500 mt-1">
+                        Gunakan kata sandi yang aman dan mudah Anda ingat
                     </p>
 
                 </div>
@@ -244,13 +307,13 @@
                 @csrf
                 @method('PUT')
 
-                <div class="grid md:grid-cols-3 gap-4">
+                <div class="grid md:grid-cols-3 gap-5">
 
-                    {{-- OLD --}}
+                    {{-- PASSWORD LAMA --}}
                     <div>
 
                         <label class="text-sm font-medium text-gray-700 mb-2 block">
-                            Password Lama
+                            Kata Sandi Lama
                         </label>
 
                         <input
@@ -265,11 +328,11 @@
 
                     </div>
 
-                    {{-- NEW --}}
+                    {{-- PASSWORD BARU --}}
                     <div>
 
                         <label class="text-sm font-medium text-gray-700 mb-2 block">
-                            Password Baru
+                            Kata Sandi Baru
                         </label>
 
                         <input
@@ -284,11 +347,11 @@
 
                     </div>
 
-                    {{-- CONFIRM --}}
+                    {{-- KONFIRMASI --}}
                     <div>
 
                         <label class="text-sm font-medium text-gray-700 mb-2 block">
-                            Konfirmasi Password
+                            Konfirmasi Kata Sandi
                         </label>
 
                         <input
@@ -306,16 +369,16 @@
                 </div>
 
                 {{-- BUTTON --}}
-                <div class="flex justify-end mt-6">
+                <div class="flex justify-end mt-7">
 
                     <button
                         type="submit"
                         class="inline-flex items-center gap-2
-                               px-4 py-2 rounded-xl
+                               px-5 py-2.5 rounded-xl
                                bg-[#0b3d0b] hover:bg-[#145214]
                                text-white text-sm font-medium transition">
 
-                        Simpan Password
+                        Simpan Perubahan
 
                     </button>
 
@@ -328,42 +391,49 @@
     </div>
 
 
-     {{-- ===== LOGOUT ===== --}}
-<a href="{{ route('logout') }}"
-   class="bg-white rounded-2xl border border-gray-100 p-5
-          flex items-center justify-between">
+    {{-- ================= LOGOUT ================= --}}
+    <a href="{{ route('logout') }}"
+       class="bg-white rounded-2xl border border-gray-100 p-5
+              flex items-center justify-between
+              hover:border-red-100 hover:bg-red-50/30 transition">
 
-    <div class="flex items-center gap-3">
+        <div class="flex items-center gap-4">
 
-        {{-- ICON --}}
-        <div class="w-11 h-11 rounded-xl
-                    bg-red-50
-                    flex items-center justify-center hover:bg-red-100 transition group">
+            {{-- ICON --}}
+            <div class="w-12 h-12 rounded-xl
+                        bg-red-50
+                        flex items-center justify-center">
 
-            <i class="fas fa-sign-out-alt text-red-500"></i>
+                <i class="fas fa-sign-out-alt text-red-500"></i>
+
+            </div>
+
+            {{-- TEXT --}}
+            <div>
+
+                <p class="font-medium text-gray-800">
+                    Keluar dari Akun
+                </p>
+
+                <p class="text-sm text-gray-500 mt-1">
+                    Anda akan keluar dari akun ActiveHub
+                </p>
+
+            </div>
 
         </div>
 
-        {{-- TEXT --}}
-        <div>
+        <i class="fas fa-chevron-right text-gray-300"></i>
 
-            <p class="font-medium text-gray-800 group-hover:text-red-600 transition">
-                Keluar
-            </p>
+    </a>
 
-            <p class="text-sm text-gray-500">
-                Keluar dari akun ActiveHub Anda
-            </p>
+</div>
 
-        </div>
 
-    </div>
-
-</a>
-
-{{-- Tambahan CSS untuk Font Awesome --}}
+{{-- FONT AWESOME --}}
 @push('styles')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 @endpush
 
 @endsection

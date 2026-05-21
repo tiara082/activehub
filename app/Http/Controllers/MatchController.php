@@ -82,12 +82,14 @@ class MatchController extends Controller
             ]);
         }
 
-        return redirect()->route('matches.index')->with('success', 'Match berhasil dibuat!');
+        return redirect()
+            ->route('matches.index')
+            ->with('success', 'Match berhasil dibuat!');
     }
 
         public function myMatches(Request $request)
     {
-        $active = $request->tab ?? 'open';
+        $active = $request->tab ?? 'all';
 
         $matches = GameMatch::with([
                 'booking.field.venue',
@@ -97,7 +99,6 @@ class MatchController extends Controller
             ->where(function ($q) {
 
                 $q->where('creator_id', auth()->id())
-
                 ->orWhereHas('participants', function ($qq) {
 
                         $qq->where('user_id', auth()->id());
@@ -112,6 +113,10 @@ class MatchController extends Controller
         // FILTER
         $filteredMatches = $matches->filter(function ($match) use ($active) {
 
+            if ($active === 'all') {
+                return true;
+            }
+
             return $match->status === $active;
 
         });
@@ -120,8 +125,13 @@ class MatchController extends Controller
         // TAB COUNT
         $tabs = [
 
+            'all' => [
+                'label' => 'Semua',
+                'count' => $matches->count(),
+            ],
+
             'open' => [
-                'label' => 'Open',
+                'label' => 'open',
                 'count' => $matches->where('status', 'open')->count(),
             ],
 

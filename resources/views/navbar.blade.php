@@ -18,7 +18,7 @@
         {{-- Public Match --}}
         <a href="{{ route('matches.index') }}"
            class="text-white/80 text-sm font-medium hover:text-white transition-colors">
-            Pertandingan Terbuka
+            Pertandingan
         </a>
 
         {{-- Cari Lapangan --}}

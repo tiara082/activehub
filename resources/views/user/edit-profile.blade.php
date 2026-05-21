@@ -29,7 +29,7 @@
                 <div>
 
                     <h3 class="font-semibold text-gray-900 text-lg">
-                        Informasi Profile
+                        Informasi Profil
                     </h3>
 
                     <p class="text-sm text-gray-500">

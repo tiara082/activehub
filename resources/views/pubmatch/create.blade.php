@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buat Public Match</title>
+    <title>Buat Pertandingan</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -18,7 +18,7 @@
 <div class="bg-[#123012] py-12 text-center shadow-md">
     <h1 class="text-white tracking-widest"
         style="font-family:'Bebas Neue'; font-size:clamp(2.2rem,6vw,3.6rem); letter-spacing:6px;">
-        BUAT PUBLIC MATCH
+        BUAT PERTANDINGAN
     </h1>
 </div>
 
@@ -37,7 +37,7 @@
         <button type="button" id="tab-match"
             onclick="switchTab('match')"
             class="py-3 text-white font-semibold transition bg-gray-400">
-            Detail Match
+            Detail Pertandingan
         </button>
     </div>
 
@@ -114,7 +114,7 @@
                 <div class="flex justify-end pt-6">
                     <button type="button" onclick="switchTab('match')"
                         class="bg-[#123012] text-white px-6 py-2.5 rounded-lg text-sm font-semibold shadow-sm hover:shadow-md hover:scale-[1.01] transition">
-                        Next →
+                        Lanjut →
                     </button>
                 </div>
 
@@ -140,7 +140,7 @@
 
                 <div>
                     <label class="text-sm font-medium">
-                        Title <span class="text-red-500">*</span>
+                        Judul Pertandingan <span class="text-red-500">*</span>
                     </label>
                     <input name="title" required
                         placeholder="Contoh: Futsal Santai Minggu Sore"
@@ -231,7 +231,7 @@
                 <div class="flex justify-between pt-6">
                     <button type="button" onclick="switchTab('lapangan')"
                         class="text-gray-500 hover:text-black text-sm font-medium transition">
-                        ← Back
+                        ← Kembali
                     </button>
 
                     <button type="submit" id="publishBtn"

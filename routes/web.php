@@ -74,7 +74,6 @@ Route::get('/matches/{match}', [MatchController::class, 'show'])
 // FIELD
 // ==========================
 Route::get('/fields', [FieldController::class, 'index'])->name('fields.index');
-Route::get('/fields/{field}', [FieldController::class, 'show'])->name('fields.show');
 
 // ==========================
 // VENUE
@@ -93,10 +92,6 @@ Route::middleware('auth')->group(function () {
 Route::get('/venues/{id}/fields', function ($id) {
     return view('field.index', compact('id'));
 })->name('venues.fields');
-
-Route::get('/fields/{id}', function ($id) {
-    return view('field.detail', compact('id'));
-})->name('fields.detail');
 
 // Booking dari venue (create booking lalu redirect ke create match)
 Route::post('/venues/book', function (\Illuminate\Http\Request $request) {
@@ -156,7 +151,8 @@ Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
 
     Route::get('/discover', [\App\Http\Controllers\User\DiscoverController::class, 'index'])
         ->name('discover');
-    Route::get('/my-match', fn () => view('user.my-match'))->name('my-match');
+    Route::get('/my-match', [MatchController::class, 'myMatches'])
+    ->name('my-match');
     Route::get('/bookings', [\App\Http\Controllers\User\BookingController::class, 'index'])
         ->name('bookings');
     Route::get('/profile', fn () => view('user.profile'))->name('profile');

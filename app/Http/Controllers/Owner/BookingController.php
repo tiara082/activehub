@@ -67,7 +67,7 @@ class BookingController extends Controller
             'Berlangsung' => 0,
             'Selesai' => 0,
             'Dibatalkan' => 0,
-            'Pending' => 0,
+            'Menunggu' => 0,
             'Blokir' => 0
         ];
 
@@ -78,7 +78,7 @@ class BookingController extends Controller
             if ($b->status === 'cancelled') {
                 $statusStr = 'Dibatalkan';
             } elseif ($b->status === 'pending') {
-                $statusStr = 'Pending';
+                $statusStr = 'Menunggu';
             } elseif ($b->status === 'completed') {
                 $statusStr = 'Selesai';
             } elseif ($b->status === 'blocked') {
@@ -138,7 +138,7 @@ class BookingController extends Controller
             ['key' => 'Berlangsung', 'label' => 'Berlangsung', 'count' => $counts['Berlangsung']],
             ['key' => 'Selesai', 'label' => 'Selesai', 'count' => $counts['Selesai']],
             ['key' => 'Dibatalkan', 'label' => 'Dibatalkan', 'count' => $counts['Dibatalkan']],
-            ['key' => 'Pending', 'label' => 'Pending', 'count' => $counts['Pending']],
+            ['key' => 'Menunggu', 'label' => 'Menunggu', 'count' => $counts['Menunggu']],
             ['key' => 'Blokir', 'label' => 'Blokir', 'count' => $counts['Blokir']],
         ];
 
@@ -195,7 +195,7 @@ class BookingController extends Controller
             ['key' => 'Berlangsung', 'label' => 'Berlangsung', 'count' => 0],
             ['key' => 'Selesai', 'label' => 'Selesai', 'count' => 0],
             ['key' => 'Dibatalkan', 'label' => 'Dibatalkan', 'count' => 0],
-            ['key' => 'Pending', 'label' => 'Pending', 'count' => 0],
+            ['key' => 'Menunggu', 'label' => 'Menunggu', 'count' => 0],
             ['key' => 'Blokir', 'label' => 'Blokir', 'count' => 0],
         ];
     }

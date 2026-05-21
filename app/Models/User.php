@@ -63,7 +63,7 @@ class User extends Authenticatable
         return $this->hasMany(Booking::class);
     }
 
-    public function createdMatches(): HasMany
+        public function createdMatches()
     {
         return $this->hasMany(GameMatch::class, 'creator_id');
     }

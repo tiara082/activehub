@@ -96,7 +96,7 @@
                     <div style="font-family:'Bebas Neue',sans-serif;"
                          class="leading-none text-right">
                         <div class="text-4xl md:text-6xl transition group-hover:translate-x-1">
-                            LEARN
+                            PELAJARI 
                         </div>
                         <div class="text-4xl md:text-6xl transition group-hover:translate-x-1">
                             LEBIH LANJUT

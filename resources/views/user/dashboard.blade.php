@@ -1,6 +1,6 @@
 @extends('partials.app')
 
-@section('title', 'Dashboard User')
+@section('title', 'Dashboard Pengguna')
 
 @section('content')
 
@@ -26,12 +26,12 @@
             {{-- STATS --}}
             <div class="grid grid-cols-2 gap-4">
 
-                {{-- TOTAL BOOKING --}}
+                {{-- TOTAL PESANAN --}}
                 <div class="bg-gray-100 p-5 rounded-xl flex justify-between items-center">
 
                     <div>
                         <p class="text-xs text-gray-500">
-                            Total Booking
+                            Total Pesanan
                         </p>
 
                         <p class="text-lg font-semibold text-gray-800">
@@ -45,13 +45,12 @@
 
                 </div>
 
-
-                {{-- MATCH BOOKING --}}
+                {{-- PERTANDINGAN PUBLIK --}}
                 <div class="bg-gray-100 p-5 rounded-xl flex justify-between items-center">
 
                     <div>
                         <p class="text-xs text-gray-500">
-                            Match Booking
+                            Total Pertandingan
                         </p>
 
                         <p class="text-lg font-semibold text-gray-800">
@@ -67,7 +66,6 @@
 
             </div>
 
-
             {{-- CHART --}}
             <div class="bg-white rounded-2xl border p-6 shadow-sm">
 
@@ -75,7 +73,7 @@
 
                     <div>
                         <h3 class="font-semibold text-gray-800">
-                            Aktivitas User
+                            Aktivitas Pengguna
                         </h3>
 
                         <p class="text-xs text-gray-400 mt-1">
@@ -93,20 +91,19 @@
 
         </div>
 
-
         {{-- ================= RIGHT ================= --}}
         <div class="space-y-6">
 
-            {{-- ===== QUICK ACTION ===== --}}
+            {{-- ===== AKSI CEPAT ===== --}}
             <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
 
                 <h3 class="font-semibold text-gray-800 mb-5">
-                    Quick Action
+                    Aksi Cepat
                 </h3>
 
                 <div class="grid grid-cols-3 gap-4 text-center">
 
-                    {{-- Cari --}}
+                    {{-- CARI LAPANGAN --}}
                     <a href="{{ route('venues.index') }}"
                        class="flex flex-col items-center gap-2 group">
 
@@ -119,13 +116,12 @@
                         </div>
 
                         <p class="text-xs text-gray-600">
-                            Cari Lapangan
+                            Temukan Lapangan
                         </p>
 
                     </a>
 
-
-                    {{-- Join --}}
+                    {{-- CARI PERTANDINGAN --}}
                     <a href="{{ route('matches.index') }}"
                        class="flex flex-col items-center gap-2 group">
 
@@ -138,13 +134,12 @@
                         </div>
 
                         <p class="text-xs text-gray-600">
-                            Join Match
+                            Cari Pertandingan
                         </p>
 
                     </a>
 
-
-                    {{-- Buat Match --}}
+                    {{-- BUAT PERTANDINGAN --}}
                     <a href="{{ $hasBooking
                                 ? route('matches.create')
                                 : route('venues.index') }}"
@@ -162,12 +157,12 @@
                         <div class="text-center">
 
                             <p class="text-xs text-gray-600">
-                                Buat Match
+                                Buat Pertandingan
                             </p>
 
                             @if(!$hasBooking)
                             <p class="text-[10px] text-gray-400 mt-1 leading-tight">
-                                Booking lapangan dulu
+                                Pesan lapangan terlebih dahulu
                             </p>
                             @endif
 
@@ -179,7 +174,6 @@
 
             </div>
 
-
             {{-- ===== AKTIVITAS TERDEKAT ===== --}}
             <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
 
@@ -189,55 +183,114 @@
 
                 <div class="space-y-4">
 
-                    {{-- BOOKING --}}
+                    {{-- PESANAN --}}
                     @if($nearestBooking)
                     <div class="border border-gray-100 rounded-xl p-3 bg-white hover:bg-gray-50 transition shadow-sm">
+
                         <div class="flex justify-between items-start mb-1">
-                            <p class="text-[10px] font-bold text-green-600 uppercase tracking-wider">Booking Terdekat</p>
+
+                            <p class="text-[10px] font-bold text-green-600 uppercase tracking-wider">
+                                Pesanan Terdekat
+                            </p>
+
                             @php
                                 $status = $nearestBooking->status;
                                 $statusLabel = 'Terjadwal';
                                 $statusColor = 'bg-blue-50 text-blue-600';
+
                                 if($status == 'confirmed' || $status == 'paid') {
-                                    $statusLabel = 'Confirmed';
+                                    $statusLabel = 'Dikonfirmasi';
                                     $statusColor = 'bg-green-50 text-green-600';
                                 }
                             @endphp
-                            <span class="text-[10px] px-2 py-0.5 rounded-full {{ $statusColor }}">{{ $statusLabel }}</span>
+
+                            <span class="text-[10px] px-2 py-0.5 rounded-full {{ $statusColor }}">
+                                {{ $statusLabel }}
+                            </span>
+
                         </div>
-                        <p class="text-sm font-semibold text-gray-800">{{ $nearestBooking->field->venue->name ?? 'Venue' }}</p>
-                        <p class="text-xs text-gray-500">{{ $nearestBooking->field->name ?? 'Lapangan' }}</p>
+
+                        <p class="text-sm font-semibold text-gray-800">
+                            {{ $nearestBooking->field->venue->name ?? 'Venue' }}
+                        </p>
+
+                        <p class="text-xs text-gray-500">
+                            {{ $nearestBooking->field->name ?? 'Lapangan' }}
+                        </p>
+
                         <p class="text-[11px] text-gray-400 mt-2 flex items-center gap-1.5">
                             <i class="far fa-calendar text-gray-400"></i>
-                            {{ $nearestBooking->timeSlot && $nearestBooking->timeSlot->date ? $nearestBooking->timeSlot->date->format('d M Y') : '-' }}
+
+                            {{ $nearestBooking->timeSlot && $nearestBooking->timeSlot->date
+                                ? $nearestBooking->timeSlot->date->format('d M Y')
+                                : '-' }}
                         </p>
+
                         <p class="text-[11px] text-gray-400 mt-1 flex items-center gap-1.5">
                             <i class="far fa-clock text-gray-400"></i>
-                            {{ $nearestBooking->timeSlot ? date('H:i', strtotime($nearestBooking->timeSlot->start_time)) : '-' }} - {{ $nearestBooking->timeSlot ? date('H:i', strtotime($nearestBooking->timeSlot->end_time)) : '-' }}
+
+                            {{ $nearestBooking->timeSlot
+                                ? date('H:i', strtotime($nearestBooking->timeSlot->start_time))
+                                : '-' }}
+
+                            -
+
+                            {{ $nearestBooking->timeSlot
+                                ? date('H:i', strtotime($nearestBooking->timeSlot->end_time))
+                                : '-' }}
                         </p>
+
                     </div>
                     @endif
 
-                    {{-- MATCH --}}
+                    {{-- PERTANDINGAN --}}
                     @if($nearestMatch)
                     <div class="border border-gray-100 rounded-xl p-3 bg-white hover:bg-gray-50 transition shadow-sm">
+
                         <div class="flex justify-between items-start mb-1">
-                            <p class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Match Terdekat</p>
-                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">Joined</span>
+
+                            <p class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">
+                                Pertandingan Terdekat
+                            </p>
+
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">
+                                Bergabung
+                            </span>
+
                         </div>
-                        <p class="text-sm font-semibold text-gray-800">{{ $nearestMatch->field->venue->name ?? 'Venue' }}</p>
-                        <p class="text-xs text-gray-500">{{ $nearestMatch->field->name ?? 'Lapangan' }}</p>
+
+                        <p class="text-sm font-semibold text-gray-800">
+                            {{ $nearestMatch->field->venue->name ?? 'Venue' }}
+                        </p>
+
+                        <p class="text-xs text-gray-500">
+                            {{ $nearestMatch->field->name ?? 'Lapangan' }}
+                        </p>
+
                         <p class="text-[11px] text-gray-400 mt-2 flex items-center gap-1.5">
                             <i class="far fa-calendar text-gray-400"></i>
-                            {{ $nearestMatch->timeSlot && $nearestMatch->timeSlot->date ? $nearestMatch->timeSlot->date->format('d M Y') : '-' }}
+
+                            {{ $nearestMatch->timeSlot && $nearestMatch->timeSlot->date
+                                ? $nearestMatch->timeSlot->date->format('d M Y')
+                                : '-' }}
                         </p>
+
                         <p class="text-[11px] text-gray-400 mt-1 flex items-center gap-1.5">
                             <i class="far fa-clock text-gray-400"></i>
-                            {{ $nearestMatch->timeSlot ? date('H:i', strtotime($nearestMatch->timeSlot->start_time)) : '-' }} - {{ $nearestMatch->timeSlot ? date('H:i', strtotime($nearestMatch->timeSlot->end_time)) : '-' }}
+
+                            {{ $nearestMatch->timeSlot
+                                ? date('H:i', strtotime($nearestMatch->timeSlot->start_time))
+                                : '-' }}
+
+                            -
+
+                            {{ $nearestMatch->timeSlot
+                                ? date('H:i', strtotime($nearestMatch->timeSlot->end_time))
+                                : '-' }}
                         </p>
+
                     </div>
                     @endif
-
 
                     {{-- EMPTY --}}
                     @if(!$nearestBooking && !$nearestMatch)
@@ -258,7 +311,6 @@
 
 @endsection
 
-
 {{-- ================= SCRIPT ================= --}}
 @push('scripts')
 
@@ -276,7 +328,7 @@ new Chart(ctx, {
         datasets: [
 
            {
-                label: 'Total Booking',
+                label: 'Total Pesanan',
                 data: @json($bookingData),
                 backgroundColor: '#C8E6C9',
                 hoverBackgroundColor: '#C8E6C9',
@@ -284,7 +336,7 @@ new Chart(ctx, {
             },
 
             {
-                label: 'Match Diikuti',
+                label: 'Pertandingan Diikuti',
                 data: @json($joinedMatchData),
                 backgroundColor: '#81C784',
                 hoverBackgroundColor: '#81C784',
@@ -292,7 +344,7 @@ new Chart(ctx, {
             },
 
             {
-                label: 'Match Dibuat',
+                label: 'Pertandingan Dibuat',
                 data: @json($createdMatchData),
                 backgroundColor: '#2E7D32',
                 hoverBackgroundColor: '#2E7D32',
@@ -353,7 +405,6 @@ new Chart(ctx, {
 });
 </script>
 @endpush
-
 
 {{-- FONT AWESOME --}}
 @push('styles')

@@ -33,7 +33,7 @@
         <a href="{{ route('matches.create') }}"
         class="inline-block bg-yellow-400 hover:bg-yellow-400
                 text-black font-bold px-12 py-4 rounded-xl transition">
-            Buat Public Match
+            Buat Pertandingan
         </a>
     </section>
 

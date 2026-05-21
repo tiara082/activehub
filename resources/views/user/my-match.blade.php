@@ -1,6 +1,6 @@
 @extends('partials.app')
 
-@section('title', 'My Match')
+@section('title', 'Pertandingan Saya')
 
 @section('content')
 
@@ -10,18 +10,52 @@
     <div>
 
         <h2 class="text-2xl font-semibold text-gray-900">
-            My Match
+            Pertandingan Saya
         </h2>
 
         <p class="text-sm text-gray-500 mt-1">
-            Match yang kamu buat atau ikuti
+            Daftar pertandingan yang Anda buat atau ikuti
         </p>
 
     </div>
 
 
-    {{-- TABS --}}
-    <div class="flex gap-6 border-b border-gray-100">
+    {{-- SEARCH --}}
+    <form method="GET"
+          action="{{ route('matches.index') }}"
+          id="filterForm">
+
+        <div class="relative">
+
+            <input
+                type="text"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Cari pertandingan atau venue..."
+                class="w-full bg-white border border-gray-200 rounded-2xl
+                       px-4 py-3 pl-10 text-sm
+                       focus:ring-2 focus:ring-[#1b3a1b] outline-none"
+                onchange="document.getElementById('filterForm').submit()">
+
+            <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                 fill="none"
+                 stroke="currentColor"
+                 viewBox="0 0 24 24">
+
+                <path stroke-width="2"
+                      d="M21 21l-4.3-4.3m1.8-5.2
+                         a7 7 0 11-14 0
+                         7 7 0 0114 0z"/>
+
+            </svg>
+
+        </div>
+
+    </form>
+
+
+    {{-- FILTER TAB --}}
+    <div class="flex gap-2 p-1 bg-gray-100 rounded-2xl overflow-x-auto no-scrollbar">
 
         @foreach($tabs as $key => $tab)
 
@@ -30,24 +64,29 @@
         @endphp
 
         <a href="?tab={{ $key }}"
-           class="pb-3 relative text-sm flex items-center gap-2
+           class="relative flex items-center gap-2 whitespace-nowrap px-4 py-2 rounded-xl
+           transition-all duration-200 ease-out
            {{ $isActive
-                ? 'text-green-700 font-semibold'
-                : 'text-gray-400'
+                ? 'bg-white shadow-sm text-[#1b3a1b]'
+                : 'text-gray-500 hover:text-gray-800 hover:bg-white/60'
            }}">
 
-            <span>{{ $tab['label'] }}</span>
+            <span class="text-sm font-medium">
+                {{ $tab['label'] }}
+            </span>
 
-            <span class="text-[11px] px-2 py-0.5 rounded-full
+            <span class="text-[11px] font-semibold px-2 py-[2px] rounded-full
                 {{ $isActive
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-gray-100 text-gray-500'
+                    ? 'bg-[#1b3a1b]/10 text-[#1b3a1b]'
+                    : 'bg-gray-200 text-gray-500'
                 }}">
+
                 {{ $tab['count'] }}
+
             </span>
 
             @if($isActive)
-            <div class="absolute bottom-0 left-0 w-full h-[2px] bg-green-700 rounded-full"></div>
+                <span class="absolute inset-0 rounded-xl ring-1 ring-[#1b3a1b]/10"></span>
             @endif
 
         </a>
@@ -63,18 +102,18 @@
         @forelse($filteredMatches as $match)
 
         @php
-
             $isCreator = $match->creator_id == auth()->id();
-
         @endphp
 
-        <div class="bg-white border border-gray-100 rounded-2xl p-5 flex justify-between items-center">
+        <div class="bg-white border border-gray-100 rounded-2xl p-5
+                    flex flex-col lg:flex-row lg:items-center
+                    justify-between gap-5 hover:bg-gray-50 transition">
 
             {{-- LEFT --}}
             <div class="flex gap-4">
 
                 {{-- IMAGE --}}
-                <div class="w-28 h-20 rounded-xl overflow-hidden bg-gray-100">
+                <div class="w-28 h-20 rounded-xl overflow-hidden bg-gray-100 shrink-0">
 
                     <img
                         src="{{ asset($match->booking->field->image ?? 'images/default-field.jpg') }}"
@@ -91,7 +130,7 @@
                         {{ $match->title }}
                     </h3>
 
-                    <div class="text-sm text-gray-500 mt-1 space-y-1">
+                    <div class="text-sm text-gray-500 mt-2 space-y-1">
 
                         <p>
                             {{ $match->booking->field->sport ?? 'Futsal' }}
@@ -119,20 +158,48 @@
 
 
             {{-- RIGHT --}}
-            <div class="text-right">
+            <div class="flex flex-col items-start lg:items-end gap-2">
 
+                {{-- ROLE --}}
                 <span class="text-xs px-3 py-1 rounded-full
                     {{ $isCreator
                         ? 'bg-green-100 text-green-700'
                         : 'bg-blue-100 text-blue-700'
                     }}">
 
-                    {{ $isCreator ? 'Creator' : 'Joined' }}
+                    {{ $isCreator ? 'Pembuat' : 'Peserta' }}
 
                 </span>
 
 
-                <p class="text-sm font-semibold text-gray-800 mt-3">
+                {{-- STATUS --}}
+                @php
+                    $matchStatusStyle = [
+                        'open' => 'bg-orange-50 text-orange-600',
+                        'ongoing' => 'bg-yellow-50 text-yellow-700',
+                        'finished' => 'bg-green-50 text-green-700',
+                        'cancelled' => 'bg-red-50 text-red-700',
+                    ];
+                @endphp
+
+                <span class="text-xs px-3 py-1 rounded-full
+                    {{ $matchStatusStyle[$match->status] ?? 'bg-gray-100 text-gray-600' }}">
+
+                    {{
+                        match($match->status) {
+                            'open' => 'open',
+                            'ongoing' => 'Berlangsung',
+                            'finished' => 'Selesai',
+                            'cancelled' => 'Dibatalkan',
+                            default => 'Unknown'
+                        }
+                    }}
+
+                </span>
+
+
+                {{-- PLAYER --}}
+                <p class="text-sm font-semibold text-gray-800 mt-1">
 
                     {{ $match->participants->count() }}
                     /
@@ -143,25 +210,27 @@
                 </p>
 
 
+                {{-- BUTTON --}}
                 <a href="{{ route('matches.show', $match->id) }}"
-                   class="inline-block mt-3 border border-green-700 text-green-700
-                          hover:bg-green-700 hover:text-white
-                          transition px-4 py-2 rounded-xl text-sm">
+                class="inline-block mt-2 border border-[#1b3a1b]
+                        text-[#1b3a1b]
+                        hover:bg-[#1b3a1b] hover:text-white
+                        transition px-4 py-2 rounded-xl text-sm">
 
-                    Detail
+                    Lihat Detail
 
                 </a>
 
             </div>
-
         </div>
 
         @empty
 
-        <div class="bg-white border border-dashed rounded-2xl p-10 text-center">
+        <div class="bg-white border border-dashed border-gray-200
+                    rounded-2xl p-12 text-center">
 
             <p class="text-gray-400">
-                Belum ada match
+                Belum ada pertandingan
             </p>
 
         </div>
