@@ -67,4 +67,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(GameMatch::class, 'creator_id');
     }
+
+    public function joinedMatches()
+    {
+        return $this->belongsToMany(
+            GameMatch::class,
+            'match_participants',
+            'user_id',
+            'match_id'
+        );
+    }
 }

@@ -11,6 +11,7 @@
         <h2 class="text-lg font-semibold text-gray-900">
             Halo, {{ auth()->user()->name }} 👋
         </h2>
+
         <p class="text-sm text-gray-500">
             Selamat datang di ActiveHub
         </p>
@@ -25,32 +26,66 @@
             {{-- STATS --}}
             <div class="grid grid-cols-2 gap-4">
 
-                <div class="bg-gray-100 p-5 rounded-xl flex justify-between">
+                {{-- TOTAL BOOKING --}}
+                <div class="bg-gray-100 p-5 rounded-xl flex justify-between items-center">
+
                     <div>
-                        <p class="text-xs text-gray-500">Total Booking</p>
-                        <p class="text-lg font-semibold">{{ $totalBooking }}</p>
+                        <p class="text-xs text-gray-500">
+                            Total Booking
+                        </p>
+
+                        <p class="text-lg font-semibold text-gray-800">
+                            {{ $totalBooking }}
+                        </p>
                     </div>
+
+                    <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
+                        <i class="fas fa-calendar-check text-green-700"></i>
+                    </div>
+
                 </div>
 
-                <div class="bg-gray-100 p-5 rounded-xl flex justify-between">
+
+                {{-- MATCH BOOKING --}}
+                <div class="bg-gray-100 p-5 rounded-xl flex justify-between items-center">
+
                     <div>
-                        <p class="text-xs text-gray-500">Match Booking</p>
-                        <p class="text-lg font-semibold">{{ $matchBooking }}</p>
+                        <p class="text-xs text-gray-500">
+                            Match Booking
+                        </p>
+
+                        <p class="text-lg font-semibold text-gray-800">
+                            {{ $matchBooking }}
+                        </p>
                     </div>
+
+                    <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
+                        <i class="fas fa-users text-blue-700"></i>
+                    </div>
+
                 </div>
 
             </div>
+
 
             {{-- CHART --}}
             <div class="bg-white rounded-2xl border p-6 shadow-sm">
 
                 <div class="flex justify-between mb-4">
-                    <h3 class="font-semibold text-gray-800">
-                        Aktivitas Booking
-                    </h3>
+
+                    <div>
+                        <h3 class="font-semibold text-gray-800">
+                            Aktivitas User
+                        </h3>
+
+                        <p class="text-xs text-gray-400 mt-1">
+                            Statistik aktivitas bulanan
+                        </p>
+                    </div>
+
                 </div>
 
-                <div class="h-64">
+                <div class="h-72">
                     <canvas id="bookingChart"></canvas>
                 </div>
 
@@ -62,16 +97,14 @@
         {{-- ================= RIGHT ================= --}}
         <div class="space-y-6">
 
-{{-- ===== QUICK ACTION ===== --}}
+            {{-- ===== QUICK ACTION ===== --}}
             <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
 
                 <h3 class="font-semibold text-gray-800 mb-5">
                     Quick Action
                 </h3>
 
-
                 <div class="grid grid-cols-3 gap-4 text-center">
-
 
                     {{-- Cari --}}
                     <a href="{{ route('venues.index') }}"
@@ -90,7 +123,6 @@
                         </p>
 
                     </a>
-
 
 
                     {{-- Join --}}
@@ -112,12 +144,11 @@
                     </a>
 
 
-
                     {{-- Buat Match --}}
                     <a href="{{ $hasBooking
                                 ? route('matches.create')
                                 : route('venues.index') }}"
-                                 class="flex flex-col items-center gap-2 group">
+                       class="flex flex-col items-center gap-2 group">
 
                         <div class="w-12 h-12 rounded-xl
                                     {{ $hasBooking ? 'bg-yellow-500' : 'bg-gray-400' }}
@@ -135,11 +166,9 @@
                             </p>
 
                             @if(!$hasBooking)
-
                             <p class="text-[10px] text-gray-400 mt-1 leading-tight">
                                 Booking lapangan dulu
                             </p>
-
                             @endif
 
                         </div>
@@ -238,56 +267,91 @@
 <script>
 const ctx = document.getElementById('bookingChart').getContext('2d');
 
-const descriptions = [
-    "Awal bulan sepi",
-    "Mulai naik",
-    "Stabil",
-    "Aktif",
-    "Naik",
-    "Puncak"
-];
-
 new Chart(ctx, {
     type: 'bar',
+
     data: {
         labels: @json($months),
+
         datasets: [
-            {
-                label: 'Pending',
-                data: @json($pendingData),
-                backgroundColor: '#bbf7d0'
+
+           {
+                label: 'Total Booking',
+                data: @json($bookingData),
+                backgroundColor: '#C8E6C9',
+                hoverBackgroundColor: '#C8E6C9',
+                borderRadius: 4,
             },
+
             {
-                label: 'Confirmed',
-                data: @json($confirmedData),
-                backgroundColor: '#4ade80'
+                label: 'Match Diikuti',
+                data: @json($joinedMatchData),
+                backgroundColor: '#81C784',
+                hoverBackgroundColor: '#81C784',
+                borderRadius: 4,
             },
+
             {
-                label: 'Completed',
-                data: @json($completedData),
-                backgroundColor: '#166534'
+                label: 'Match Dibuat',
+                data: @json($createdMatchData),
+                backgroundColor: '#2E7D32',
+                hoverBackgroundColor: '#2E7D32',
+                borderRadius: 4,
             }
+
         ]
     },
+
     options: {
         responsive: true,
-        scales: {
-            x: { stacked: true },
-            y: { stacked: true }
-        },
+        maintainAspectRatio: false,
+
         plugins: {
+
+            legend: {
+                position: 'top',
+
+                labels: {
+                    usePointStyle: false,
+                    boxWidth: 40,
+                    padding: 20
+                }
+            },
+
             tooltip: {
-                callbacks: {
-                    afterBody: function(context) {
-                        return descriptions[context[0].dataIndex];
-                    }
+                backgroundColor: '#111827',
+                padding: 12,
+                cornerRadius: 10
+            }
+        },
+
+        scales: {
+
+            x: {
+                stacked: true,
+
+                grid: {
+                    color: '#f3f4f6'
+                }
+            },
+
+            y: {
+                stacked: true,
+                beginAtZero: true,
+
+                ticks: {
+                    stepSize: 2
+                },
+
+                grid: {
+                    color: '#f3f4f6'
                 }
             }
+
         }
     }
 });
 </script>
-
 @endpush
 
 

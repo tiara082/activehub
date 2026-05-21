@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Models\GameMatch;
 
 class DashboardController extends Controller
 {
@@ -31,10 +32,10 @@ class DashboardController extends Controller
         // =========================
         // CHART DATA (6 BULAN)
         // =========================
+        $bookingData = [];
+        $joinedMatchData = [];
+        $createdMatchData = [];
         $months = [];
-        $pendingData = [];
-        $confirmedData = [];
-        $completedData = [];
 
         for ($i = 5; $i >= 0; $i--) {
 
@@ -42,20 +43,21 @@ class DashboardController extends Controller
 
             $months[] = $date->translatedFormat('M');
 
-            $pendingData[] = Booking::where('user_id', $userId)
-                ->where('status', 'pending')
+            // TOTAL BOOKING
+            $bookingData[] = Booking::where('user_id', $userId)
                 ->whereYear('created_at', $date->year)
                 ->whereMonth('created_at', $date->month)
                 ->count();
 
-            $confirmedData[] = Booking::where('user_id', $userId)
-                ->where('status', 'confirmed')
+            // MATCH DIIKUTI
+            $joinedMatchData[] = Booking::where('user_id', $userId)
+                ->where('is_public_match', true)
                 ->whereYear('created_at', $date->year)
                 ->whereMonth('created_at', $date->month)
                 ->count();
 
-            $completedData[] = Booking::where('user_id', $userId)
-                ->where('status', 'completed')
+            // MATCH DIBUAT
+            $createdMatchData[] = GameMatch::where('creator_id', $userId)
                 ->whereYear('created_at', $date->year)
                 ->whereMonth('created_at', $date->month)
                 ->count();
@@ -103,11 +105,11 @@ class DashboardController extends Controller
             'matchBooking',
             'hasBooking',
             'months',
-            'pendingData',
-            'confirmedData',
-            'completedData',
             'nearestBooking',
-            'nearestMatch'
+            'nearestMatch',
+            'bookingData',
+            'joinedMatchData',
+            'createdMatchData'
         ));
     }
 }

@@ -86,6 +86,7 @@
                             <h3 class="text-white text-2xl tracking-tight"
                                 style="font-family:'Bebas Neue',sans-serif;">
                                 Pertandingan Terbuka
+                                Pertandingan Terbuka
                             </h3>
 
                             <p class="text-white/70 text-sm mt-2 leading-relaxed">

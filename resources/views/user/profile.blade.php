@@ -10,19 +10,19 @@
     $stats = [
         [
             'label' => 'Total Booking',
-            'value' => \App\Models\Booking::where('user_id', $user->id)->count(),
+            'value' => $user->bookings()->count(),
             'icon'  => 'calendar-check',
             'color' => 'green'
         ],
         [
             'label' => 'Match Diikuti',
-             'value' => '12',
+             'value' => $user->joinedMatches()->count(),
             'icon'  => 'users',
             'color' => 'blue'
         ],
         [
             'label'=>'Match Dibuat',
-            'value' => \App\Models\GameMatch::where('creator_id', $user->id)->count(),
+            'value' => $user->createdMatches()->count(),
             'icon'=>'trophy',
             'color'=>'yellow'
         ],

@@ -5,7 +5,7 @@
         <div class="mb-12 max-w-md">
             <h2 class="leading-none"
                 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(2.6rem,7vw,3.8rem);color:#1c3a0c;">
-                Gapunya Temen Main?
+                Gapunya Teman Main?
             </h2>
 
             <p class="text-[#1c3a0c]/60 text-sm mt-2 max-w-sm leading-relaxed">

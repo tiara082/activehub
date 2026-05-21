@@ -8,8 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class MatchController extends Controller
 {
-    /** GET /matches — daftar public match (public) */
-   public function index()
+    public function index()
     {
         $matches = GameMatch::with([
             'booking.field.venue',
@@ -21,7 +20,6 @@ class MatchController extends Controller
         return view('pubmatch.list', compact('matches'));
     }
 
-    /** GET /matches/{match} — detail public match (public) */
     public function show(GameMatch $match)
     {
         $match->load([
@@ -36,20 +34,24 @@ class MatchController extends Controller
         return view('pubmatch.detail', compact('match'));
     }
 
-    /** GET /matches/create — form buat public match (user login) */
     public function create()
     {
         return view('pubmatch.create');
     }
 
     public function join($id)
-        {
-            // logic join match
+    {
+        $match = GameMatch::findOrFail($id);
 
-            return back()->with('success', 'Berhasil join match');
+        if ($match->participants()->where('user_id', Auth::id())->exists()) {
+            return back()->with('error', 'Kamu sudah join match ini');
         }
 
-    /** POST /matches — simpan public match (user login) */
+        $match->participants()->attach(Auth::id());
+
+        return back()->with('success', 'Berhasil join match');
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -81,5 +83,70 @@ class MatchController extends Controller
         }
 
         return redirect()->route('matches.index')->with('success', 'Match berhasil dibuat!');
+    }
+
+        public function myMatches(Request $request)
+    {
+        $active = $request->tab ?? 'open';
+
+        $matches = GameMatch::with([
+                'booking.field.venue',
+                'participants',
+                'creator'
+            ])
+            ->where(function ($q) {
+
+                $q->where('creator_id', auth()->id())
+
+                ->orWhereHas('participants', function ($qq) {
+
+                        $qq->where('user_id', auth()->id());
+
+                });
+
+            })
+            ->latest()
+            ->get();
+
+
+        // FILTER
+        $filteredMatches = $matches->filter(function ($match) use ($active) {
+
+            return $match->status === $active;
+
+        });
+
+
+        // TAB COUNT
+        $tabs = [
+
+            'open' => [
+                'label' => 'Open',
+                'count' => $matches->where('status', 'open')->count(),
+            ],
+
+            'ongoing' => [
+                'label' => 'Berlangsung',
+                'count' => $matches->where('status', 'ongoing')->count(),
+            ],
+
+            'finished' => [
+                'label' => 'Selesai',
+                'count' => $matches->where('status', 'finished')->count(),
+            ],
+
+            'cancelled' => [
+                'label' => 'Dibatalkan',
+                'count' => $matches->where('status', 'cancelled')->count(),
+            ],
+
+        ];
+
+
+        return view('user.my-match', compact(
+            'tabs',
+            'active',
+            'filteredMatches'
+        ));
     }
 }
