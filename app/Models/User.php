@@ -77,4 +77,9 @@ class User extends Authenticatable
             'match_id'
         );
     }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
 }

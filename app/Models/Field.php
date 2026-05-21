@@ -35,4 +35,9 @@ class Field extends Model
     {
         return $this->hasMany(TimeSlot::class);
     }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
 }

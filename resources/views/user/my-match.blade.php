@@ -1,6 +1,6 @@
 @extends('partials.app')
 
-@section('title', 'Pertandingan Saya')
+@section('title', 'Permainan Saya')
 
 @section('content')
 
@@ -10,11 +10,11 @@
     <div>
 
         <h2 class="text-2xl font-semibold text-gray-900">
-            Pertandingan Saya
+            Permainan Saya
         </h2>
 
         <p class="text-sm text-gray-500 mt-1">
-            Daftar pertandingan yang Anda buat atau ikuti
+            Daftar permainan yang Anda buat atau ikuti
         </p>
 
     </div>
@@ -31,7 +31,7 @@
                 type="text"
                 name="search"
                 value="{{ request('search') }}"
-                placeholder="Cari pertandingan atau venue..."
+                placeholder="Cari permainan atau venue..."
                 class="w-full bg-white border border-gray-200 rounded-2xl
                        px-4 py-3 pl-10 text-sm
                        focus:ring-2 focus:ring-[#1b3a1b] outline-none"
@@ -113,7 +113,7 @@
             <div class="flex gap-4">
 
                 {{-- IMAGE --}}
-                <div class="w-28 h-20 rounded-xl overflow-hidden bg-gray-100 shrink-0">
+                <div class="w-28 sm:w-36 rounded-xl overflow-hidden bg-gray-100 shrink-0">
 
                     <img
                         src="{{ asset($match->booking->field->image ?? 'images/default-field.jpg') }}"
@@ -141,13 +141,13 @@
                         </p>
 
                         <p>
-                            {{ \Carbon\Carbon::parse($match->booking->booking_date)->translatedFormat('d F Y') }}
+                            {{ $match->booking->timeSlot && $match->booking->timeSlot->date ? \Carbon\Carbon::parse($match->booking->timeSlot->date)->locale('id')->translatedFormat('j F Y') : '-' }}
                         </p>
 
                         <p>
-                            {{ $match->booking->start_time }}
-                            -
-                            {{ $match->booking->end_time }}
+                            {{ $match->booking->timeSlot && $match->booking->timeSlot->start_time ? \Carbon\Carbon::parse($match->booking->timeSlot->start_time)->format('H:i') : '' }}
+                            {{ $match->booking->timeSlot && $match->booking->timeSlot->start_time ? '-' : '' }}
+                            {{ $match->booking->timeSlot && $match->booking->timeSlot->end_time ? \Carbon\Carbon::parse($match->booking->timeSlot->end_time)->format('H:i') : '' }}
                         </p>
 
                     </div>
@@ -172,42 +172,20 @@
                 </span>
 
 
-                {{-- STATUS --}}
-                @php
-                    $matchStatusStyle = [
-                        'open' => 'bg-orange-50 text-orange-600',
-                        'ongoing' => 'bg-yellow-50 text-yellow-700',
-                        'finished' => 'bg-green-50 text-green-700',
-                        'cancelled' => 'bg-red-50 text-red-700',
-                    ];
-                @endphp
-
-                <span class="text-xs px-3 py-1 rounded-full
-                    {{ $matchStatusStyle[$match->status] ?? 'bg-gray-100 text-gray-600' }}">
-
-                    {{
-                        match($match->status) {
-                            'open' => 'open',
-                            'ongoing' => 'Berlangsung',
-                            'finished' => 'Selesai',
-                            'cancelled' => 'Dibatalkan',
-                            default => 'Unknown'
-                        }
-                    }}
-
-                </span>
-
-
-                {{-- PLAYER --}}
-                <p class="text-sm font-semibold text-gray-800 mt-1">
-
-                    {{ $match->participants->count() }}
-                    /
-                    {{ $match->total_players }}
-
-                    pemain
-
-                </p>
+                {{-- PLAYER PROGRESS --}}
+                <div class="w-full lg:w-48 mt-2 lg:mt-1 lg:text-right">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="text-xs font-medium text-gray-500">Peserta</span>
+                        <span class="text-xs font-bold text-gray-800">{{ $match->participants->count() }} / {{ $match->total_players }}</span>
+                    </div>
+                    @php
+                        $percentage = min(100, ($match->participants->count() / max(1, $match->total_players)) * 100);
+                        $isFull = $percentage >= 100;
+                    @endphp
+                    <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                        <div class="h-1.5 rounded-full transition-all duration-500 {{ $isFull ? 'bg-orange-500' : 'bg-[#1b3a1b]' }}" style="width: {{ $percentage }}%"></div>
+                    </div>
+                </div>
 
 
                 {{-- BUTTON --}}

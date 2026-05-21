@@ -153,12 +153,13 @@ Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\User\DashboardController::class, 'index'])
         ->name('dashboard');
 
-    Route::get('/discover', [\App\Http\Controllers\User\DiscoverController::class, 'index'])
-        ->name('discover');
+
     Route::get('/my-match', [MatchController::class, 'myMatches'])
     ->name('my-match');
     Route::get('/bookings', [\App\Http\Controllers\User\BookingController::class, 'index'])
         ->name('bookings');
+    Route::post('/reviews', [\App\Http\Controllers\User\ReviewController::class, 'store'])
+        ->name('reviews.store');
     Route::get('/profile', fn () => view('user.profile'))->name('profile');
 });
 
@@ -199,11 +200,12 @@ Route::middleware(['auth'])->prefix('owner')->name('owner.')->group(function () 
     Route::get('/dashboard', fn () => redirect()->route('owner.venue'))->name('dashboard');
 
     Route::get('/bookings', [\App\Http\Controllers\Owner\BookingController::class, 'index'])->name('bookings');
+    Route::get('/bookings/export', [\App\Http\Controllers\Owner\BookingController::class, 'export'])->name('bookings.export');
     Route::get('/calendar', [\App\Http\Controllers\Owner\CalendarController::class, 'index'])->name('calendar');
     Route::post('/calendar/block', [\App\Http\Controllers\Owner\CalendarController::class, 'blockFullDay'])->name('calendar.block');
     Route::post('/calendar/unblock', [\App\Http\Controllers\Owner\CalendarController::class, 'unblockFullDay'])->name('calendar.unblock');
     Route::post('/calendar/booking', [\App\Http\Controllers\Owner\CalendarController::class, 'storeOfflineBooking'])->name('calendar.booking');
-    Route::get('/earnings', fn () => view('owner.earnings'))->name('earnings');
+    Route::get('/earnings', [\App\Http\Controllers\Owner\EarningsController::class, 'index'])->name('earnings');
     Route::get('/profile', fn () => view('owner.profile'))->name('profile');
 });
 

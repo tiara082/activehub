@@ -14,7 +14,7 @@ class BookingController extends Controller
     $userId = Auth::id();
     $now = \Carbon\Carbon::now();
 
-    $bookings = Booking::with(['field.venue', 'timeSlot', 'user'])
+    $bookings = Booking::with(['field.venue', 'timeSlot', 'user', 'review'])
         ->where('user_id', $userId)
         ->latest()
         ->get();
@@ -106,7 +106,8 @@ class BookingController extends Controller
 
             'duration' => $dur . ' jam',
 
-            'raw_status' => $b->status
+            'raw_status' => $b->status,
+            'review' => $b->review
         ];
     });
 

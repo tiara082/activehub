@@ -53,22 +53,27 @@
             </span>
         </div>
 
-        <div class="flex items-end gap-3 h-32">
+        <div class="flex gap-3 h-32">
             @foreach($bars as $bar)
-            <div class="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
+            <div class="flex-1 flex flex-col items-center gap-2 group cursor-pointer h-full">
 
                 <span class="font-mono text-[10px] opacity-0 group-hover:opacity-100 transition
-                             {{ isset($bar['current']) ? 'text-green-600 font-medium' : 'text-gray-400' }}">
+                             {{ !empty($bar['current']) ? 'text-green-600 font-medium' : 'text-gray-400' }}">
                     {{ $bar['val'] }}M
                 </span>
 
-                <div class="w-full rounded-t-xl transition-all duration-300 group-hover:scale-y-105 origin-bottom"
-                    style="height:{{ max($bar['pct'], 10) }}%;
-                            background:{{ isset($bar['current']) ? '#1b3a1b' : '#bbf7d0' }};">
+                {{-- BAR WRAPPER --}}
+                <div class="w-full flex-1 flex items-end">
+                    <div class="w-full rounded-t-xl transition-all duration-300 group-hover:scale-y-105 origin-bottom"
+                        @style([
+                            "height:" . max($bar['pct'], 10) . "%",
+                            "background:" . (!empty($bar['current']) ? '#1b3a1b' : '#bbf7d0')
+                        ])>
+                    </div>
                 </div>
 
                 <span class="text-[10px]
-                             {{ isset($bar['current']) ? 'text-[#1b3a1b] font-semibold' : 'text-gray-400' }}">
+                             {{ !empty($bar['current']) ? 'text-[#1b3a1b] font-semibold' : 'text-gray-400' }}">
                     {{ $bar['month'] }}
                 </span>
 
@@ -104,7 +109,7 @@
                     <div>
                         <p class="font-medium text-gray-800 text-sm">{{ $lap['name'] }}</p>
                         <p class="text-[11px] text-gray-400">
-                            {{ $lap['booking'] }} booking • {{ $lap['jam'] }} jam
+                            {{ $lap['booking'] }} pemesanan • {{ $lap['jam'] }} jam
                         </p>
 
                         <p class="text-[11px] mt-1
@@ -120,7 +125,7 @@
 
                 <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                     <div class="h-full bg-[#1b3a1b] rounded-full"
-                        style="width: {{ $lap['pct'] }}%">
+                        @style(["width: {$lap['pct']}%"])>
                     </div>
                 </div>
             </div>

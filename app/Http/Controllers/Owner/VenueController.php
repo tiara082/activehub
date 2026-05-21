@@ -18,6 +18,7 @@ class VenueController extends Controller
 
     public function index(): View
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         $venues = $user
@@ -72,7 +73,9 @@ class VenueController extends Controller
         ]);
 
         // 1. create venue
-        $venue = Auth::user()->venues()->create([
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $venue = $user->venues()->create([
             'name'        => $data['name'],
             'sport_type'  => $data['sport_type'] ?? [],
             'location'    => $data['location'],

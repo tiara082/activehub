@@ -101,7 +101,25 @@ class VenueController extends Controller
             }]);
         }])->findOrFail($id);
 
-        return view('venue.show', compact('venue', 'date'));
+        $venue->load(['reviews.user']);
+
+        $totalReviews = $venue->reviews->count();
+        $avgMain = 0;
+        $avgClean = 0;
+        $avgCondition = 0;
+        $avgComms = 0;
+
+        if ($totalReviews > 0) {
+            $avgMain = round($venue->reviews->avg('rating_main'), 1);
+            $avgClean = round($venue->reviews->avg('rating_clean'), 2);
+            $avgCondition = round($venue->reviews->avg('rating_condition'), 2);
+            $avgComms = round($venue->reviews->avg('rating_comms'), 2);
+        }
+
+        return view('venue.show', compact(
+            'venue', 'date', 'totalReviews', 
+            'avgMain', 'avgClean', 'avgCondition', 'avgComms'
+        ));
     }
 
     public function store(Request $request)

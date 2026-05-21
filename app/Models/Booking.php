@@ -40,4 +40,9 @@ class Booking extends Model
     {
         return $this->hasMany(GameMatch::class);
     }
+
+    public function review()
+    {
+        return $this->hasOne(Review::class);
+    }
 }

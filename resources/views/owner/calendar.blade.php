@@ -17,9 +17,44 @@
         <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
 
             {{-- LEFT INFO --}}
-            <div>
-                <p class="font-semibold text-gray-800 text-sm">{{ \Carbon\Carbon::parse($date)->translatedFormat('F Y') }}</p>
-                <p class="text-xs text-gray-400">Klik tanggal untuk lihat slot</p>
+            <div class="relative" id="calendarDropdownWrapper">
+                <button type="button" onclick="toggleCalendarMenu()" class="flex items-center gap-2 font-semibold text-gray-800 text-sm hover:text-[#1b3a1b] transition bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm">
+                    {{ \Carbon\Carbon::parse($date)->locale('id')->translatedFormat('F Y') }}
+                    <i class="fa-solid fa-chevron-down text-[10px] text-gray-500 transition-transform duration-300" id="calIcon"></i>
+                </button>
+                <p class="text-xs text-gray-400 mt-2">Klik tanggal untuk lihat slot</p>
+                
+                {{-- Dropdown Menu --}}
+                <div id="calendarMenu" class="absolute left-0 top-full mt-2 w-[280px] bg-white rounded-2xl shadow-xl border border-gray-100 p-4 opacity-0 invisible translate-y-2 transition-all duration-300 z-50">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase mb-2">Bulan</p>
+                            <div class="flex flex-col gap-1 max-h-48 overflow-y-auto no-scrollbar pr-1">
+                                @php
+                                    $currentMonth = \Carbon\Carbon::parse($date)->format('m');
+                                    $currentYear = \Carbon\Carbon::parse($date)->format('Y');
+                                    $months = [
+                                        '01' => 'Januari', '02' => 'Februari', '03' => 'Maret', 
+                                        '04' => 'April', '05' => 'Mei', '06' => 'Juni',
+                                        '07' => 'Juli', '08' => 'Agustus', '09' => 'September',
+                                        '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+                                    ];
+                                @endphp
+                                @foreach($months as $num => $name)
+                                    <button onclick="changeDate('{{ $num }}', '{{ $currentYear }}')" class="text-left text-xs px-3 py-2 rounded-lg transition {{ $currentMonth === $num ? 'bg-[#1b3a1b] text-white font-semibold' : 'text-gray-600 hover:bg-gray-50' }}">{{ $name }}</button>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase mb-2">Tahun</p>
+                            <div class="flex flex-col gap-1 max-h-48 overflow-y-auto no-scrollbar pr-1">
+                                @for($y = date('Y') - 5; $y <= date('Y') + 5; $y++)
+                                    <button onclick="changeDate('{{ $currentMonth }}', '{{ $y }}')" class="text-left text-xs px-3 py-2 rounded-lg transition {{ $currentYear == $y ? 'bg-[#1b3a1b] text-white font-semibold' : 'text-gray-600 hover:bg-gray-50' }}">{{ $y }}</button>
+                                @endfor
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {{-- RIGHT ACTION (POJOK) --}}
@@ -103,8 +138,7 @@
         <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
 
             <div>
-                <p class="font-semibold text-gray-800 text-sm">Slot — {{ \Carbon\Carbon::parse($selectedDate)->translatedFormat('d F Y') }}</p>
-                <p class="text-xs text-gray-400">Klik slot untuk blokir jam tertentu</p>
+                <p class="font-semibold text-gray-800 text-sm">{{ \Carbon\Carbon::parse($selectedDate)->locale('id')->translatedFormat('j F Y') }}</p>
             </div>
 
             <button onclick="openAddBookingModal()" class="px-4 py-2 text-sm rounded-xl bg-[#0b3d0b] text-white hover:bg-[#163016] transition">
@@ -278,12 +312,12 @@
                 <div class="flex items-center gap-4 mt-2">
                     <label class="flex items-center gap-2 text-sm cursor-pointer">
                         <input type="radio" name="action_type" value="block" checked class="text-[#0b3d0b] focus:ring-[#0b3d0b]" 
-                            onchange="document.getElementById('manageBlockForm').action = '{{ route('owner.calendar.block') }}'">
+                            onchange="updateActionRoute('block')">
                         <span>Blokir</span>
                     </label>
                     <label class="flex items-center gap-2 text-sm cursor-pointer">
                         <input type="radio" name="action_type" value="unblock" class="text-[#0b3d0b] focus:ring-[#0b3d0b]"
-                            onchange="document.getElementById('manageBlockForm').action = '{{ route('owner.calendar.unblock') }}'">
+                            onchange="updateActionRoute('unblock')">
                         <span>Buka Blokir</span>
                     </label>
                 </div>
@@ -305,6 +339,44 @@
 </div>
 
 <script>
+    let calMenuOpen = false;
+    function toggleCalendarMenu() {
+        const menu = document.getElementById('calendarMenu');
+        const icon = document.getElementById('calIcon');
+        if (calMenuOpen) {
+            menu.classList.replace('opacity-100', 'opacity-0');
+            menu.classList.replace('visible', 'invisible');
+            menu.classList.replace('translate-y-0', 'translate-y-2');
+            icon.style.transform = 'rotate(0deg)';
+        } else {
+            menu.classList.replace('opacity-0', 'opacity-100');
+            menu.classList.replace('invisible', 'visible');
+            menu.classList.replace('translate-y-2', 'translate-y-0');
+            icon.style.transform = 'rotate(180deg)';
+        }
+        calMenuOpen = !calMenuOpen;
+    }
+    
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('calendarDropdownWrapper');
+        if (calMenuOpen && dropdown && !dropdown.contains(event.target)) {
+            toggleCalendarMenu();
+        }
+    });
+
+    function changeDate(m, y) {
+        window.location.href = `{{ route('owner.calendar') }}?month=${m}&year=${y}`;
+    }
+
+    function updateActionRoute(type) {
+        const form = document.getElementById('manageBlockForm');
+        if (type === 'block') {
+            form.action = "{{ route('owner.calendar.block') }}";
+        } else {
+            form.action = "{{ route('owner.calendar.unblock') }}";
+        }
+    }
+
     function openManageBlockModal() {
         document.getElementById('manageBlockModal').classList.remove('hidden');
         document.body.classList.add('overflow-hidden');

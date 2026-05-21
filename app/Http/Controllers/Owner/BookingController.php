@@ -134,12 +134,11 @@ class BookingController extends Controller
 
         $tabs = [
             ['key' => 'all', 'label' => 'Semua', 'count' => $counts['all']],
+            ['key' => 'Menunggu', 'label' => 'Menunggu', 'count' => $counts['Menunggu']],
             ['key' => 'Terjadwal', 'label' => 'Terjadwal', 'count' => $counts['Terjadwal']],
             ['key' => 'Berlangsung', 'label' => 'Berlangsung', 'count' => $counts['Berlangsung']],
             ['key' => 'Selesai', 'label' => 'Selesai', 'count' => $counts['Selesai']],
             ['key' => 'Dibatalkan', 'label' => 'Dibatalkan', 'count' => $counts['Dibatalkan']],
-            ['key' => 'Menunggu', 'label' => 'Menunggu', 'count' => $counts['Menunggu']],
-            ['key' => 'Blokir', 'label' => 'Blokir', 'count' => $counts['Blokir']],
         ];
 
         // 6 Months Stats
@@ -191,12 +190,11 @@ class BookingController extends Controller
     {
         return [
             ['key' => 'all', 'label' => 'Semua', 'count' => 0],
+            ['key' => 'Menunggu', 'label' => 'Menunggu', 'count' => 0],
             ['key' => 'Terjadwal', 'label' => 'Terjadwal', 'count' => 0],
             ['key' => 'Berlangsung', 'label' => 'Berlangsung', 'count' => 0],
             ['key' => 'Selesai', 'label' => 'Selesai', 'count' => 0],
             ['key' => 'Dibatalkan', 'label' => 'Dibatalkan', 'count' => 0],
-            ['key' => 'Menunggu', 'label' => 'Menunggu', 'count' => 0],
-            ['key' => 'Blokir', 'label' => 'Blokir', 'count' => 0],
         ];
     }
 
@@ -223,5 +221,88 @@ class BookingController extends Controller
         return [
             'label' => '', 'month_num' => 0, 'year' => 0, 'total' => 0, 'selesai' => 0, 'dibatalkan' => 0
         ];
+    }
+
+    public function export(Request $request)
+    {
+        $user = Auth::user();
+        $venue = $user->venues()->with('fields')->first();
+        
+        if (!$venue) {
+            return back()->with('error', 'Belum ada venue.');
+        }
+
+        $fieldIds = $venue->fields->pluck('id');
+
+        $query = Booking::whereIn('field_id', $fieldIds)
+            ->with(['user', 'timeSlot', 'field'])
+            ->orderByDesc('created_at');
+
+        if ($request->filled('date')) {
+            $query->whereHas('timeSlot', function($q) use ($request) {
+                $q->where('date', $request->date);
+            });
+        }
+
+        if ($request->filled('field_id')) {
+            $query->where('field_id', $request->field_id);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('user', function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        $bookings = $query->get();
+
+        $filename = "data_pemesanan_" . date('Y-m-d_H-i-s') . ".csv";
+
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $columns = ['ID Booking', 'Nama Pemesan', 'Telepon', 'Lapangan', 'Tanggal', 'Jam', 'Durasi (Jam)', 'Total Harga (Rp)', 'Status Sistem'];
+
+        $callback = function() use($bookings, $columns) {
+            $file = fopen('php://output', 'w');
+            
+            // Tambahkan BOM agar Excel mengenali karakter dengan benar (opsional tapi disarankan)
+            fputs($file, "\xEF\xBB\xBF");
+            
+            fputcsv($file, $columns, ';');
+
+            foreach ($bookings as $b) {
+                $ts = $b->timeSlot;
+                $dur = 0;
+                if ($ts && $ts->start_time && $ts->end_time) {
+                    $dur = Carbon::parse($ts->start_time)->diffInHours(Carbon::parse($ts->end_time));
+                }
+
+                $row = [
+                    $b->id,
+                    $b->user ? $b->user->name : 'Unknown',
+                    $b->user && $b->user->phone ? $b->user->phone : '-',
+                    $b->field ? $b->field->name : '-',
+                    $ts ? Carbon::parse($ts->date)->format('Y-m-d') : '-',
+                    $ts ? Carbon::parse($ts->start_time)->format('H:i') . ' - ' . Carbon::parse($ts->end_time)->format('H:i') : '-',
+                    $dur,
+                    $b->total_price,
+                    $b->status
+                ];
+
+                fputcsv($file, $row, ';');
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

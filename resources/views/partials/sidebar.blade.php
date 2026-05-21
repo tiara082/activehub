@@ -59,16 +59,6 @@
             <span>Aktivitas</span>
         </a>
 
-        {{-- Discover --}}
-        <a href="{{ route('user.discover') }}"
-           class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition
-           {{ request()->routeIs('user.discover') ? 'bg-[#0b3d0b]/5 text-[#0b3d0b] font-medium' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100' }}">
-            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8" stroke-width="2"/>
-                <path stroke-width="2" d="M21 21l-4.3-4.3"/>
-            </svg>
-            <span>Jelajahi</span>
-        </a>
 
         {{-- Bookings --}}
         <a href="{{ route('user.bookings') }}"
@@ -93,7 +83,7 @@
                     d="M5 6h2a3 3 0 01-3 3V6zM19 6h-2a3 3 0 003 3V6z"/>
             </svg>
 
-            <span>Pertandingan</span>
+            <span>Permainan</span>
         </a>
 
         @endif

@@ -47,7 +47,7 @@ $statusStyle = [
 
         </div>
 
-        <div class="flex items-end gap-3 h-36" id="booking-chart">
+        <div class="flex gap-3 h-36" id="booking-chart">
 
             @foreach($monthlyStats as $idx => $stat)
 
@@ -62,7 +62,7 @@ $statusStyle = [
                 ) - 1;
             @endphp
 
-            <div class="flex-1 flex flex-col items-center gap-1 group relative">
+            <div class="flex-1 flex flex-col items-center gap-1 group relative h-full">
 
                 {{-- TOOLTIP --}}
                 <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2
@@ -82,11 +82,15 @@ $statusStyle = [
 
                 </div>
 
-                {{-- BAR --}}
-                <div class="w-full rounded-t-lg transition-all duration-500 ease-out"
-                     style="height: {{ $heightPct }}%;
-                            background: {{ $isLast ? '#1b3a1b' : '#e5ede5' }};
-                            min-height: 6px;">
+                {{-- BAR WRAPPER --}}
+                <div class="w-full flex-1 flex items-end">
+                    <div class="w-full rounded-t-lg transition-all duration-500 ease-out"
+                         @style([
+                             "height: {$heightPct}%",
+                             "background: " . ($isLast ? '#1b3a1b' : '#e5ede5'),
+                             "min-height: 4px"
+                         ])>
+                    </div>
                 </div>
 
                 {{-- LABEL --}}
@@ -196,7 +200,7 @@ $statusStyle = [
                     <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden">
 
                         <div class="h-full bg-[#1b3a1b]/30 rounded-full"
-                             style="width: {{ $barW }}%">
+                             @style(["width: {$barW}%"])>
                         </div>
 
                     </div>
@@ -368,12 +372,11 @@ $statusStyle = [
 
         </div>
 
-        <button class="px-4 py-2 text-sm rounded-xl border border-gray-200
-                       hover:border-[#1b3a1b] hover:text-[#1b3a1b] transition">
-
+        <a href="{{ route('owner.bookings.export', request()->all()) }}" 
+           class="px-4 py-2 text-sm rounded-xl border border-gray-200 inline-block
+                  hover:border-[#1b3a1b] hover:text-[#1b3a1b] transition">
             Ekspor Data
-
-        </button>
+        </a>
 
     </div>
 
@@ -383,35 +386,35 @@ $statusStyle = [
 
         <table class="w-full text-sm">
 
-            <thead class="text-[11px] text-gray-400 uppercase tracking-wider">
+            <thead class="text-[11px] text-gray-400 uppercase tracking-wider text-center">
 
                 <tr>
 
-                    <th class="px-6 py-4 text-left">
+                    <th class="px-6 py-4">
                         Pemesan
                     </th>
 
-                    <th class="px-6 py-4 text-left">
+                    <th class="px-6 py-4">
                         Lapangan
                     </th>
 
-                    <th class="px-6 py-4 text-left">
+                    <th class="px-6 py-4">
                         Jadwal
                     </th>
 
-                    <th class="px-6 py-4 text-left">
+                    <th class="px-6 py-4">
                         Durasi
                     </th>
 
-                    <th class="px-6 py-4 text-left">
+                    <th class="px-6 py-4">
                         Total
                     </th>
 
-                    <th class="px-6 py-4 text-left">
+                    <th class="px-6 py-4">
                         Status
                     </th>
 
-                    <th class="px-6 py-4 text-right">
+                    <th class="px-6 py-4">
                         Aksi
                     </th>
 
@@ -420,7 +423,7 @@ $statusStyle = [
             </thead>
 
 
-            <tbody class="divide-y divide-gray-50">
+            <tbody class="divide-y divide-gray-50 text-center">
 
                 @forelse($bookings as $b)
 
@@ -473,9 +476,9 @@ $statusStyle = [
 
                     </td>
 
-                    <td class="px-6 py-4 text-right">
+                    <td class="px-6 py-4">
 
-                        <div class="flex justify-end gap-2">
+                        <div class="flex justify-center gap-2">
 
                             {{-- DETAIL --}}
                             <button class="w-9 h-9 inline-flex items-center justify-center

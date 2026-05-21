@@ -242,7 +242,7 @@ class MatchController extends Controller
             ],
 
             'open' => [
-                'label' => 'open',
+                'label' => 'Menunggu',
                 'count' => $matches->where('status', 'open')->count(),
             ],
 
@@ -254,11 +254,6 @@ class MatchController extends Controller
             'finished' => [
                 'label' => 'Selesai',
                 'count' => $matches->where('status', 'finished')->count(),
-            ],
-
-            'cancelled' => [
-                'label' => 'Dibatalkan',
-                'count' => $matches->where('status', 'cancelled')->count(),
             ],
 
         ];

@@ -30,4 +30,9 @@ class Venue extends Model
    {
       return $this->hasMany(Field::class);
    }
+
+   public function reviews()
+   {
+      return $this->hasManyThrough(Review::class, Field::class);
+   }
 }

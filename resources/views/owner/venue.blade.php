@@ -142,8 +142,7 @@
                     <div>
                         <p class="font-medium text-gray-900">{{ $field->name }}</p>
                         <p class="text-sm text-gray-500">
-                            {{ $field->sport_type ?? '-' }}
-                            @if($field->capacity) • {{ $field->capacity }} orang @endif
+                            @if($field->capacity) Kapasitas: {{ $field->capacity }} orang @endif
                         </p>
                     </div>
 
@@ -312,13 +311,14 @@
                 $todayBookings = \App\Models\Booking::whereIn('field_id', $venueFieldIds)
                                      ->whereDate('created_at', today())->count();
                 $hoursUsed     = \App\Models\Booking::whereIn('field_id', $venueFieldIds)
-                                    //  ->whereDate('booking_date', today())
                                      ->where('status', 'confirmed')
+                                     ->with('timeSlot')
                                      ->get()
-                                     ->sum(fn($b) =>
-                                         \Carbon\Carbon::parse($b->start_time)
-                                             ->diffInHours(\Carbon\Carbon::parse($b->end_time))
-                                     );
+                                     ->sum(function($b) {
+                                         if (!$b->timeSlot) return 0;
+                                         return \Carbon\Carbon::parse($b->timeSlot->start_time)
+                                             ->diffInHours(\Carbon\Carbon::parse($b->timeSlot->end_time));
+                                     });
             @endphp
             <div class="grid grid-cols-2 gap-4">
                 <div class="bg-gray-50 rounded-xl p-4">

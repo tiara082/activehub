@@ -17,7 +17,7 @@
 <div class="px-10 py-8">
 
     <!-- Back Button -->
-    <a href="{{ route('matches.index') }}" class="inline-flex items-center text-[#1b3a1b] hover:text-[#2a5a2a] mb-6">
+    <a href="{{ url()->previous() !== url()->current() ? url()->previous() : route('matches.index') }}" class="inline-flex items-center text-[#1b3a1b] hover:text-[#2a5a2a] mb-6">
         <i class="fas fa-arrow-left mr-2"></i> Kembali
     </a>
 
@@ -150,6 +150,12 @@
                             <p class="font-bold text-gray-800">{{ $match->creator->name ?? '-' }}</p>
                         </div>
                     </div>
+
+                    @auth
+                        @if(auth()->id() === $match->creator_id)
+                            @include('pubmatch.partials.participants')
+                        @endif
+                    @endauth
 
                     <!-- CTA -->
                     @auth

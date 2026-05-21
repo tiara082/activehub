@@ -135,9 +135,9 @@ class EarningsController extends Controller
         $txns = [];
         foreach ($txnsData as $booking) {
             $source = ($booking->user_id === $user->id) ? 'offline' : 'online';
-            $userName = $booking->user ? $booking->user->name : 'Guest';
+            $userName = $booking->user ? $booking->user->name : 'Tamu';
             if ($source === 'offline') {
-                $userName = 'Booking Offline';
+                $userName = 'Pemesanan Offline';
             }
 
             $detail = $booking->field->name . ' • 1 jam';
