@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\MatchController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\BookingPaymentController;
 
 // ==========================
 // PUBLIC
@@ -97,7 +98,7 @@ Route::get('/venues/{id}/fields', function ($id) {
     return view('field.index', compact('id'));
 })->name('venues.fields');
 
-// Booking dari venue (create booking lalu redirect ke create match)
+// Booking dari venue — buat booking pending lalu arahkan ke payment
 Route::post('/venues/book', function (\Illuminate\Http\Request $request) {
     $request->validate([
         'time_slot_id' => ['required', 'exists:time_slots,id'],
@@ -110,29 +111,26 @@ Route::post('/venues/book', function (\Illuminate\Http\Request $request) {
         'field_id'        => $slot->field_id,
         'time_slot_id'    => $slot->id,
         'total_price'     => $slot->field->price_per_hour,
-        'status'          => 'confirmed',
+        'status'          => 'pending',
         'is_public_match' => 0,
     ]);
 
-    return redirect()->route('matches.create', ['booking' => $booking->id]);
+    return redirect()->route('payment.show', $booking->id);
 })->name('venues.book')->middleware('auth');
 
 // ==========================
-// CHECKOUT
+// PAYMENT — Booking Flow
 // ==========================
-Route::get('/checkout/{booking}', [CheckoutController::class, 'show'])->name('checkout.show');
-Route::post('/checkout/{booking}/pay', [CheckoutController::class, 'pay'])->name('checkout.pay');
+Route::middleware('auth')->group(function () {
+    Route::get('/payment/{booking}',         [BookingPaymentController::class, 'show'])->name('payment.show');
+    Route::post('/payment/{booking}/snap',   [BookingPaymentController::class, 'createSnap'])->name('payment.snap');
+    Route::post('/payment/{booking}/qris',   [BookingPaymentController::class, 'createQris'])->name('payment.qris');
+    Route::get('/payment/{booking}/qr',      [BookingPaymentController::class, 'qr'])->name('payment.qr');
+    Route::get('/payment/{booking}/status',  [BookingPaymentController::class, 'checkStatus'])->name('payment.status');
+    Route::get('/payment/{booking}/success', [BookingPaymentController::class, 'success'])->name('payment.success');
+});
 
-// ==========================
-// PAYMENT
-// ==========================
-Route::get('/payment', fn () => view('booking.index'))->name('payment.index');
-Route::get('/payment/qr', fn () => view('booking.qr'))
-    ->name('payment.qr');
-Route::get('/payment/success', fn () => view('booking.success'))
-    ->name('payment.success');
-
-// Midtrans payment routes
+// Midtrans payment routes (Match)
 Route::post('/payment/match', [PaymentController::class, 'createMatchPayment'])
     ->name('payment.match.create');
 Route::post('/payment/match/finish', [PaymentController::class, 'matchFinish'])

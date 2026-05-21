@@ -15,6 +15,9 @@ class Booking extends Model
         'total_price',
         'status',
         'is_public_match',
+        'snap_token',
+        'midtrans_order_id',
+        'payment_method',
     ];
 
     protected $casts = [

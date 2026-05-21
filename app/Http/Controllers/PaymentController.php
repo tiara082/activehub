@@ -193,6 +193,7 @@ class PaymentController extends Controller
 
     private function handleSuccessPayment(string $orderId)
     {
+        // Handle MATCH-{matchId}-{userId}-{time}
         if (preg_match('/^MATCH-(\d+)-(\d+)-/', $orderId, $matches)) {
             $matchId = $matches[1];
             $userId  = $matches[2];
@@ -201,6 +202,13 @@ class PaymentController extends Controller
                 ['match_id' => $matchId, 'user_id' => $userId],
                 ['payment_status' => 'confirmed']
             );
+        }
+
+        // Handle BOOKING-{bookingId}-{time}
+        if (preg_match('/^BOOKING-(\d+)-/', $orderId, $matches)) {
+            $bookingId = $matches[1];
+            \App\Models\Booking::where('id', $bookingId)
+                ->update(['status' => 'confirmed']);
         }
     }
 
@@ -215,6 +223,13 @@ class PaymentController extends Controller
                 ['payment_status' => 'pending']
             );
         }
+
+        // Handle BOOKING-{bookingId}-{time} — tetap pending
+        if (preg_match('/^BOOKING-(\d+)-/', $orderId, $matches)) {
+            $bookingId = $matches[1];
+            \App\Models\Booking::where('id', $bookingId)
+                ->update(['status' => 'pending']);
+        }
     }
 
     private function handleFailedPayment(string $orderId)
@@ -226,6 +241,13 @@ class PaymentController extends Controller
             MatchParticipant::where('match_id', $matchId)
                 ->where('user_id', $userId)
                 ->update(['payment_status' => 'rejected']);
+        }
+
+        // Handle BOOKING-{bookingId}-{time} — batalkan booking
+        if (preg_match('/^BOOKING-(\d+)-/', $orderId, $matches)) {
+            $bookingId = $matches[1];
+            \App\Models\Booking::where('id', $bookingId)
+                ->update(['status' => 'cancelled']);
         }
     }
 }
