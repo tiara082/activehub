@@ -37,7 +37,7 @@ Route::put('/profile/update', [AuthController::class, 'updateProfile'])
  Route::put('/profile/password', [AuthController::class, 'updatePassword'])
         ->name('profile.password');
 
-Route::get('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 // ==========================
 // MATCH
