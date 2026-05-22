@@ -8,9 +8,6 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script type="text/javascript"
-        src="https://app.sandbox.midtrans.com/snap/snap.js"
-        data-client-key="{{ config('midtrans.client_key') }}"></script>
 </head>
 
 <body class="bg-[#f6f7f6]" style="font-family:'DM Sans',sans-serif;">
@@ -22,7 +19,7 @@
     </h1>
 </div>
 
-<form id="matchForm" class="max-w-4xl mx-auto px-6 py-10">
+<form id="matchForm" class="max-w-4xl mx-auto px-6 py-10" method="POST" action="{{ route('matches.store') }}">
 
     @csrf
     <input type="hidden" name="booking_id" value="{{ $booking?->id }}">
@@ -72,7 +69,7 @@
                     <div>
                         <label class="text-sm font-medium">Tanggal</label>
                         <input readonly
-                            value="{{ $booking->timeSlot->date ?? '-' }}"
+                            value="{{ $booking->timeSlot ? $booking->timeSlot->date->format('Y-m-d') : '-' }}"
                             type="date"
                             class="w-full border rounded-lg p-3 mt-1 bg-gray-50 text-gray-700">
                     </div>
@@ -80,7 +77,7 @@
                     <div>
                         <label class="text-sm font-medium">Jam</label>
                         <input readonly
-                            value="{{ $booking->timeSlot->start_time ?? '' }} - {{ $booking->timeSlot->end_time ?? '' }}"
+                            value="{{ $booking->timeSlot ? \Carbon\Carbon::parse($booking->timeSlot->start_time)->format('H:i') . ' - ' . \Carbon\Carbon::parse($booking->timeSlot->end_time)->format('H:i') : '-' }}"
                             class="w-full border rounded-lg p-3 mt-1 bg-gray-50 text-gray-700">
                     </div>
                 </div>
@@ -133,8 +130,8 @@
                         {{ $booking->field->name ?? '' }} &mdash;
                         {{ $booking->field->sport_type ?? '' }}
                         &middot;
-                        {{ $booking->timeSlot->date ?? '' }}
-                        {{ $booking->timeSlot->start_time ?? '' }}-{{ $booking->timeSlot->end_time ?? '' }}
+                        {{ $booking->timeSlot && $booking->timeSlot->date ? $booking->timeSlot->date->format('d M Y') : '' }}
+                        ({{ $booking->timeSlot ? \Carbon\Carbon::parse($booking->timeSlot->start_time)->format('H:i') . ' - ' . \Carbon\Carbon::parse($booking->timeSlot->end_time)->format('H:i') : '' }})
                     </p>
                 </div>
 
@@ -235,8 +232,8 @@
                     </button>
 
                     <button type="submit" id="publishBtn"
-                        class="bg-yellow-400 text-black px-6 py-2.5 rounded-lg text-sm font-bold shadow-sm hover:shadow-md hover:scale-[1.01] transition">
-                        Publish & Bayar
+                        class="bg-[#123012] text-white px-6 py-2.5 rounded-lg text-sm font-bold shadow-sm hover:shadow-md hover:scale-[1.01] transition">
+                        Publikasikan Match
                     </button>
                 </div>
 
@@ -246,12 +243,7 @@
     </div>
 </form>
 
-<div id="loadingOverlay" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-2xl p-8 text-center">
-        <div class="animate-spin w-10 h-10 border-4 border-[#123012] border-t-transparent rounded-full mx-auto mb-4"></div>
-        <p class="font-medium">Memproses pembayaran...</p>
-    </div>
-</div>
+
 
 <script>
 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
@@ -304,7 +296,7 @@ function calcPricePerPerson() {
             <div class="flex justify-between"><span>Total harga lapangan:</span><span class="font-semibold">Rp ${fieldPrice.toLocaleString('id-ID')}</span></div>
             <div class="flex justify-between"><span>Dibagi ${slots} orang:</span><span class="font-semibold">Rp ${fieldPrice.toLocaleString('id-ID')} ÷ ${slots} = Rp ${perPerson.toLocaleString('id-ID')}</span></div>
             <hr class="border-blue-200 my-1">
-            <div class="flex justify-between font-bold"><span>Kamu (pembuat) bayar:</span><span class="text-green-700">Rp ${fieldPrice.toLocaleString('id-ID')} (full)</span></div>
+            <div class="flex justify-between font-bold"><span>Kamu (pembuat):</span><span class="text-green-700">✓ Sudah Lunas (bayar saat checkout)</span></div>
             <div class="flex justify-between font-bold"><span>Joiner bayar:</span><span class="text-yellow-700">Rp ${perPerson.toLocaleString('id-ID')} / orang</span></div>
         `;
         content.innerHTML = html;
@@ -340,87 +332,10 @@ document.addEventListener('click', function(e) {
 // Initial calc
 calcPricePerPerson();
 
-document.getElementById('matchForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-
+document.getElementById('matchForm').addEventListener('submit', function(e) {
     const btn = document.getElementById('publishBtn');
     btn.disabled = true;
     btn.innerText = 'Memproses...';
-
-    const formData = new FormData(this);
-
-    try {
-        const res = await fetch('{{ route("matches.store") }}', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json',
-            },
-            body: formData,
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            alert(data.message || 'Gagal membuat match');
-            btn.disabled = false;
-            btn.innerText = 'Publish & Bayar';
-            return;
-        }
-
-        const matchId = data.match_id;
-
-        // Creator always pays full price
-        const payRes = await fetch('{{ route("payment.match.create") }}', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({ match_id: matchId, is_creator: true }),
-        });
-
-        const payData = await payRes.json();
-
-        if (!payRes.ok || !payData.snap_token) {
-            alert(payData.error || 'Gagal membuat token pembayaran');
-            btn.disabled = false;
-            btn.innerText = 'Publish & Bayar';
-            return;
-        }
-
-        showLoading(true);
-
-        snap.pay(payData.snap_token, {
-            onSuccess: function(result) {
-                showLoading(false);
-                window.location.href = '{{ url("payment/match/finish") }}?order_id=' + payData.order_id + '&match_id=' + matchId;
-            },
-            onPending: function(result) {
-                showLoading(false);
-                alert('Pembayaran pending. Silakan selesaikan pembayaran.');
-                window.location.href = '{{ url("matches") }}/' + matchId;
-            },
-            onError: function(result) {
-                showLoading(false);
-                alert('Pembayaran gagal. Silakan coba lagi.');
-                btn.disabled = false;
-                btn.innerText = 'Publish & Bayar';
-            },
-            onClose: function() {
-                showLoading(false);
-                alert('Kamu menutup popup. Match sudah dibuat, bisa bayar nanti.');
-                window.location.href = '{{ url("matches") }}/' + matchId;
-            }
-        });
-
-    } catch (err) {
-        console.error(err);
-        alert('Terjadi kesalahan. Silakan coba lagi.');
-        btn.disabled = false;
-        btn.innerText = 'Publish & Bayar';
-    }
 });
 </script>
 

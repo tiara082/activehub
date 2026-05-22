@@ -158,7 +158,21 @@ class MatchController extends Controller
             return back()->with('error', 'Kamu sudah join match ini');
         }
 
-        $match->participants()->attach(Auth::id());
+        // Validasi Kapasitas
+        $currentParticipants = $match->participants()->where('payment_status', 'confirmed')->count();
+        if ($currentParticipants >= $match->total_players) {
+            return back()->with('error', 'Pertandingan sudah penuh');
+        }
+
+        // Proteksi Bypass Pembayaran
+        if ($match->price_per_person > 0) {
+            return back()->with('error', 'Pertandingan ini berbayar. Silakan bergabung dari halaman detail match.');
+        }
+
+        // Join match gratis secara aman
+        $match->participants()->attach(Auth::id(), [
+            'payment_status' => 'confirmed'
+        ]);
 
         return back()->with('success', 'Berhasil join match');
     }
@@ -185,6 +199,13 @@ class MatchController extends Controller
             'status'            => 'open',
         ]);
 
+        // Otomatis daftarkan creator sebagai participant (sudah lunas — bayar saat checkout booking)
+        \App\Models\MatchParticipant::create([
+            'match_id'       => $match->id,
+            'user_id'        => Auth::id(),
+            'payment_status' => 'confirmed',
+        ]);
+
         if ($request->expectsJson()) {
             return response()->json([
                 'success'  => true,
@@ -194,8 +215,8 @@ class MatchController extends Controller
         }
 
         return redirect()
-            ->route('matches.index')
-            ->with('success', 'Match berhasil dibuat!');
+            ->route('matches.show', $match->id)
+            ->with('success', 'Match berhasil dipublikasikan!');
     }
 
         public function myMatches(Request $request)

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $venue->name }} - Detail Lapangan</title>
@@ -28,7 +29,7 @@
             </p>
             <div class="flex items-center gap-2 mb-6">
                 <i class="fas fa-clock text-[#1b3a1b] text-sm"></i>
-                <span class="text-gray-500 text-sm">{{ \Carbon\Carbon::parse($venue->open_time)->format('H:i') }} â€“ {{ \Carbon\Carbon::parse($venue->close_time)->format('H:i') }}</span>
+                <span class="text-gray-500 text-sm">{{ \Carbon\Carbon::parse($venue->open_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($venue->close_time)->format('H:i') }}</span>
             </div>
 
             <!-- TWO COLUMN LAYOUT -->
@@ -191,7 +192,7 @@
                     <input type="hidden" name="time_slot_id" id="selectedSlotId">
                     <button type="submit"
                         class="bg-[#1b3a1b] text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-sm hover:bg-[#2a5a2a] transition">
-                        Booking & Buat Match â†’
+                        Booking & Bayar
                     </button>
                 </form>
             </div>
@@ -403,7 +404,7 @@
 
         document.getElementById('selectedSlotId').value = slotId;
         document.getElementById('selectedInfo').innerHTML =
-            `${field} â€” ${sport} â€” ${time} â€” Rp ${price.toLocaleString('id-ID')}`;
+            `${field} - ${sport} - ${time} - Rp ${price.toLocaleString('id-ID')}`;
 
         document.getElementById('bookingBar').classList.remove('hidden');
     }

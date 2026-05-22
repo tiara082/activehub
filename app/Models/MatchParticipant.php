@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MatchParticipant extends Model
 {
+    const UPDATED_AT = null;
+
     protected $table = 'match_participants';
 
     protected $fillable = [

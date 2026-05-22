@@ -107,6 +107,16 @@ class PaymentController extends Controller
         if ($matchId) {
             $match = GameMatch::findOrFail($matchId);
 
+            // Validasi Kapasitas
+            $currentParticipants = MatchParticipant::where('match_id', $match->id)
+                ->where('payment_status', 'confirmed')
+                ->count();
+
+            if ($currentParticipants >= $match->total_players) {
+                return redirect()->route('matches.show', $match->id)
+                    ->with('error', 'Pembayaran berhasil dikonfirmasi, namun kuota pertandingan sudah penuh. Silakan hubungi admin untuk proses refund.');
+            }
+
             $exists = MatchParticipant::where('match_id', $match->id)
                 ->where('user_id', Auth::id())
                 ->exists();
@@ -137,6 +147,22 @@ class PaymentController extends Controller
             $orderId     = $notif->order_id;
             $transaction = $notif->transaction_status;
             $fraudStatus = $notif->fraud_status;
+            $statusCode  = $notif->status_code;
+            $grossAmount = $notif->gross_amount;
+            $signature   = $notif->signature_key;
+
+            // Validasi Signature Key Midtrans (Issue 1)
+            $serverKey = config('midtrans.server_key');
+            $localSignature = hash("sha512", $orderId . $statusCode . $grossAmount . $serverKey);
+
+            if ($signature !== $localSignature) {
+                Log::error('Midtrans Signature Mismatch', [
+                    'order_id' => $orderId,
+                    'signature_key' => $signature,
+                    'calculated' => $localSignature,
+                ]);
+                return response()->json(['status' => 'error', 'message' => 'Invalid signature'], 403);
+            }
 
             Log::info('Midtrans Notification', [
                 'order_id'           => $orderId,
@@ -182,6 +208,15 @@ class PaymentController extends Controller
             return response()->json(['error' => 'Kamu sudah bergabung di match ini'], 400);
         }
 
+        // Validasi Kapasitas
+        $currentParticipants = MatchParticipant::where('match_id', $match->id)
+            ->where('payment_status', 'confirmed')
+            ->count();
+
+        if ($currentParticipants >= $match->total_players) {
+            return response()->json(['error' => 'Pertandingan sudah penuh'], 400);
+        }
+
         MatchParticipant::create([
             'match_id'       => $match->id,
             'user_id'        => $user->id,
@@ -197,6 +232,23 @@ class PaymentController extends Controller
         if (preg_match('/^MATCH-(\d+)-(\d+)-/', $orderId, $matches)) {
             $matchId = $matches[1];
             $userId  = $matches[2];
+
+            $match = GameMatch::find($matchId);
+            if ($match) {
+                // Validasi Kapasitas sebelum konfirmasi pembayaran
+                $currentParticipants = MatchParticipant::where('match_id', $matchId)
+                    ->where('payment_status', 'confirmed')
+                    ->count();
+
+                if ($currentParticipants >= $match->total_players) {
+                    Log::warning("Match full. Cannot confirm payment for Match ID: {$matchId}, User ID: {$userId}");
+                    MatchParticipant::updateOrCreate(
+                        ['match_id' => $matchId, 'user_id' => $userId],
+                        ['payment_status' => 'rejected']
+                    );
+                    return;
+                }
+            }
 
             MatchParticipant::updateOrCreate(
                 ['match_id' => $matchId, 'user_id' => $userId],
