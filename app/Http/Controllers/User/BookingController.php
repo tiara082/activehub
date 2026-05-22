@@ -137,4 +137,14 @@ class BookingController extends Controller
         'cancelledBookings'
     ));
 }
+
+public function show(Booking $booking)
+{
+    // Ensure the booking belongs to the authenticated user
+    if ($booking->user_id !== Auth::id()) {
+        abort(403, 'Unauthorized');
+    }
+
+    return view('user.bookings-detail', compact('booking'));
+}
 }

@@ -156,6 +156,8 @@ Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
     ->name('my-match');
     Route::get('/bookings', [\App\Http\Controllers\User\BookingController::class, 'index'])
         ->name('bookings');
+    Route::get('/bookings/{booking}', [\App\Http\Controllers\User\BookingController::class, 'show'])
+        ->name('bookings.show');
     Route::post('/reviews', [\App\Http\Controllers\User\ReviewController::class, 'store'])
         ->name('reviews.store');
     Route::get('/profile', fn () => view('user.profile'))->name('profile');

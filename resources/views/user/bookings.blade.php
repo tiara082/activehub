@@ -397,13 +397,13 @@ $statusStyle = [
                         <td class="px-6 py-4 text-center">
                             <div class="flex justify-center gap-2 items-center">
                                 @if($booking->status_label === 'Menunggu')
-                                    <a href="{{ route('checkout.show', $booking->id) }}"
+                                    <a href="{{ route('user.bookings.show', $booking->id) }}"
                                        class="w-9 h-9 inline-flex items-center justify-center
                                               rounded-xl hover:bg-gray-100 transition text-gray-500" title="Lihat Detail">
                                         <i class="fa-solid fa-eye text-sm"></i>
                                     </a>
                                 @elseif($booking->status_label === 'Terjadwal')
-                                    <a href="{{ route('checkout.show', $booking->id) }}"
+                                    <a href="{{ route('user.bookings.show', $booking->id) }}"
                                        class="w-9 h-9 inline-flex items-center justify-center
                                               rounded-xl hover:bg-gray-100 transition text-gray-500" title="Lihat Detail">
                                         <i class="fa-solid fa-eye text-sm"></i>

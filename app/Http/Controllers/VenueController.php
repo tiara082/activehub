@@ -92,14 +92,50 @@ class VenueController extends Controller
     {
         $date = $request->query('date', \Carbon\Carbon::today()->format('Y-m-d'));
 
-        $venue = Venue::with(['fields' => function($query) use ($date) {
+        $venue = Venue::with('fields')->findOrFail($id);
+
+        // Generate dynamic time slots if none exist for this date
+        foreach ($venue->fields as $field) {
+            $exists = \App\Models\TimeSlot::where('field_id', $field->id)
+                ->whereDate('date', $date)
+                ->exists();
+            if (!$exists) {
+                $openTime = $venue->open_time ?: '07:00:00';
+                $closeTime = $venue->close_time ?: '22:00:00';
+                
+                try {
+                    $start = \Carbon\Carbon::parse($openTime);
+                    $end = \Carbon\Carbon::parse($closeTime);
+                } catch (\Exception $e) {
+                    $start = \Carbon\Carbon::parse('07:00:00');
+                    $end = \Carbon\Carbon::parse('22:00:00');
+                }
+                
+                $current = $start->copy();
+                while ($current->copy()->addHours(2)->lte($end)) {
+                    $slotStart = $current->format('H:i');
+                    $current->addHours(2);
+                    $slotEnd = $current->format('H:i');
+                    
+                    \App\Models\TimeSlot::create([
+                        'field_id'   => $field->id,
+                        'date'       => $date,
+                        'start_time' => $slotStart,
+                        'end_time'   => $slotEnd,
+                    ]);
+                }
+            }
+        }
+
+        // Reload fields and time slots properly filtering by date and booking status
+        $venue->load(['fields' => function($query) use ($date) {
             $query->with(['timeSlots' => function($q) use ($date) {
                 $q->whereDate('date', $date)
                   ->whereDoesntHave('bookings', function($b) {
                       $b->whereIn('status', ['paid', 'confirmed', 'completed']);
                   });
             }]);
-        }])->findOrFail($id);
+        }]);
 
         $venue->load(['reviews.user']);
 
