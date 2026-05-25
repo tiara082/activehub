@@ -18,7 +18,10 @@ class FieldResource extends Resource
 {
     protected static ?string $model = Field::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-map';
+
+    protected static ?string $modelLabel = 'Lapangan';
+    protected static ?string $pluralModelLabel = 'Lapangan';
 
     public static function form(Schema $schema): Schema
     {

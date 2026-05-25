@@ -47,6 +47,21 @@ class AdminPanelProvider extends PanelProvider
                         background-image: radial-gradient(at top left, rgba(250, 204, 21, 0.1) 0%, transparent 40%),
                                           radial-gradient(at bottom right, rgba(16, 185, 129, 0.1) 0%, transparent 40%);
                     }
+                    /* Reduce sidebar menu spacing */
+                    .fi-sidebar-nav-group-items {
+                        gap: 0.125rem !important;
+                    }
+                    .fi-sidebar-nav-item .fi-sidebar-item-button {
+                        padding-top: 0.375rem !important;
+                        padding-bottom: 0.375rem !important;
+                        min-height: 2rem !important;
+                    }
+                    ul.fi-sidebar-nav-groups {
+                        gap: 0.5rem !important;
+                    }
+                    .fi-sidebar-nav-item {
+                        margin-bottom: 0.125rem !important;
+                    }
                     /* Make the login form card slightly styled */
                     .fi-simple-main .fi-modal-window {
                         box-shadow: 0 10px 40px -10px rgba(11, 61, 11, 0.1);

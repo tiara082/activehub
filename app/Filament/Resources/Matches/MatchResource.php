@@ -18,7 +18,10 @@ class MatchResource extends Resource
 {
     protected static ?string $model = GameMatch::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-flag';
+
+    protected static ?string $modelLabel = 'Pertandingan';
+    protected static ?string $pluralModelLabel = 'Pertandingan';
 
     public static function form(Schema $schema): Schema
     {

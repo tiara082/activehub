@@ -18,7 +18,10 @@ class TimeSlotResource extends Resource
 {
     protected static ?string $model = TimeSlot::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clock';
+
+    protected static ?string $modelLabel = 'Waktu Tersedia';
+    protected static ?string $pluralModelLabel = 'Jadwal';
 
     public static function form(Schema $schema): Schema
     {
