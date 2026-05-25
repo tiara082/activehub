@@ -695,6 +695,25 @@
         </div>
 
         <div class="field-group">
+          <label class="field-label" for="gender">Gender / Jenis Kelamin</label>
+          <div class="phone-wrap">
+            <select
+              class="input-field @error('gender') !border-red-400 @enderror"
+              id="gender"
+              name="gender"
+              required
+            >
+              <option value="" disabled {{ old('gender') ? '' : 'selected' }}>Pilih Gender</option>
+              <option value="male" {{ old('gender') === 'male' ? 'selected' : '' }}>Pria (Male)</option>
+              <option value="female" {{ old('gender') === 'female' ? 'selected' : '' }}>Wanita (Female)</option>
+            </select>
+          </div>
+          @error('gender')
+          <p class="error-text">{{ $message }}</p>
+          @enderror
+        </div>
+
+        <div class="field-group">
           <label class="field-label" for="password">Password</label>
           <div class="input-wrap">
             <input

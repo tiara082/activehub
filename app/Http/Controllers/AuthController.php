@@ -78,6 +78,7 @@ class AuthController extends Controller
             'email'                 => ['required', 'email', 'max:255', 'unique:users,email'],
             'phone'                 => ['required', 'string', 'max:20', 'unique:users,phone'],
             'role'                  => ['required', 'in:owner,user'],
+            'gender'                => ['required', 'in:male,female'],
             'password'              => ['required', 'confirmed', Password::min(8)],
         ]);
 
@@ -89,6 +90,7 @@ class AuthController extends Controller
             'email'    => $request->input('email'),
             'phone'    => $phone,
             'role'     => $request->input('role'),
+            'gender'   => $request->input('gender'),
             'password' => Hash::make($request->input('password')),
         ]);
 
@@ -103,6 +105,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . Auth::id(),
             'phone' => 'nullable|string|max:20',
+            'gender' => 'required|in:male,female',
         ]);
 
         $user = User::findOrFail(Auth::id());
@@ -111,6 +114,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
+            'gender' => $request->gender,
         ]);
 
         return back()->with('success', 'Profile berhasil diperbarui');

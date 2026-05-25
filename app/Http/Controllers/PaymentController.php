@@ -41,6 +41,12 @@ class PaymentController extends Controller
         $match     = GameMatch::with(['booking', 'booking.field', 'booking.field.venue'])->findOrFail($request->match_id);
         $user      = Auth::user();
         $isCreator = $request->boolean('is_creator', false);
+
+        // Validasi Gender untuk Joiner
+        if (!$isCreator && $match->gender_preference !== 'mixed' && $user->gender !== $match->gender_preference) {
+            return response()->json(['error' => 'Gender Anda tidak sesuai dengan preferensi pertandingan ini.'], 400);
+        }
+
         $orderId   = 'MATCH-' . $match->id . '-' . $user->id . '-' . time();
 
         // Tentukan jumlah bayar
@@ -199,6 +205,11 @@ class PaymentController extends Controller
 
         $match = GameMatch::findOrFail($request->match_id);
         $user  = Auth::user();
+
+        // Validasi Gender
+        if ($match->gender_preference !== 'mixed' && $user->gender !== $match->gender_preference) {
+            return response()->json(['error' => 'Gender Anda tidak sesuai dengan preferensi pertandingan ini.'], 400);
+        }
 
         $exists = MatchParticipant::where('match_id', $match->id)
             ->where('user_id', $user->id)

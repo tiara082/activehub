@@ -35,6 +35,12 @@
             </div>
             @endif
 
+            @if(session('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
+                {{ session('error') }}
+            </div>
+            @endif
+
             <h1 class="text-3xl font-bold text-gray-800 mb-1">{{ $match->title ?? 'Public Match' }}</h1>
             <p class="text-gray-500 text-sm mb-1">
                 <i class="fas fa-map-marker-alt mr-1"></i> {{ $match->booking->field->venue->name ?? '' }} - {{ $match->booking->field->venue->city ?? '' }}

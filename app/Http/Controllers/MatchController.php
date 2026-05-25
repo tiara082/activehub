@@ -158,6 +158,11 @@ class MatchController extends Controller
             return back()->with('error', 'Kamu sudah join match ini');
         }
 
+        // Validasi Gender
+        if ($match->gender_preference !== 'mixed' && Auth::user()->gender !== $match->gender_preference) {
+            return back()->with('error', 'Gender Anda tidak sesuai dengan preferensi pertandingan ini.');
+        }
+
         // Validasi Kapasitas
         $currentParticipants = $match->participants()->where('payment_status', 'confirmed')->count();
         if ($currentParticipants >= $match->total_players) {

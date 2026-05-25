@@ -137,6 +137,35 @@
                     </div>
 
                 </div>
+
+                {{-- GENDER --}}
+                <div>
+
+                    <label class="text-sm font-medium text-gray-700 mb-2 block">
+                        Gender / Jenis Kelamin
+                    </label>
+
+                    <div class="relative">
+
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                            <i class="fas fa-venus-mars"></i>
+                        </span>
+
+                        <select
+                            name="gender"
+                            class="w-full border border-gray-200
+                                   rounded-xl pl-11 pr-4 py-3
+                                   focus:outline-none
+                                   focus:ring-2
+                                   focus:ring-[#0b3d0b]/20
+                                   focus:border-[#0b3d0b]">
+                            <option value="male" {{ old('gender', $user->gender) === 'male' ? 'selected' : '' }}>Pria (Male)</option>
+                            <option value="female" {{ old('gender', $user->gender) === 'female' ? 'selected' : '' }}>Wanita (Female)</option>
+                        </select>
+
+                    </div>
+
+                </div>
                 </div>
 
                 {{-- BUTTON --}}

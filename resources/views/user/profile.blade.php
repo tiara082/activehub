@@ -74,6 +74,10 @@
                         {{ $user->phone }}
                     </p>
 
+                    <p>
+                        <i class="fas fa-venus-mars mr-1"></i>
+                        {{ $user->gender === 'female' ? 'Wanita (Female)' : 'Pria (Male)' }}
+                    </p>
                 </div>
 
             </div>
