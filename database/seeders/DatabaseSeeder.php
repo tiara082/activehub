@@ -22,6 +22,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             FieldSeeder::class,
             BookingSeeder::class,
+            GameMatchSeeder::class,
         ]);
     }
 }
+

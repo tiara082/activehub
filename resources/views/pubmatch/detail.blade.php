@@ -261,13 +261,37 @@ async function payAndJoin() {
                 });
             },
             onPending: function(result) {
-                alert('Pembayaran pending. Silakan selesaikan pembayaran.');
+                alert('Simulasi: Menganggap pembayaran pending sebagai sukses.');
+                showLoading(true);
+                fetch('{{ route("payment.match.finish") }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ order_id: data.order_id, match_id: matchId }),
+                }).then(() => {
+                    window.location.reload();
+                });
             },
             onError: function(result) {
                 alert('Pembayaran gagal. Silakan coba lagi.');
             },
             onClose: function() {
-                alert('Kamu menutup popup pembayaran.');
+                alert('Simulasi: Popup ditutup, menganggap pembayaran sukses.');
+                showLoading(true);
+                fetch('{{ route("payment.match.finish") }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ order_id: data.order_id, match_id: matchId }),
+                }).then(() => {
+                    window.location.reload();
+                });
             }
         });
 
