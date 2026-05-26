@@ -309,7 +309,6 @@
                         setLoading(false);
                     },
                     onClose: function() {
-                        alert('Silumasi: Menganggap pembayaran sukses meskipun popup ditutup.');
                         window.location.href = `/payment/${bookingId}/success`;
                     }
                 });

@@ -261,7 +261,6 @@ async function payAndJoin() {
                 });
             },
             onPending: function(result) {
-                alert('Simulasi: Menganggap pembayaran pending sebagai sukses.');
                 showLoading(true);
                 fetch('{{ route("payment.match.finish") }}', {
                     method: 'POST',
@@ -279,7 +278,6 @@ async function payAndJoin() {
                 alert('Pembayaran gagal. Silakan coba lagi.');
             },
             onClose: function() {
-                alert('Simulasi: Popup ditutup, menganggap pembayaran sukses.');
                 showLoading(true);
                 fetch('{{ route("payment.match.finish") }}', {
                     method: 'POST',
