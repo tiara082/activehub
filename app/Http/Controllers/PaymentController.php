@@ -135,7 +135,8 @@ class PaymentController extends Controller
                 ]);
             }
 
-            return redirect()->route('matches.show', $match->id)
+            return redirect()
+                ->route('matches.index')
                 ->with('success', 'Pembayaran berhasil! Kamu sudah bergabung di match ini.');
         }
 

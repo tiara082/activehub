@@ -171,7 +171,7 @@
                             <div class="w-full bg-green-50 text-green-700 py-3 rounded-xl font-semibold text-center border border-green-200">
                                 Kamu adalah pembuat match ini
                             </div>
-                        @elseif($match->status === 'open' && $match->participants->where('user_id', auth()->id())->count() === 0)
+                        @elseif($match->status === 'open' && $match->participants->where('id', auth()->id())->count() === 0)
                             @if($match->price_per_person > 0)
                                 <button onclick="payAndJoin()"
                                     class="w-full bg-[#1b3a1b] hover:bg-[#2a5a2a] text-white py-3 rounded-xl font-semibold shadow-md transition">
@@ -183,7 +183,7 @@
                                     Join Match (Gratis)
                                 </button>
                             @endif
-                        @elseif($match->participants->where('user_id', auth()->id())->count() > 0)
+                        @elseif($match->participants->where('id', auth()->id())->count() > 0)
                             <div class="w-full bg-gray-100 text-gray-600 py-3 rounded-xl font-semibold text-center border border-gray-200">
                                 <i class="fas fa-check-circle text-green-600 mr-1"></i> Kamu sudah bergabung
                             </div>

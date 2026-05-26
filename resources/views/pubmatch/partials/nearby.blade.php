@@ -76,6 +76,26 @@
                     </div>
 
                 </div>
+
+                @auth
+                    @if($match->creator_id === auth()->id())
+                        <div class="bg-blue-50 text-blue-700 text-xs font-semibold py-2.5 px-4 text-center border-t border-blue-100">
+                            <i class="fas fa-user-shield mr-1"></i> Kamu adalah Pembuat Match
+                        </div>
+                    @elseif($match->participants->where('id', auth()->id())->count() > 0)
+                        <div class="bg-green-50 text-green-700 text-xs font-semibold py-2.5 px-4 text-center border-t border-green-100">
+                            <i class="fas fa-check-circle mr-1"></i> Kamu sudah bergabung (Lihat Detail)
+                        </div>
+                    @else
+                        <div class="bg-gray-50 text-gray-500 text-xs font-semibold py-2.5 px-4 text-center border-t border-gray-100 group-hover:bg-green-50 group-hover:text-green-700 transition duration-200">
+                            Lihat Detail Match
+                        </div>
+                    @endif
+                @else
+                    <div class="bg-gray-50 text-gray-500 text-xs font-semibold py-2.5 px-4 text-center border-t border-gray-100 group-hover:bg-green-50 group-hover:text-green-700 transition duration-200">
+                        Lihat Detail Match
+                    </div>
+                @endauth
             </a>
             @endforeach
         </div>
