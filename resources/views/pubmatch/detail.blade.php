@@ -220,6 +220,34 @@ function showLoading(show) {
     document.getElementById('loadingOverlay').classList.toggle('hidden', !show);
 }
 
+function submitPaymentFinish(orderId, matchId) {
+    showLoading(true);
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{{ route("payment.match.finish") }}';
+    
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = '_token';
+    csrfInput.value = csrfToken;
+    form.appendChild(csrfInput);
+
+    const orderInput = document.createElement('input');
+    orderInput.type = 'hidden';
+    orderInput.name = 'order_id';
+    orderInput.value = orderId;
+    form.appendChild(orderInput);
+
+    const matchInput = document.createElement('input');
+    matchInput.type = 'hidden';
+    matchInput.name = 'match_id';
+    matchInput.value = matchId;
+    form.appendChild(matchInput);
+
+    document.body.appendChild(form);
+    form.submit();
+}
+
 // Joiner bayar = price_per_person (bukan full)
 async function payAndJoin() {
     showLoading(true);
@@ -247,49 +275,16 @@ async function payAndJoin() {
 
         snap.pay(data.snap_token, {
             onSuccess: function(result) {
-                showLoading(true);
-                fetch('{{ route("payment.match.finish") }}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({ order_id: data.order_id, match_id: matchId }),
-                }).then(() => {
-                    window.location.reload();
-                });
+                submitPaymentFinish(data.order_id, matchId);
             },
             onPending: function(result) {
-                showLoading(true);
-                fetch('{{ route("payment.match.finish") }}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({ order_id: data.order_id, match_id: matchId }),
-                }).then(() => {
-                    window.location.reload();
-                });
+                submitPaymentFinish(data.order_id, matchId);
             },
             onError: function(result) {
                 alert('Pembayaran gagal. Silakan coba lagi.');
             },
             onClose: function() {
-                showLoading(true);
-                fetch('{{ route("payment.match.finish") }}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({ order_id: data.order_id, match_id: matchId }),
-                }).then(() => {
-                    window.location.reload();
-                });
+                submitPaymentFinish(data.order_id, matchId);
             }
         });
 
