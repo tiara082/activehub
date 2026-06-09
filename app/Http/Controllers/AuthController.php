@@ -163,12 +163,16 @@ class AuthController extends Controller
      */
     private function redirectByRole()
     {
-        return match (Auth::user()->role) {
-            'admin' => redirect()->route('admin.dashboard'),
-            'owner' => redirect()->route('owner.venue'),
-            'user'  => redirect()->route('user.dashboard'),
-            default => redirect()->route('home'),
+        $role = Auth::user()->role;
+
+        $default = match ($role) {
+            'admin' => route('admin.dashboard'),
+            'owner' => route('owner.venue'),
+            'user'  => route('user.dashboard'),
+            default => route('home'),
         };
+
+        return redirect()->intended($default);
     }
 
     /**

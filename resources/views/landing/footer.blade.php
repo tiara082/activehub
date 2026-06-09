@@ -27,10 +27,10 @@
                             Cari Lapangan
                         </a>
                         <a href="{{ route('matches.index') }}" class="text-yellow-300/70 hover:text-yellow-300 transition">
-                            Pertandingan Terbuka
+                            Permainan Terbuka
                         </a>
                         <a href="{{ route('fields.index') }}" class="text-yellow-300/70 hover:text-yellow-300 transition">
-                            Pertandingan Saya
+                            Permainan Saya
                         </a>
                     </div>
                 </div>

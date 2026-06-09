@@ -55,8 +55,8 @@
                     </h1>
 
                     <p class="text-yellow-300/60 mt-5 max-w-md text-sm leading-relaxed">
-                        Digitalkan sistem reservasi lapangan Anda. Pantau pendapatan secara real-time,
-                        atur jadwal otomatis, dan jangkau lebih banyak komunitas olahraga di Malang.
+                        Digitalkan sistem reservasi lapangan Anda. Pantau pendapatan secara <i>real-time</i>,
+                        atur jadwal otomatis, dan jangkau lebih banyak komunitas olahraga di sekitarmu.
                     </p>
                 </div>
 
@@ -80,7 +80,7 @@
                     </h1>
 
                     <p class="text-yellow-300/60 mt-5 max-w-md text-sm leading-relaxed">
-                        Gak perlu ribet chat admin. Pilih lapangan favoritmu, gabung pertandingan terbuka yang tersedia,
+                        Gak perlu ribet <i>chat admin</i>. Pilih lapangan favoritmu, gabung permainan terbuka yang tersedia,
                         dan bayar instan tanpa drama. Olahraga jadi makin gampang!
                     </p>
                 </div>

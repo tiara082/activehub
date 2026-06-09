@@ -58,9 +58,9 @@ class MatchController extends Controller
                            [$lat, $lon, $lat, $radius]
                        );
             });
-        } elseif ($request->filled('city')) {
+        } elseif ($request->filled('city') || $request->filled('location')) {
             // Jika pencarian text manual, ambil kata pertama sebelum koma agar lebih akurat (misal: "Malang, Jawa Timur" -> "Malang")
-            $cityStr = strtolower($request->city);
+            $cityStr = strtolower($request->filled('city') ? $request->city : $request->location);
             $cityParts = explode(',', $cityStr);
             $city = trim($cityParts[0]);
 
@@ -191,7 +191,14 @@ class MatchController extends Controller
             'total_players'     => ['required', 'integer', 'min:2'],
             'price_per_person'  => ['required', 'integer', 'min:0'],
             'gender_preference' => ['required', 'in:mixed,male,female'],
+            'photo'             => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ]);
+
+        $photoUrl = null;
+        if ($request->hasFile('photo')) {
+            $path = $request->file('photo')->store('matches', 'public');
+            $photoUrl = '/storage/' . $path;
+        }
 
         $match = GameMatch::create([
             'booking_id'        => $validated['booking_id'],
@@ -202,6 +209,7 @@ class MatchController extends Controller
             'price_per_person'  => $validated['price_per_person'],
             'gender_preference' => $validated['gender_preference'],
             'status'            => 'open',
+            'photo_url'         => $photoUrl,
         ]);
 
         // Otomatis daftarkan creator sebagai participant (sudah lunas — bayar saat checkout booking)
@@ -222,6 +230,58 @@ class MatchController extends Controller
         return redirect()
             ->route('matches.show', $match->id)
             ->with('success', 'Match berhasil dipublikasikan!');
+    }
+
+    public function edit($id)
+    {
+        $match = GameMatch::with(['booking.field.venue', 'booking.timeSlot'])->findOrFail($id);
+        
+        // Ensure only creator can edit
+        if ($match->creator_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        return view('pubmatch.edit', compact('match'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $match = GameMatch::findOrFail($id);
+
+        if ($match->creator_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $validated = $request->validate([
+            'title'             => ['required', 'string', 'max:255'],
+            'description'       => ['required', 'string'],
+            'total_players'     => ['required', 'integer', 'min:2'],
+            'price_per_person'  => ['required', 'integer', 'min:0'],
+            'gender_preference' => ['required', 'in:mixed,male,female'],
+            'photo'             => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+        ]);
+
+        $photoUrl = $match->photo_url;
+        if ($request->hasFile('photo')) {
+            if ($photoUrl && str_starts_with($photoUrl, '/storage/')) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete(str_replace('/storage/', '', $photoUrl));
+            }
+            $path = $request->file('photo')->store('matches', 'public');
+            $photoUrl = '/storage/' . $path;
+        }
+
+        $match->update([
+            'title'             => $validated['title'],
+            'description'       => $validated['description'],
+            'total_players'     => $validated['total_players'],
+            'price_per_person'  => $validated['price_per_person'],
+            'gender_preference' => $validated['gender_preference'],
+            'photo_url'         => $photoUrl,
+        ]);
+
+        return redirect()
+            ->route('matches.show', $match->id)
+            ->with('success', 'Match berhasil diperbarui!');
     }
 
         public function myMatches(Request $request)

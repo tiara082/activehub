@@ -15,6 +15,7 @@ class Field extends Model
         'price_per_hour',
         'capacity',
         'is_indoor',
+        'photo_url',
     ];
 
     protected $casts = [

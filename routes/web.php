@@ -63,8 +63,9 @@ Route::middleware('auth')->group(function () {
 
     })->name('matches.create');
 
-    Route::post('/matches', [MatchController::class, 'store'])
-        ->name('matches.store');
+    Route::get('/matches/{id}/edit', [MatchController::class, 'edit'])->name('matches.edit');
+    Route::put('/matches/{id}', [MatchController::class, 'update'])->name('matches.update');
+    Route::post('/matches', [MatchController::class, 'store'])->name('matches.store');
 });
 
 // ==========================
@@ -88,7 +89,10 @@ Route::get('/venues/{id}', [VenueController::class, 'show'])->name('venues.show'
 
 Route::middleware('auth')->group(function () {
     Route::get('/venues/create', fn () => view('venue.create'))->name('venues.create');
-    Route::post('/venues', fn () => 'store')->name('venues.store');
+    Route::post('/venues', [\App\Http\Controllers\VenueController::class, 'store'])->name('venues.store');
+    Route::get('/venues/{id}/edit', [\App\Http\Controllers\VenueController::class, 'edit'])->name('venues.edit');
+    Route::put('/venues/{id}', [\App\Http\Controllers\VenueController::class, 'update'])->name('venues.update');
+    Route::delete('/venues/{id}', [\App\Http\Controllers\VenueController::class, 'destroy'])->name('venues.destroy');
 });
 
 // ==========================
@@ -141,7 +145,7 @@ Route::post('/payment/notification', [PaymentController::class, 'notification'])
     ->name('payment.notification');
 
 Route::post('/matches/{id}/join',[MatchController::class, 'join']
-)->name('match.join');
+)->name('match.join')->middleware('auth');
 
 // ==========================
 // USER AREA

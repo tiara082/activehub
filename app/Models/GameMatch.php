@@ -20,6 +20,7 @@ class GameMatch extends Model
         'price_per_person',
         'gender_preference',
         'status',
+        'photo_url',
     ];
 
     protected $casts = [

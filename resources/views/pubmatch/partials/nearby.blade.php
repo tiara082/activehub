@@ -1,7 +1,7 @@
 @if($matches->count() > 0)
     <div class="mb-10">
         <div class="flex items-center gap-2 mb-4 px-1">
-            <h2 class="text-xl font-bold text-gray-900">Pertandingan Terdekat dari Lokasi Anda</h2>
+            <h2 class="text-xl font-bold text-gray-900">Permainan Terdekat dari Lokasi Anda</h2>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -105,6 +105,6 @@
         <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center mb-3">
             <i class="fas fa-search-location text-gray-400 text-xl"></i>
         </div>
-        <p class="text-gray-500 font-medium">Belum ada pertandingan di sekitar Anda.</p>
+        <p class="text-gray-500 font-medium">Belum ada permainan di sekitar Anda.</p>
     </div>
 @endif

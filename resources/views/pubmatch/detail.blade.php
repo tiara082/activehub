@@ -24,7 +24,7 @@
     <!-- Match Header -->
     <div class="bg-white rounded-xl overflow-hidden mb-8 shadow-sm">
         <div class="relative h-64">
-            <img src="{{ $match->booking->field->venue->photo_url ?? 'https://images.unsplash.com/photo-1584466977773-e625c37cdd50' }}"
+            <img src="{{ $match->photo_url ?? $match->booking->field->venue->photo_url ?? 'https://images.unsplash.com/photo-1584466977773-e625c37cdd50' }}"
                  class="w-full h-full object-cover">
         </div>
         
@@ -171,6 +171,11 @@
                             <div class="w-full bg-green-50 text-green-700 py-3 rounded-xl font-semibold text-center border border-green-200">
                                 Kamu adalah pembuat match ini
                             </div>
+                        @elseif(auth()->user()->role === 'owner')
+                            <button type="button" onclick="alert('Maaf, Owner tidak bisa bergabung ke public match.')"
+                                class="w-full bg-[#1b3a1b] text-white py-3 rounded-xl font-semibold shadow-md opacity-50 cursor-not-allowed text-center">
+                                Join Match
+                            </button>
                         @elseif($match->status === 'open' && $match->participants->where('id', auth()->id())->count() === 0)
                             @if($match->price_per_person > 0)
                                 <button onclick="payAndJoin()"
@@ -193,10 +198,12 @@
                             </div>
                         @endif
                     @else
-                        <a href="{{ route('login') }}"
-                            class="block w-full bg-[#1b3a1b] hover:bg-[#2a5a2a] text-white py-3 rounded-xl font-semibold shadow-md transition text-center">
-                            Login untuk Join
-                        </a>
+                        <form method="POST" action="{{ route('match.join', $match->id) }}">
+                            @csrf
+                            <button type="submit" class="block w-full bg-[#1b3a1b] hover:bg-[#2a5a2a] text-white py-3 rounded-xl font-semibold shadow-md transition text-center">
+                                Gabung Match
+                            </button>
+                        </form>
                     @endif
                 </div>
 

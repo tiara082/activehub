@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Venue;
 use App\Models\Field;
 use App\Models\Booking;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class VenueController extends Controller
 {
@@ -39,8 +41,8 @@ class VenueController extends Controller
                       "(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) <= ?",
                       [$lat, $lon, $lat, $radius]
                   );
-        } elseif ($request->filled('city')) {
-            $cityStr = strtolower($request->city);
+        } elseif ($request->filled('city') || $request->filled('location')) {
+            $cityStr = strtolower($request->filled('city') ? $request->city : $request->location);
             $cityParts = explode(',', $cityStr);
             $city = trim($cityParts[0]);
 
@@ -158,43 +160,172 @@ class VenueController extends Controller
         ));
     }
 
+    public function create()
+    {
+        return view('venue.create');
+    }
+
     public function store(Request $request)
     {
-        // 1️⃣ Validasi
         $request->validate([
-            'name' => 'required',
-            'city' => 'required',
-            'price' => 'required|numeric',
+            'name' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'location' => 'required|string',
+            'description' => 'required|string',
+            'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'fields' => 'required|array',
         ]);
 
-        // 2️⃣ Simpan Venue
+        $photos = [];
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $file) {
+                $path = $file->store('venues', 'public');
+                $photos[] = '/storage/' . $path;
+            }
+        }
+        $photoUrl = count($photos) > 0 ? $photos[0] : null;
+
+        $facilities = $request->input('facilities', []);
+        $sportTypes = $request->input('sport_type', []);
+
         $venue = Venue::create([
+            'owner_id' => Auth::id() ?? 1,
             'name' => $request->name,
-            'location' => $request->city,
-            'description' => 'Default description',
+            'city' => $request->city,
+            'location' => $request->location,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'description' => $request->description,
+            'rules' => $request->rules,
+            'open_time' => $request->open_time,
+            'close_time' => $request->close_time,
+            'facilities' => json_encode($facilities),
+            'sport_type' => is_array($sportTypes) ? implode(', ', $sportTypes) : $sportTypes,
+            'photo_url' => $photoUrl,
+            'photos' => $photos,
+            'price_per_hour' => 0, // Akan dihitung dari min price fields
         ]);
 
-        // 3️⃣ Buat Field otomatis (biar sesuai ERD)
-        $field = Field::create([
-            'venue_id' => $venue->id,
-            'name' => 'Lapangan A',
-            'sport_type' => 'Futsal',
-            'price_per_hour' => $request->price,
-            'capacity' => 10,
-            'is_indoor' => true,
+        $minPrice = 0;
+        if ($request->has('fields')) {
+            $prices = [];
+            foreach ($request->fields as $fieldData) {
+                Field::create([
+                    'venue_id' => $venue->id,
+                    'name' => $fieldData['name'],
+                    'sport_type' => $fieldData['sport_type'] ?? 'Futsal',
+                    'price_per_hour' => $fieldData['price_per_hour'] ?? 0,
+                    'capacity' => $fieldData['capacity'] ?? 10,
+                    'is_indoor' => $fieldData['is_indoor'] ?? true,
+                ]);
+                $prices[] = $fieldData['price_per_hour'] ?? 0;
+            }
+            if (!empty($prices)) {
+                $minPrice = min($prices);
+                $venue->update(['price_per_hour' => $minPrice]);
+            }
+        }
+
+        return redirect()->route('venues.show', $venue->id)->with('success', 'Venue berhasil didaftarkan!');
+    }
+
+    public function edit($id)
+    {
+        $venue = Venue::with('fields')->findOrFail($id);
+        return view('venue.edit', compact('venue'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $venue = Venue::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'location' => 'required|string',
+            'description' => 'required|string',
+            'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'fields' => 'required|array',
         ]);
 
-        // 4️⃣ Buat Booking otomatis (SIMULASI)
-        $booking = Booking::create([
-            'user_id' => 1, // sementara (anggap login user id=1)
-            'field_id' => $field->id,
-            'time_slot_id' => 1, // dummy dulu
-            'total_price' => $field->price_per_hour,
-            'status' => 'pending',
-            'is_public_match' => false,
+        $photos = $venue->photos ?? [];
+        $photoUrl = $venue->photo_url;
+        
+        if ($request->hasFile('photos')) {
+            // Delete old photos
+            if (is_array($venue->photos)) {
+                foreach ($venue->photos as $oldPhoto) {
+                    if ($oldPhoto && str_starts_with($oldPhoto, '/storage/')) {
+                        Storage::disk('public')->delete(str_replace('/storage/', '', $oldPhoto));
+                    }
+                }
+            } elseif ($photoUrl && str_starts_with($photoUrl, '/storage/')) {
+                Storage::disk('public')->delete(str_replace('/storage/', '', $photoUrl));
+            }
+            
+            $photos = [];
+            foreach ($request->file('photos') as $file) {
+                $path = $file->store('venues', 'public');
+                $photos[] = '/storage/' . $path;
+            }
+            $photoUrl = count($photos) > 0 ? $photos[0] : null;
+        }
+
+        $facilities = $request->input('facilities', []);
+        $sportTypes = $request->input('sport_type', []);
+
+        $venue->update([
+            'name' => $request->name,
+            'city' => $request->city,
+            'location' => $request->location,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'description' => $request->description,
+            'rules' => $request->rules,
+            'open_time' => $request->open_time,
+            'close_time' => $request->close_time,
+            'facilities' => json_encode($facilities),
+            'sport_type' => is_array($sportTypes) ? implode(', ', $sportTypes) : $sportTypes,
+            'photo_url' => $photoUrl,
+            'photos' => $photos,
         ]);
 
-        // 5️⃣ Redirect ke checkout (pakai booking ID!)
-        return redirect('/checkout/' . $booking->id);
+        // Sync fields: Delete existing fields and recreate them to simplify
+        $venue->fields()->delete();
+        $minPrice = $venue->price_per_hour;
+
+        if ($request->has('fields')) {
+            $prices = [];
+            foreach ($request->fields as $fieldData) {
+                Field::create([
+                    'venue_id' => $venue->id,
+                    'name' => $fieldData['name'],
+                    'sport_type' => $fieldData['sport_type'] ?? 'Futsal',
+                    'price_per_hour' => $fieldData['price_per_hour'] ?? 0,
+                    'capacity' => $fieldData['capacity'] ?? 10,
+                    'is_indoor' => $fieldData['is_indoor'] ?? true,
+                ]);
+                $prices[] = $fieldData['price_per_hour'] ?? 0;
+            }
+            if (!empty($prices)) {
+                $minPrice = min($prices);
+                $venue->update(['price_per_hour' => $minPrice]);
+            }
+        }
+
+        return redirect()->route('venues.show', $venue->id)->with('success', 'Venue berhasil diperbarui!');
+    }
+
+    public function destroy($id)
+    {
+        $venue = Venue::findOrFail($id);
+        
+        if ($venue->photo_url && str_starts_with($venue->photo_url, '/storage/')) {
+            Storage::disk('public')->delete(str_replace('/storage/', '', $venue->photo_url));
+        }
+        
+        $venue->delete();
+
+        return redirect()->route('venues.index')->with('success', 'Venue berhasil dihapus.');
     }
 }

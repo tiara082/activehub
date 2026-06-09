@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buat Permainan</title>
+    <title>Edit Permainan</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -15,14 +15,15 @@
 <div class="bg-[#123012] py-12 text-center shadow-md">
     <h1 class="text-white tracking-widest"
         style="font-family:'Bebas Neue'; font-size:clamp(2.2rem,6vw,3.6rem); letter-spacing:6px;">
-        BUAT PERMAINAN
+        EDIT PERMAINAN
     </h1>
 </div>
 
-<form id="matchForm" class="max-w-4xl mx-auto px-6 py-10" method="POST" action="{{ route('matches.store') }}" enctype="multipart/form-data">
+@php $booking = $match->booking; @endphp
+<form id="matchForm" class="max-w-4xl mx-auto px-6 py-10" method="POST" action="{{ route('matches.update', $match->id) }}" enctype="multipart/form-data">
 
     @csrf
-    <input type="hidden" name="booking_id" value="{{ $booking?->id }}">
+    @method('PUT')
 
     <div class="grid grid-cols-2 rounded-xl overflow-hidden shadow-md mb-10">
         <button type="button" id="tab-lapangan"
@@ -139,7 +140,7 @@
                     <label class="text-sm font-medium">
                         Judul Permainan <span class="text-red-500">*</span>
                     </label>
-                    <input name="title" required
+                    <input name="title" required value="{{ $match->title }}"
                         placeholder="Contoh: Futsal Santai Minggu Sore"
                         class="w-full border rounded-lg p-3 mt-1 outline-none focus:ring-2 focus:ring-[#123012]">
                 </div>
@@ -150,17 +151,17 @@
                     </label>
                     <textarea name="description" required
                         placeholder="Jelaskan siapa yang kamu cari, level permainan, dll."
-                        class="w-full border rounded-lg p-3 h-28 mt-1 outline-none focus:ring-2 focus:ring-[#123012]"></textarea>
+                        class="w-full border rounded-lg p-3 h-28 mt-1 outline-none focus:ring-2 focus:ring-[#123012]">{{ $match->description }}</textarea>
                 </div>
 
                 <div>
                     <label class="text-sm font-medium">Foto (Opsional)</label>
                     <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-[#123012] transition bg-gray-50" id="drop-zone">
                         <div class="space-y-1 text-center">
-                            <div id="image-preview" class="hidden mb-4">
-                                <img src="" alt="Preview" class="mx-auto h-48 w-auto rounded-lg object-cover shadow-sm">
+                            <div id="image-preview" class="{{ $match->photo_url ? '' : 'hidden' }} mb-4">
+                                <img src="{{ $match->photo_url ?? '' }}" alt="Preview" class="mx-auto h-48 w-auto rounded-lg object-cover shadow-sm">
                             </div>
-                            <div id="upload-placeholder">
+                            <div id="upload-placeholder" class="{{ $match->photo_url ? 'hidden' : '' }}">
                                 <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
                                     <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
@@ -198,7 +199,7 @@
                     </label>
 
                     <div class="relative mt-1">
-                        <input name="total_players" id="jumlah_slot" type="number" min="2" value="2" required
+                        <input name="total_players" id="jumlah_slot" type="number" min="2" value="{{ $match->total_players }}" required
                             class="w-full border rounded-lg p-3 pr-16 outline-none focus:ring-2 focus:ring-[#123012]"
                             oninput="calcPricePerPerson()">
 
@@ -216,12 +217,17 @@
                         Gender <span class="text-red-500">*</span>
                     </label>
 
-                    <input type="hidden" name="gender_preference" id="genderInput" value="mixed">
+                    <input type="hidden" name="gender_preference" id="genderInput" value="{{ $match->gender_preference }}">
 
                     <div class="relative mt-1">
                         <button type="button" onclick="toggleDropdown()"
                             class="w-full border rounded-lg p-3 flex justify-between items-center bg-white shadow-sm hover:border-[#123012] transition">
-                            <span id="genderText">Bebas (Mixed)</span>
+                            <span id="genderText">
+                                @if($match->gender_preference === 'male') Pria
+                                @elseif($match->gender_preference === 'female') Wanita
+                                @else Bebas (Mixed)
+                                @endif
+                            </span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
                                  viewBox="0 0 24 24">
                                 <path d="M19 9l-7 7-7-7"/>
@@ -272,7 +278,7 @@
 
                     <button type="submit" id="publishBtn"
                         class="bg-[#123012] text-white px-6 py-2.5 rounded-lg text-sm font-bold shadow-sm hover:shadow-md hover:scale-[1.01] transition">
-                        Publikasikan Match
+                        Update Match
                     </button>
                 </div>
 

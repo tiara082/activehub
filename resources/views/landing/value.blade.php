@@ -1,17 +1,22 @@
 <section class="bg-white py-20 px-6">
     <div class="max-w-5xl mx-auto">
 
-        <div class="relative overflow-hidden rounded-2xl min-h-[440px]">
+        <div class="relative overflow-hidden rounded-2xl md:min-h-[440px] flex flex-col md:block bg-[#0f2305]">
 
-            <!-- IMAGE -->
-            <img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?w=1400&q=80"
-                 class="absolute inset-0 w-full h-full object-cover object-right scale-x-[-1]">
+            <!-- IMAGE WRAPPER -->
+            <div class="relative h-64 md:h-auto md:absolute md:inset-0 w-full shrink-0">
+                <img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?w=1400&q=80"
+                     class="w-full h-full object-cover object-center md:object-right md:scale-x-[-1]">
+                     
+                <!-- OVERLAY (MOBILE) -->
+                <div class="absolute inset-0 bg-gradient-to-t from-[#0f2305] via-[#0f2305]/40 to-transparent md:hidden"></div>
+            </div>
 
-            <!-- OVERLAY -->
-            <div class="absolute inset-0 bg-gradient-to-r from-[#0f2305]/95 via-[#0f2305]/70 to-transparent"></div>
+            <!-- OVERLAY (DESKTOP) -->
+            <div class="hidden md:block absolute inset-0 bg-gradient-to-r from-[#0f2305]/95 via-[#0f2305]/70 to-transparent"></div>
 
             <!-- CONTENT -->
-            <div class="relative z-10 p-8 max-w-lg">
+            <div class="relative z-10 p-6 md:p-8 max-w-lg -mt-8 md:mt-0">
 
                 <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,7vw,4rem);color:white;">
                     Kenapa ActiveHub?
@@ -101,7 +106,7 @@
 
                                 <div class="accordion-content overflow-hidden max-h-0 opacity-0 transition-all duration-500">
                                     <p class="text-white/60 text-sm mt-2 leading-relaxed">
-                                        Gabung pertandingan terbuka dan temukan teman bermain kapan saja.
+                                        Gabung permainan terbuka dan temukan teman bermain kapan saja.
                                     </p>
                                 </div>
                             </div>

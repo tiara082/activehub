@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daftarkan Venue - ActiveHub</title>
+<title>Edit Venue - ActiveHub</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
@@ -83,23 +83,25 @@
 <div class="bg-[#123012] py-12 text-center">
     <h1 class="text-white tracking-widest"
         style="font-family:'Bebas Neue'; font-size:clamp(2.2rem,6vw,3.6rem); letter-spacing:6px;">
-        DAFTARKAN VENUE
+        EDIT VENUE
     </h1>
 </div>
 
 <div class="max-w-4xl mx-auto px-6 py-10">
 
-    <form action="{{ route('venues.store') }}" method="POST" id="venueForm" enctype="multipart/form-data">
-        @csrf
-
-        <div class="grid grid-cols-2 rounded-xl overflow-hidden shadow-md mb-8">
-            <button type="button" id="tabV" onclick="showTab('venue')" class="py-3 bg-[#123012] text-white font-semibold transition-all">
-                Detail Venue
-            </button>
-            <button type="button" id="tabL" onclick="showTab('lapangan')" class="py-3 bg-gray-400 text-white font-semibold transition-all">
-                Detail Lapangan
-            </button>
+    @if ($errors->any())
+        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6">
+            <ul class="list-disc pl-5">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
+    @endif
+
+    <form action="{{ route('owner.venue.update', $venue->id) }}" method="POST" id="venueForm" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
 
         <div class="bg-white rounded-2xl shadow-md p-8">
 
@@ -107,32 +109,38 @@
             <div id="venueSection" class="space-y-5">
                 <div>
                     <label class="text-sm font-semibold text-gray-700">Nama Venue <span class="req">*</span></label>
-                    <input name="name" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none" placeholder="Masukkan nama venue">
+                    <input name="name" value="{{ $venue->name }}" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none" placeholder="Masukkan nama venue">
                 </div>
 
                 <div>
                     <label class="text-sm font-semibold text-gray-700">Deskripsi <span class="req">*</span></label>
-                    <textarea name="description" required class="w-full border rounded-lg p-3 h-28 mt-1 focus:ring-2 focus:ring-[#123012] outline-none" placeholder="Ceritakan tentang venue Anda..."></textarea>
+                    <textarea name="description" required class="w-full border rounded-lg p-3 h-28 mt-1 focus:ring-2 focus:ring-[#123012] outline-none" placeholder="Ceritakan tentang venue Anda...">{{ $venue->description }}</textarea>
                 </div>
 
                 <div>
                     <label class="text-sm font-semibold text-gray-700">Foto Venue (Galeri)</label>
                     <div class="mt-1 flex flex-col justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-[#123012] transition bg-gray-50" id="drop-zone">
                         <div class="space-y-1 text-center">
-                            <div id="image-preview" class="hidden mb-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <!-- Previews will be injected here -->
+                            <div id="image-preview" class="{{ $venue->photos && count($venue->photos) > 0 || $venue->photo_url ? '' : 'hidden' }} mb-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+                                @if($venue->photos && count($venue->photos) > 0)
+                                    @foreach($venue->photos as $photo)
+                                        <img src="{{ $photo }}" alt="Preview" class="w-full h-32 object-cover rounded-lg shadow-sm">
+                                    @endforeach
+                                @elseif($venue->photo_url)
+                                    <img src="{{ $venue->photo_url }}" alt="Preview" class="w-full h-32 object-cover rounded-lg shadow-sm">
+                                @endif
                             </div>
-                            <div id="upload-placeholder">
+                            <div id="upload-placeholder" class="{{ $venue->photos && count($venue->photos) > 0 || $venue->photo_url ? 'hidden' : '' }}">
                                 <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
                                     <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
                                 <div class="flex text-sm text-gray-600 justify-center mt-2">
                                     <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-[#123012] hover:text-green-700 focus-within:outline-none px-1">
-                                        <span>Pilih file (bisa lebih dari satu)</span>
+                                        <span>Ganti file (pilih beberapa sekaligus)</span>
                                         <input id="file-upload" name="photos[]" type="file" multiple class="sr-only" accept="image/*" onchange="previewImages(event)">
                                     </label>
                                 </div>
-                                <p class="text-xs text-gray-500 mt-1">PNG, JPG, WEBP up to 2MB</p>
+                                <p class="text-xs text-gray-500 mt-1">Mengunggah file baru akan menimpa foto lama.</p>
                             </div>
                         </div>
                     </div>
@@ -175,11 +183,11 @@
                 <div class="grid md:grid-cols-2 gap-4">
                     <div>
                         <label class="text-sm font-semibold text-gray-700">Kota <span class="req">*</span></label>
-                        <input name="city" id="cityInput" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none" placeholder="Masukkan kota">
+                        <input name="city" value="{{ $venue->city }}" id="cityInput" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none" placeholder="Masukkan kota">
                     </div>
                     <div>
                         <label class="text-sm font-semibold text-gray-700">Alamat Lengkap <span class="req">*</span></label>
-                        <input name="location" id="locationAutocomplete" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none" placeholder="Cari lokasi atau ketik alamat...">
+                        <input name="location" value="{{ $venue->location }}" id="locationAutocomplete" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none" placeholder="Cari lokasi atau ketik alamat...">
                     </div>
                 </div>
 
@@ -187,8 +195,8 @@
                     <label class="text-sm font-semibold text-gray-700 mb-2 block">Pilih Lokasi di Peta <span class="req">*</span></label>
                     <div id="map"></div>
                     <p class="text-xs text-gray-400 mt-2 italic">Geser marker untuk menentukan titik lokasi yang tepat.</p>
-                    <input type="hidden" name="latitude" id="latInput">
-                    <input type="hidden" name="longitude" id="lngInput">
+                    <input type="hidden" name="latitude" id="latInput" value="{{ $venue->latitude }}">
+                    <input type="hidden" name="longitude" id="lngInput" value="{{ $venue->longitude }}">
                 </div>
 
                 <div>
@@ -201,11 +209,11 @@
                 <div class="grid md:grid-cols-2 gap-4">
                     <div>
                         <label class="text-sm font-semibold text-gray-700">Jam Buka <span class="req">*</span></label>
-                        <input type="time" name="open_time" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none">
+                        <input type="time" name="open_time" value="{{ \Carbon\Carbon::parse($venue->open_time)->format('H:i') }}" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none">
                     </div>
                     <div>
                         <label class="text-sm font-semibold text-gray-700">Jam Tutup <span class="req">*</span></label>
-                        <input type="time" name="close_time" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none">
+                        <input type="time" name="close_time" value="{{ \Carbon\Carbon::parse($venue->close_time)->format('H:i') }}" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none">
                     </div>
                 </div>
 
@@ -228,98 +236,13 @@
                     <div id="venueSportHiddenInputs"></div>
                 </div>
 
-                <div class="flex justify-end pt-6 border-t">
-                    <button type="button" onclick="showTab('lapangan')" class="bg-[#123012] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition shadow-lg">
-                        Lanjut ke Lapangan →
-                    </button>
-                </div>
-            </div>
-
-            {{-- STEP 2: FIELD DETAILS --}}
-            <div id="lapanganSection" class="hidden space-y-6">
-                <div class="flex justify-between items-center border-b pb-4">
-                    <div>
-                        <h2 class="font-bold text-xl text-gray-800">Manajemen Lapangan</h2>
-                        <p class="text-sm text-gray-500">Tambahkan setidaknya satu lapangan.</p>
-                    </div>
-                    <button type="button" onclick="addLapangan()" class="bg-yellow-400 hover:bg-yellow-500 px-6 py-2 rounded-xl font-bold transition shadow-sm">
-                        + Tambah Lapangan
-                    </button>
-                </div>
-
-                <div id="lapanganContainer" class="space-y-6">
-                    {{-- First Field Card --}}
-                    <div class="field-card border rounded-2xl p-6 space-y-4 bg-gray-50/50">
-                        <div class="flex justify-between items-center">
-                            <span class="font-bold text-[#123012] flex items-center gap-2">
-                                <span class="w-6 h-6 bg-[#123012] text-white rounded-full flex items-center justify-center text-[10px]">1</span>
-                                Lapangan Utama
-                            </span>
-                        </div>
-                        
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Nama Lapangan <span class="req">*</span></label>
-                                <input name="fields[0][name]" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none bg-white" placeholder="Misal: Lapangan A">
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="dropdown">
-                                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Tipe <span class="req">*</span></label>
-                                    <button type="button" onclick="toggleDropdown('dropType-0')" class="w-full border border-gray-200 rounded-lg p-3 mt-1 flex justify-between items-center bg-white hover:bg-gray-50 transition shadow-sm">
-                                        <span class="selected-val">Indoor</span>
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
-                                    </button>
-                                    <input type="hidden" name="fields[0][is_indoor]" value="1" required>
-                                    <div id="dropType-0" class="dropdown-box">
-                                        <div onclick="selectCustom(this, '1', 'Indoor')">Indoor</div>
-                                        <div onclick="selectCustom(this, '0', 'Outdoor')">Outdoor</div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Kapasitas <span class="req">*</span></label>
-                                    <input type="number" name="fields[0][capacity]" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none bg-white" placeholder="0">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div class="dropdown">
-                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Jenis Olahraga <span class="req">*</span></label>
-                                <button type="button" onclick="toggleDropdown('drop-0')" class="w-full border rounded-lg p-3 mt-1 flex justify-between items-center bg-white hover:bg-gray-50 transition shadow-sm">
-                                    <span class="selected-val">Pilih Olahraga</span>
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
-                                </button>
-                                <input type="hidden" name="fields[0][sport_type]" class="sport-hidden-input" required>
-                                <div id="drop-0" class="dropdown-box">
-                                    <div onclick="selectSingleSport(this, 'Futsal')">Futsal</div>
-                                    <div onclick="selectSingleSport(this, 'Basket')">Basket</div>
-                                    <div onclick="selectSingleSport(this, 'Bulu Tangkis')">Bulu Tangkis</div>
-                                    <div onclick="selectSingleSport(this, 'Tennis')">Tennis</div>
-                                    <div onclick="selectSingleSport(this, 'Voli')">Voli</div>
-                                    <div onclick="selectSingleSport(this, 'Padel')">Padel</div>
-                                    <div onclick="selectSingleSport(this, 'Kebugaran')">Kebugaran</div>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Harga per Jam <span class="req">*</span></label>
-                                <div class="flex mt-1">
-                                    <span class="inline-flex items-center px-4 rounded-l-lg border border-r-0 border-gray-300 bg-gray-100 text-gray-500 font-bold">
-                                        Rp
-                                    </span>
-                                    <input type="number" name="fields[0][price_per_hour]" required class="w-full border rounded-r-lg p-3 outline-none focus:ring-2 focus:ring-[#123012] bg-white" placeholder="0">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="flex justify-between pt-8 border-t">
-                    <button type="button" onclick="showTab('venue')" class="flex items-center gap-2 text-gray-500 font-bold hover:text-gray-900 transition group">
+                    <a href="{{ route('owner.venue') }}" class="flex items-center gap-2 text-gray-500 font-bold hover:text-gray-900 transition group">
                         <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition">←</span>
-                        Kembali ke Detail Venue
-                    </button>
+                        Batal
+                    </a>
                     <button type="submit" class="bg-[#fbbf24] hover:bg-[#d97706] text-[#123012] px-8 py-3 rounded-xl font-bold transition-all hover:scale-105 active:scale-95 shadow-md uppercase tracking-wider text-sm">
-                        Publish Venue
+                        Simpan Perubahan Venue
                     </button>
                 </div>
             </div>
@@ -334,38 +257,65 @@
 
 <script>
 let map, marker;
+let lapCount = 0;
 
 function initMap() {
-    const defaultLat = -6.2088;
-    const defaultLng = 106.8456; // Jakarta
+    const defaultLat = {{ $venue->latitude ?? '-6.2088' }};
+    const defaultLng = {{ $venue->longitude ?? '106.8456' }};
     
-    map = L.map('map').setView([defaultLat, defaultLng], 13);
+    map = L.map('map').setView([defaultLat, defaultLng], 15);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution: '&copy; OpenStreetMap'
     }).addTo(map);
 
     marker = L.marker([defaultLat, defaultLng], {
         draggable: true
     }).addTo(map);
 
-    // Update coordinates on drag
     marker.on('dragend', function(e) {
         const position = marker.getLatLng();
         updateCoords(position.lat, position.lng);
     });
 
-    // Update coordinates on click
     map.on('click', function(e) {
         marker.setLatLng(e.latlng);
         updateCoords(e.latlng.lat, e.latlng.lng);
     });
 
-    // Initialize with default coords
     updateCoords(defaultLat, defaultLng);
-
-    // Setup Autocomplete (Search)
     setupSearch();
+    
+    // Load existing tags
+    @if($venue->facilities)
+        @php
+            $existingFacilities = is_array($venue->facilities) ? $venue->facilities : json_decode($venue->facilities, true);
+        @endphp
+        @if(is_array($existingFacilities))
+            @foreach($existingFacilities as $fac)
+                if(!facilities.includes("{{ $fac }}")) {
+                    facilities.push("{{ $fac }}");
+                }
+            @endforeach
+            renderFacilities();
+        @endif
+    @endif
+    
+    @if($venue->sport_type)
+        @php
+            $existingSports = is_array($venue->sport_type) ? $venue->sport_type : array_map('trim', explode(',', $venue->sport_type));
+        @endphp
+        @if(is_array($existingSports))
+            @foreach($existingSports as $spt)
+                if(!venueSports.includes("{{ $spt }}")) {
+                    venueSports.push("{{ $spt }}");
+                }
+            @endforeach
+            renderVenueSports();
+        @endif
+    @endif
+    
+    // Fields array rendering logic removed since fields are managed in the dashboard now
 }
 
 function updateCoords(lat, lng) {
@@ -436,27 +386,7 @@ function setupSearch() {
 // Load map
 window.onload = initMap;
 
-function showTab(tab){
-    const vSection = document.getElementById('venueSection');
-    const lSection = document.getElementById('lapanganSection');
-    const tabV = document.getElementById('tabV');
-    const tabL = document.getElementById('tabL');
 
-    if(tab === 'venue'){
-        vSection.classList.remove('hidden');
-        lSection.classList.add('hidden');
-        tabV.classList.add('tab-active');
-        tabL.classList.remove('tab-active');
-        tabL.classList.add('bg-gray-400');
-    } else {
-        lSection.classList.remove('hidden');
-        vSection.classList.add('hidden');
-        tabL.classList.add('tab-active');
-        tabV.classList.remove('tab-active');
-        tabV.classList.add('bg-gray-400');
-    }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
 
 /* DROPDOWN LOGIC */
 function toggleDropdown(id){
@@ -563,81 +493,7 @@ function removeFacility(idx){
     renderFacilities();
 }
 
-/* ADD LAPANGAN DYNAMICALLY */
-let lapCount = 0;
-function addLapangan(){
-    lapCount++;
-    const container = document.getElementById('lapanganContainer');
-    const card = document.createElement('div');
-    card.className = "field-card border rounded-2xl p-6 space-y-4 bg-gray-50/50 animate-in slide-in-from-bottom duration-500";
-    
-    const dropId = `drop-${lapCount}`;
 
-    card.innerHTML = `
-        <div class="flex justify-between items-center">
-            <span class="font-bold text-[#123012] flex items-center gap-2">
-                <span class="w-6 h-6 bg-[#123012] text-white rounded-full flex items-center justify-center text-[10px]">${lapCount + 1}</span>
-                Lapangan Tambahan
-            </span>
-            <button type="button" onclick="this.closest('.field-card').remove()" class="text-red-500 text-sm font-bold hover:underline">Hapus Lapangan</button>
-        </div>
-        
-        <div class="grid md:grid-cols-2 gap-4">
-            <div>
-                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Nama Lapangan <span class="req">*</span></label>
-                <input name="fields[${lapCount}][name]" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none bg-white" placeholder="Misal: Lapangan B">
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-                <div class="dropdown">
-                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Tipe <span class="req">*</span></label>
-                    <button type="button" onclick="toggleDropdown('dropType-${lapCount}')" class="w-full border border-gray-200 rounded-lg p-3 mt-1 flex justify-between items-center bg-white hover:bg-gray-50 transition shadow-sm">
-                        <span class="selected-val">Indoor</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-                    <input type="hidden" name="fields[${lapCount}][is_indoor]" value="1" required>
-                    <div id="dropType-${lapCount}" class="dropdown-box">
-                        <div onclick="selectCustom(this, '1', 'Indoor')">Indoor</div>
-                        <div onclick="selectCustom(this, '0', 'Outdoor')">Outdoor</div>
-                    </div>
-                </div>
-                <div>
-                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Kapasitas <span class="req">*</span></label>
-                    <input type="number" name="fields[${lapCount}][capacity]" required class="w-full border rounded-lg p-3 mt-1 focus:ring-2 focus:ring-[#123012] outline-none bg-white" placeholder="0">
-                </div>
-            </div>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-4">
-            <div class="dropdown">
-                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Jenis Olahraga <span class="req">*</span></label>
-                <button type="button" onclick="toggleDropdown('${dropId}')" class="w-full border rounded-lg p-3 mt-1 flex justify-between items-center bg-white hover:bg-gray-50 transition shadow-sm">
-                    <span class="selected-val">Pilih Olahraga</span>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
-                </button>
-                <input type="hidden" name="fields[${lapCount}][sport_type]" class="sport-hidden-input" required>
-                <div id="${dropId}" class="dropdown-box">
-                    <div onclick="selectSingleSport(this, 'Futsal')">Futsal</div>
-                    <div onclick="selectSingleSport(this, 'Basket')">Basket</div>
-                    <div onclick="selectSingleSport(this, 'Bulu Tangkis')">Bulu Tangkis</div>
-                    <div onclick="selectSingleSport(this, 'Tennis')">Tennis</div>
-                    <div onclick="selectSingleSport(this, 'Voli')">Voli</div>
-                    <div onclick="selectSingleSport(this, 'Padel')">Padel</div>
-                    <div onclick="selectSingleSport(this, 'Kebugaran')">Kebugaran</div>
-                </div>
-            </div>
-            <div>
-                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Harga per Jam <span class="req">*</span></label>
-                <div class="flex mt-1">
-                    <span class="inline-flex items-center px-4 rounded-l-lg border border-r-0 border-gray-300 bg-gray-100 text-gray-500 font-bold">
-                        Rp
-                    </span>
-                    <input type="number" name="fields[${lapCount}][price_per_hour]" required class="w-full border rounded-r-lg p-3 outline-none focus:ring-2 focus:ring-[#123012] bg-white" placeholder="0">
-                </div>
-            </div>
-        </div>
-    `;
-    container.appendChild(card);
-}
 </script>
 
 </body>

@@ -52,7 +52,7 @@ $statusStyle = [
             <input
                 type="text"
                 id="searchInput"
-                placeholder="Cari nama, nomor telepon, atau lapangan..."
+                placeholder="Cari venue atau lapangan..."
                 class="w-full bg-white border border-gray-200 rounded-2xl
                        px-4 py-3 pl-10 text-sm
                        focus:ring-2 focus:ring-[#1b3a1b] outline-none">

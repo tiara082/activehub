@@ -15,13 +15,13 @@
             'color' => 'green'
         ],
         [
-            'label' => 'Pertandingan Diikuti',
+            'label' => 'Permainan Diikuti',
             'value' => $user->joinedMatches()->count(),
             'icon'  => 'users',
             'color' => 'blue'
         ],
         [
-            'label' => 'Pertandingan Dibuat',
+            'label' => 'Permainan Dibuat',
             'value' => $user->createdMatches()->count(),
             'icon'  => 'trophy',
             'color' => 'yellow'

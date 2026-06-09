@@ -29,10 +29,18 @@
                     @endif
                 </div>
 
-                <div class="relative">
-                    <img src="{{ $venue->photo_url ?? 'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=600&q=80' }}"
-                        class="w-full h-40 object-cover group-hover:scale-[1.02] transition-transform duration-300" />
-                </div>
+            @php
+                $defaultPhotos = [
+                    'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=600&q=80',
+                    'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=600&q=80',
+                    'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600&q=80',
+                ];
+                $bgImage = $venue->photo_url ?? $defaultPhotos[$loop->index % count($defaultPhotos)];
+            @endphp
+            <div class="relative">
+                <img src="{{ $bgImage }}"
+                    class="w-full h-40 object-cover group-hover:scale-[1.02] transition-transform duration-300" />
+            </div>
 
                 <div class="p-4">
                     <div class="flex justify-between items-start mb-1">

@@ -43,7 +43,7 @@
                         </p>
 
                         <!-- HOVER DETAIL (Nempel, nggak jauh) -->
-                        <div class="opacity-0 max-h-0 overflow-hidden
+                        <div class="opacity-100 max-h-40 md:opacity-0 md:max-h-0 overflow-hidden
                                     group-hover:opacity-100 group-hover:max-h-40
                                     transition-all duration-500">
 
@@ -56,8 +56,7 @@
                                 Rp 25.000 / orang
                             </p>
 
-                            <div class="w-0 h-[2px] bg-yellow-300 mt-2 
-                                        transition-all duration-500 group-hover:w-14"></div>
+                            <div class="h-[2px] bg-yellow-300 w-14 md:w-0 mt-2 transition-all duration-500 group-hover:w-14"></div>
                         </div>
 
                     </div>
@@ -66,7 +65,7 @@
 
                 <!-- SLOT BADGE -->
                 <span class="absolute top-3 right-3 bg-yellow-300 text-[#1c3a0c] text-xs font-bold px-2 py-1 rounded-md
-                             opacity-0 group-hover:opacity-100
+                             opacity-100 md:opacity-0 group-hover:opacity-100
                              transition duration-300">
                     sisa 1 slot
                 </span>
@@ -94,7 +93,7 @@
                             Lapangan B – Malang
                         </p>
 
-                        <div class="opacity-0 max-h-0 overflow-hidden
+                        <div class="opacity-100 max-h-40 md:opacity-0 md:max-h-0 overflow-hidden
                                     group-hover:opacity-100 group-hover:max-h-40
                                     transition-all duration-500">
 
@@ -107,15 +106,14 @@
                                 Rp 20.000 / orang
                             </p>
 
-                            <div class="w-0 h-[2px] bg-yellow-300 mt-2 
-                                        transition-all duration-500 group-hover:w-14"></div>
+                            <div class="h-[2px] bg-yellow-300 w-14 md:w-0 mt-2 transition-all duration-500 group-hover:w-14"></div>
                         </div>
                     </div>
 
                 </div>
 
                 <span class="absolute top-3 right-3 bg-yellow-300 text-[#1c3a0c] text-xs font-bold px-2 py-1 rounded-md
-                             opacity-0 group-hover:opacity-100
+                             opacity-100 md:opacity-0 group-hover:opacity-100
                              transition duration-300">
                     sisa 2 slot
                 </span>
@@ -143,7 +141,7 @@
                             Lapangan A – Malang
                         </p>
 
-                        <div class="opacity-0 max-h-0 overflow-hidden
+                        <div class="opacity-100 max-h-40 md:opacity-0 md:max-h-0 overflow-hidden
                                     group-hover:opacity-100 group-hover:max-h-40
                                     transition-all duration-500">
 
@@ -156,15 +154,14 @@
                                 Rp 15.000 / orang
                             </p>
 
-                            <div class="w-0 h-[2px] bg-yellow-300 mt-2 
-                                        transition-all duration-500 group-hover:w-14"></div>
+                            <div class="h-[2px] bg-yellow-300 w-14 md:w-0 mt-2 transition-all duration-500 group-hover:w-14"></div>
                         </div>
                     </div>
 
                 </div>
 
                 <span class="absolute top-3 right-3 bg-yellow-300 text-[#1c3a0c] text-xs font-bold px-2 py-1 rounded-md
-                             opacity-0 group-hover:opacity-100
+                             opacity-100 md:opacity-0 group-hover:opacity-100
                              transition duration-300">
                     sisa 3 slot
                 </span>

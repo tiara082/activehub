@@ -11,7 +11,7 @@ class Venue extends Model
     protected $fillable = [
         'owner_id', 'name', 'sport_type', 'location', 'city', 
         'latitude', 'longitude', 'description', 'rules',
-        'open_time', 'close_time', 'facilities', 'photo_url', 'price_per_hour'
+        'open_time', 'close_time', 'facilities', 'photo_url', 'photos', 'price_per_hour'
     ];
 
     protected $casts = [
@@ -19,6 +19,7 @@ class Venue extends Model
         'longitude' => 'decimal:6',
         'facilities' => 'array',
         'sport_type' => 'array',
+        'photos' => 'array',
     ];
 
    public function owner(): BelongsTo

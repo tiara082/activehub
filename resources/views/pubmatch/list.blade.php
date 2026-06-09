@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -28,13 +29,13 @@
     <section class="bg-[#1b3a1b] w-full px-6 pt-28 pb-16 text-center mt-16">
 
         <h1 class="font-anton text-white text-4xl md:text-5xl uppercase tracking-wide leading-tight mb-6">
-            ISI SLOT DAN MULAI PERTANDINGAN
+            ISI SLOT DAN MULAI PERMAINAN
         </h1>
 
         <a href="{{ route('matches.create') }}"
         class="inline-block bg-yellow-400 hover:bg-yellow-400
                 text-black font-bold px-12 py-4 rounded-xl transition">
-            Buat Pertandingan
+            Buat Permainan
         </a>
     </section>
 
@@ -50,7 +51,7 @@
                               d="M21 21l-4.3-4.3m1.8-5.2a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                 </span>
-                <input type="text" name="q" x-model="q" @input.debounce.800ms="autoSubmit()" placeholder="Cari Pertandingan"
+                <input type="text" name="q" x-model="q" @input.debounce.800ms="autoSubmit()" placeholder="Cari Permainan"
                    class="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-3
                               text-sm text-gray-700 placeholder-gray-400
                               focus:outline-none focus:ring-2 focus:ring-[#1b3a1b]" />
@@ -261,6 +262,18 @@
 
     <!-- ===================== PUBLIC MATCH LIST ===================== -->
     <section class="max-w-5xl mx-auto px-4 pb-16">
+        
+        <!-- MAP CONTAINER -->
+        <div class="relative w-full h-[400px] mb-8 rounded-2xl overflow-hidden shadow-sm border border-gray-200">
+            <div id="match-map" class="w-full h-full z-0 relative" style="z-index: 0;"></div>
+            <!-- Overlay for Location Warning -->
+            <div id="location-warning" class="absolute top-4 left-1/2 -translate-x-1/2 bg-yellow-500 text-black px-4 py-2 rounded-xl text-sm font-bold shadow-md hidden items-center gap-2" style="z-index: 1000;">
+                <i class="fas fa-exclamation-circle"></i>
+                Beri akses lokasi agar kamu bisa melihat jarak dari posisimu!
+                <button onclick="this.parentElement.style.display='none'" class="ml-2 text-black/70 hover:text-black"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+
         <!-- Nearby Container -->
         <div id="nearby-container"></div>
 
@@ -273,7 +286,7 @@
                           transition-shadow duration-200 block group">
 
                     <div class="relative">
-                        <img src="{{ $match->booking->field->venue->photo_url ?? 'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=600&q=80' }}"
+                        <img src="{{ $match->photo_url ?? $match->booking->field->venue->photo_url ?? 'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=600&q=80' }}"
                             class="w-full h-44 object-cover group-hover:scale-[1.02] transition-transform duration-300" />
                             
                         <div class="absolute top-3 left-3 bg-[#1b3a1b]/90 backdrop-blur-sm text-white rounded-full px-3 py-1 text-xs font-semibold">
@@ -356,6 +369,155 @@
             </div>
         </div>
     </section>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<style>
+    /* Custom Leaflet Popup Styling */
+    .leaflet-popup-content-wrapper {
+        border-radius: 8px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        padding: 0;
+        overflow: hidden;
+    }
+    .leaflet-popup-content {
+        margin: 0;
+        width: 220px !important;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .leaflet-popup-close-button {
+        color: #999 !important;
+        padding: 6px 6px 0 0 !important;
+    }
+    .leaflet-popup-close-button:hover {
+        color: #333 !important;
+    }
+</style>
+<script>
+    const matchesData = [
+        @foreach($matches as $match)
+        {
+            id: {{ $match->id }},
+            title: "{!! addslashes($match->title) !!}",
+            venue_name: "{!! addslashes($match->booking->field->venue->name ?? 'Venue') !!}",
+            lat: {{ $match->booking->field->venue->latitude ?? 'null' }},
+            lon: {{ $match->booking->field->venue->longitude ?? 'null' }},
+            price: {{ $match->price_per_person }},
+            url: "{{ route('matches.show', $match->id) }}"
+        },
+        @endforeach
+    ].filter(m => m.lat !== null && m.lon !== null);
+
+    // Haversine formula
+    function getDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; 
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+        return R * c; 
+    }
+
+    function createMatchPopupHTML(m, distanceKm = null) {
+        let priceText = "Gratis";
+        if (m.price > 0) {
+            priceText = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(m.price);
+        }
+        
+        let distanceHtml = '<div></div>';
+        if (distanceKm !== null) {
+            distanceHtml = `<div class="text-[11px] font-semibold text-green-700 bg-green-50 px-2 py-1 rounded inline-flex items-center gap-1 border border-green-100"><i class="fas fa-location-arrow"></i> ${distanceKm.toFixed(1)} km</div>`;
+        }
+
+        return `
+            <div style="cursor: pointer; padding: 16px;" onclick="window.location.href='${m.url}'" class="group">
+                <h4 class="font-bold text-gray-900 text-sm mb-0.5 pr-4 leading-tight group-hover:text-[#1b3a1b] transition-colors line-clamp-1">${m.title}</h4>
+                <p class="text-[11px] text-gray-500 mb-2 line-clamp-1">${m.venue_name}</p>
+                <p class="text-xs text-gray-600 mb-3">Biaya: <span class="font-bold text-[#1b3a1b]">${priceText}</span></p>
+                <div class="flex items-center justify-between mt-1">
+                    ${distanceHtml}
+                    <div class="bg-gray-50 group-hover:bg-green-100 w-6 h-6 rounded-full flex items-center justify-center transition-colors">
+                        <i class="fas fa-chevron-right text-[10px] text-gray-400 group-hover:text-[#1b3a1b]"></i>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const map = L.map('match-map').setView([-7.9839, 112.6214], 13);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        const bounds = L.latLngBounds();
+        let hasValidMarkers = false;
+        const markersList = [];
+        const addedCoords = {};
+        
+        matchesData.forEach(m => {
+            let lat = m.lat;
+            let lon = m.lon;
+            
+            const coordKey = `${lat}-${lon}`;
+            if (addedCoords[coordKey]) {
+                addedCoords[coordKey]++;
+                lat += (Math.random() - 0.5) * 0.0005;
+                lon += (Math.random() - 0.5) * 0.0005;
+            } else {
+                addedCoords[coordKey] = 1;
+            }
+
+            const marker = L.marker([lat, lon]).addTo(map);
+            marker.bindPopup(createMatchPopupHTML(m, null));
+            bounds.extend([lat, lon]);
+            hasValidMarkers = true;
+            markersList.push({ data: m, marker: marker });
+        });
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const userLat = position.coords.latitude;
+                const userLon = position.coords.longitude;
+                
+                const userIcon = L.divIcon({
+                    className: 'custom-user-marker',
+                    html: `<div style="background-color: #3b82f6; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 6px rgba(0,0,0,0.5);"></div>`,
+                    iconSize: [16, 16],
+                    iconAnchor: [8, 8]
+                });
+
+                L.marker([userLat, userLon], {icon: userIcon})
+                    .addTo(map)
+                    .bindPopup('<strong class="font-sans text-sm text-blue-600">Lokasi Anda</strong>');
+
+                // Update popup dengan jarak
+                markersList.forEach(item => {
+                    const dist = getDistance(userLat, userLon, item.data.lat, item.data.lon);
+                    item.marker.setPopupContent(createMatchPopupHTML(item.data, dist));
+                });
+                
+                // Langsung fokus ke sekitar lokasi user
+                map.setView([userLat, userLon], 13);
+
+            }, (error) => {
+                const warn = document.getElementById('location-warning');
+                warn.classList.remove('hidden');
+                warn.classList.add('flex');
+                if (hasValidMarkers) {
+                    map.fitBounds(bounds, { padding: [30, 30], maxZoom: 13 });
+                }
+            });
+        } else {
+            if (hasValidMarkers) {
+                map.fitBounds(bounds, { padding: [30, 30], maxZoom: 13 });
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

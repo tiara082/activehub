@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .font-anton { font-family: 'Anton', sans-serif; }
@@ -248,6 +249,18 @@ function searchFilter() {
 
 <!-- ===================== VENUE CARDS ===================== -->
 <section class="max-w-5xl mx-auto px-4 pb-16">
+
+    <!-- MAP CONTAINER -->
+    <div class="relative w-full h-[400px] mb-8 rounded-2xl overflow-hidden shadow-sm border border-gray-200">
+        <div id="venue-map" class="w-full h-full z-0 relative" style="z-index: 0;"></div>
+        <!-- Overlay for Location Warning -->
+        <div id="location-warning" class="absolute top-4 left-1/2 -translate-x-1/2 bg-yellow-500 text-black px-4 py-2 rounded-xl text-sm font-bold shadow-md hidden items-center gap-2" style="z-index: 1000;">
+            <i class="fas fa-exclamation-circle"></i>
+            Beri akses lokasi agar kamu bisa melihat jarak dari posisimu!
+            <button onclick="this.parentElement.style.display='none'" class="ml-2 text-black/70 hover:text-black"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+
     <!-- Nearby Container -->
     <div id="nearby-container"></div>
 
@@ -270,13 +283,16 @@ function searchFilter() {
             $sports = array_unique($sports);
             $mainSport = count($sports) > 0 ? $sports[0] : 'Olahraga';
             
-            $bgImages = [
-                1 => 'https://images.unsplash.com/photo-1522778119026-d647f0598c20?w=600&q=80',
-                2 => 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=600&q=80',
-                3 => 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=600&q=80',
-                4 => 'https://images.unsplash.com/photo-1599058917765-a3bce0adee7a?w=600&q=80',
+            $defaultPhotos = [
+                'https://images.unsplash.com/photo-1522778119026-d647f0598c20?w=600&q=80',
+                'https://images.unsplash.com/photo-1574629810360-7efbb92bf450?w=600&q=80',
+                'https://images.unsplash.com/photo-1518605368461-1e1e808ce8cb?w=600&q=80',
+                'https://images.unsplash.com/photo-1519861531473-9200262188bf?w=600&q=80',
+                'https://images.unsplash.com/photo-1508344928928-7137b29de218?w=600&q=80',
+                'https://images.unsplash.com/photo-1554068865-24cecd4e34f8?w=600&q=80',
+                'https://images.unsplash.com/photo-1526676037777-05a232554f77?w=600&q=80',
             ];
-            $bgImage = $bgImages[$venue->id] ?? 'https://images.unsplash.com/photo-1522778119026-d647f0598c20?w=600&q=80';
+            $bgImage = $venue->photo_url ?? $defaultPhotos[$loop->index % count($defaultPhotos)];
         @endphp
         
         <a href="/venues/{{ $venue->id }}" class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 block group">
@@ -333,6 +349,144 @@ function searchFilter() {
         </div>
     </div>
 </section>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<style>
+    /* Custom Leaflet Popup Styling */
+    .leaflet-popup-content-wrapper {
+        border-radius: 8px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        padding: 0;
+        overflow: hidden;
+    }
+    .leaflet-popup-content {
+        margin: 0;
+        width: 220px !important;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .leaflet-popup-close-button {
+        color: #999 !important;
+        padding: 6px 6px 0 0 !important;
+    }
+    .leaflet-popup-close-button:hover {
+        color: #333 !important;
+    }
+</style>
+<script>
+    const venuesData = [
+        @foreach($venues as $venue)
+        @php
+            $prices = [];
+            foreach($venue->fields as $field) { $prices[] = $field->price_per_hour; }
+            $minPrice = count($prices) > 0 ? min($prices) : 0;
+        @endphp
+        {
+            id: {{ $venue->id }},
+            name: "{!! addslashes($venue->name) !!}",
+            lat: {{ $venue->latitude ?: 'null' }},
+            lon: {{ $venue->longitude ?: 'null' }},
+            price: {{ $minPrice }},
+            url: "/venues/{{ $venue->id }}"
+        },
+        @endforeach
+    ].filter(v => v.lat !== null && v.lon !== null);
+
+    // Haversine formula
+    function getDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; 
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+        return R * c; 
+    }
+
+    function createPopupHTML(v, distanceKm = null) {
+        const formattedPrice = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v.price);
+        
+        let distanceHtml = '<div></div>';
+        if (distanceKm !== null) {
+            distanceHtml = `<div class="text-[11px] font-semibold text-green-700 bg-green-50 px-2 py-1 rounded inline-flex items-center gap-1 border border-green-100"><i class="fas fa-location-arrow"></i> ${distanceKm.toFixed(1)} km</div>`;
+        }
+
+        return `
+            <div style="cursor: pointer; padding: 16px;" onclick="window.location.href='${v.url}'" class="group">
+                <h4 class="font-bold text-gray-900 text-sm mb-1 pr-4 leading-tight group-hover:text-[#1b3a1b] transition-colors">${v.name}</h4>
+                <p class="text-xs text-gray-500 mb-3">Mulai <span class="font-bold text-[#1b3a1b]">${formattedPrice}</span></p>
+                <div class="flex items-center justify-between mt-1">
+                    ${distanceHtml}
+                    <div class="bg-gray-50 group-hover:bg-green-100 w-6 h-6 rounded-full flex items-center justify-center transition-colors">
+                        <i class="fas fa-chevron-right text-[10px] text-gray-400 group-hover:text-[#1b3a1b]"></i>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const map = L.map('venue-map').setView([-7.9839, 112.6214], 13);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        const bounds = L.latLngBounds();
+        let hasValidMarkers = false;
+        const markersList = [];
+
+        // Tambahkan marker awal tanpa jarak
+        venuesData.forEach(v => {
+            const marker = L.marker([v.lat, v.lon]).addTo(map);
+            marker.bindPopup(createPopupHTML(v, null));
+            bounds.extend([v.lat, v.lon]);
+            hasValidMarkers = true;
+            markersList.push({ data: v, marker: marker });
+        });
+
+        // Geolocation
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const userLat = position.coords.latitude;
+                const userLon = position.coords.longitude;
+                
+                const userIcon = L.divIcon({
+                    className: 'custom-user-marker',
+                    html: `<div style="background-color: #3b82f6; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 6px rgba(0,0,0,0.5);"></div>`,
+                    iconSize: [16, 16],
+                    iconAnchor: [8, 8]
+                });
+
+                L.marker([userLat, userLon], {icon: userIcon})
+                    .addTo(map)
+                    .bindPopup('<strong class="font-sans text-sm text-blue-600">Lokasi Anda</strong>');
+
+                // Update popup dengan jarak
+                markersList.forEach(item => {
+                    const dist = getDistance(userLat, userLon, item.data.lat, item.data.lon);
+                    item.marker.setPopupContent(createPopupHTML(item.data, dist));
+                });
+                
+                // Langsung fokus ke sekitar lokasi user (zoom 13 = level kota/kecamatan)
+                map.setView([userLat, userLon], 13);
+
+            }, (error) => {
+                const warn = document.getElementById('location-warning');
+                warn.classList.remove('hidden');
+                warn.classList.add('flex');
+                if (hasValidMarkers) {
+                    map.fitBounds(bounds, { padding: [30, 30], maxZoom: 13 });
+                }
+            });
+        } else {
+            if (hasValidMarkers) {
+                map.fitBounds(bounds, { padding: [30, 30], maxZoom: 13 });
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

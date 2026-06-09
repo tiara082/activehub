@@ -208,7 +208,7 @@
                     rounded-2xl p-12 text-center">
 
             <p class="text-gray-400">
-                Belum ada pertandingan
+                Belum ada permainan
             </p>
 
         </div>

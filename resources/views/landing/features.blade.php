@@ -16,18 +16,16 @@
                 <img src="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=700&q=80"
                      class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
 
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent 
-                            opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#0b3d0b]/90 via-[#0b3d0b]/40 to-transparent 
+                            opacity-70 group-hover:opacity-100 transition duration-500"></div>
 
                 <div class="absolute inset-0 flex flex-col justify-end p-6">
 
-                    <div class="transform translate-y-6 opacity-0 
-                                group-hover:translate-y-0 group-hover:opacity-100
-                                transition duration-500">
+                    <div class="transform transition duration-500 group-hover:-translate-y-2">
 
-                        <div class="w-11 h-11 bg-yellow-300 rounded-full flex items-center justify-center mb-4
-                                    transition duration-300 group-hover:scale-110 group-hover:rotate-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#1c3a0c]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <div class="w-11 h-11 bg-[#FACC15] rounded-full flex items-center justify-center mb-4
+                                    transition duration-300 group-hover:scale-110 group-hover:rotate-6 shadow-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#0b3d0b]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <rect x="3" y="4" width="18" height="18" rx="2"/>
                                 <line x1="16" y1="2" x2="16" y2="6"/>
                                 <line x1="8" y1="2" x2="8" y2="6"/>
@@ -36,18 +34,18 @@
                         </div>
 
                         <div class="max-w-xs">
-                            <h3 class="text-white text-2xl tracking-tight"
+                            <h3 class="text-white text-2xl tracking-tight drop-shadow-sm"
                                 style="font-family:'Bebas Neue',sans-serif;">
                                 Pesan Lapangan
                             </h3>
 
-                            <p class="text-white/70 text-sm mt-2 leading-relaxed">
-                                Pilih jadwal, cek ketersediaan, dan pesan lapangan tanpa ribet.
-                            </p>
+                            <div class="max-h-40 opacity-100 mt-2 md:max-h-0 md:opacity-0 md:mt-0 overflow-hidden transition-all duration-500 group-hover:max-h-40 group-hover:opacity-100 group-hover:mt-2">
+                                <p class="text-white/80 text-sm leading-relaxed">
+                                    Pilih jadwal, cek ketersediaan, dan pesan lapangan tanpa ribet.
+                                </p>
+                            </div>
 
-                            <div class="w-0 h-[2px] bg-yellow-300 mt-4 
-                                        transition-all duration-500 delay-300
-                                        group-hover:w-16"></div>
+                            <div class="h-[2px] bg-[#FACC15] w-20 mt-4 md:w-0 md:mt-0 transition-all duration-500 group-hover:w-20 group-hover:mt-4"></div>
                         </div>
 
                     </div>
@@ -63,18 +61,16 @@
                 <img src="https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=700&q=80"
                      class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
 
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent 
-                            opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#0b3d0b]/90 via-[#0b3d0b]/40 to-transparent 
+                            opacity-70 group-hover:opacity-100 transition duration-500"></div>
 
                 <div class="absolute inset-0 flex flex-col justify-end p-6">
 
-                    <div class="transform translate-y-6 opacity-0 
-                                group-hover:translate-y-0 group-hover:opacity-100
-                                transition duration-500">
+                    <div class="transform transition duration-500 md:group-hover:-translate-y-2">
 
-                        <div class="w-11 h-11 bg-yellow-300 rounded-full flex items-center justify-center mb-4
-                                    transition duration-300 group-hover:scale-110 group-hover:rotate-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#1c3a0c]" fill="none"
+                        <div class="w-11 h-11 bg-[#FACC15] rounded-full flex items-center justify-center mb-4
+                                    transition duration-300 md:group-hover:scale-110 md:group-hover:rotate-6 shadow-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#0b3d0b]" fill="none"
                                  viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <circle cx="9" cy="7" r="4"/>
                                 <path d="M17 11c2 0 4 2 4 4v1H13v-1c0-2 2-4 4-4z"/>
@@ -83,18 +79,18 @@
                         </div>
 
                         <div class="max-w-xs">
-                            <h3 class="text-white text-2xl tracking-tight"
+                            <h3 class="text-white text-2xl tracking-tight drop-shadow-sm"
                                 style="font-family:'Bebas Neue',sans-serif;">
-                                Pertandingan Terbuka
-                                Pertandingan Terbuka
+                                Permainan Terbuka
                             </h3>
 
-                            <p class="text-white/70 text-sm mt-2 leading-relaxed">
-                                Temukan pertandingan terbuka dan gabung main bareng pemain lain.
-                            </p>
+                            <div class="max-h-40 opacity-100 mt-2 md:max-h-0 md:opacity-0 md:mt-0 overflow-hidden transition-all duration-500 group-hover:max-h-40 group-hover:opacity-100 group-hover:mt-2">
+                                <p class="text-white/80 text-sm leading-relaxed">
+                                    Temukan permainan terbuka dan gabung main bareng pemain lain.
+                                </p>
+                            </div>
 
-                            <div class="w-0 h-[2px] bg-yellow-300 mt-4 
-                                        transition-all duration-500 group-hover:w-16"></div>
+                            <div class="h-[2px] bg-[#FACC15] w-20 mt-4 md:w-0 md:mt-0 transition-all duration-500 group-hover:w-20 group-hover:mt-4"></div>
                         </div>
 
                     </div>

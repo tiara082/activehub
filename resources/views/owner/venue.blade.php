@@ -117,14 +117,14 @@
 
             <div class="flex items-center justify-between mb-4">
                 <h3 class="font-semibold text-gray-800">Lapangan</h3>
-                <a href="{{ route('owner.venue.edit', $activeVenue->id) }}#lapangan"
+                <button type="button" onclick="openAddField()"
                     class="inline-flex items-center gap-1.5 text-xs font-medium bg-gray-900 hover:bg-gray-700
                            text-white px-3 py-2 rounded-lg transition">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-width="2" stroke-linecap="round" d="M12 5v14M5 12h14"/>
                     </svg>
                     Tambah Lapangan
-                </a>
+                </button>
             </div>
 
             @if($activeVenue->fields->isEmpty())
@@ -139,11 +139,20 @@
                     $typeLabel = $field->is_indoor ? 'Indoor' : 'Outdoor';
                 @endphp
                 <div class="border border-gray-100 rounded-xl p-4 flex items-center justify-between hover:shadow-sm transition">
-                    <div>
-                        <p class="font-medium text-gray-900">{{ $field->name }}</p>
-                        <p class="text-sm text-gray-500">
-                            @if($field->capacity) Kapasitas: {{ $field->capacity }} orang @endif
-                        </p>
+                    <div class="flex items-center gap-4">
+                        @if($field->photo_url)
+                        <img src="{{ $field->photo_url }}" class="w-12 h-12 rounded-lg object-cover">
+                        @else
+                        <div class="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
+                            <i class="fas fa-image text-gray-300"></i>
+                        </div>
+                        @endif
+                        <div>
+                            <p class="font-medium text-gray-900">{{ $field->name }}</p>
+                            <p class="text-sm text-gray-500">
+                                @if($field->capacity) Kapasitas: {{ $field->capacity }} orang @endif
+                            </p>
+                        </div>
                     </div>
 
                     <div class="flex items-center gap-4">
@@ -155,12 +164,12 @@
                         </span>
 
                         {{-- EDIT FIELD --}}
-                        <a href="{{ route('owner.venue.edit', $activeVenue->id) }}#lapangan"
+                        <button type="button" onclick="openEditField({{ $field->id }}, '{{ addslashes($field->name) }}', '{{ addslashes($field->sport_type) }}', {{ $field->price_per_hour }}, {{ $field->capacity ?? 0 }}, {{ $field->is_indoor }})"
                             class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-700 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z"/>
                             </svg>
-                        </a>
+                        </button>
 
                         {{-- DELETE FIELD --}}
                         <button onclick="openDeleteField({{ $field->id }}, '{{ addslashes($field->name) }}')"
@@ -443,6 +452,73 @@
 
 
 
+{{-- ===== FIELD MODAL (ADD / EDIT) ===== --}}
+<div id="fieldModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="font-semibold text-gray-900" id="fieldModalTitle">Tambah Lapangan</h3>
+            <button onclick="closeModal('fieldModal')" class="text-gray-400 hover:text-gray-600 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-width="2" stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <form id="fieldForm" method="POST" action="" enctype="multipart/form-data" class="space-y-4">
+            @csrf
+            <input type="hidden" name="_method" id="fieldFormMethod" value="POST">
+            <div>
+                <label class="text-xs text-gray-500 mb-1 block">Nama Lapangan <span class="text-red-400">*</span></label>
+                <input type="text" name="name" id="fieldName" required
+                    class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                    placeholder="cth. Lapangan A">
+            </div>
+            <div>
+                <label class="text-xs text-gray-500 mb-1 block">Tipe Olahraga <span class="text-red-400">*</span></label>
+                <input type="text" name="sport_type" id="fieldSportType" required
+                    class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                    placeholder="cth. Futsal">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-xs text-gray-500 mb-1 block">Harga / Jam <span class="text-red-400">*</span></label>
+                    <input type="number" name="price_per_hour" id="fieldPrice" required
+                        class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                        placeholder="cth. 150000">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 mb-1 block">Kapasitas</label>
+                    <input type="number" name="capacity" id="fieldCapacity"
+                        class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                        placeholder="cth. 10">
+                </div>
+            </div>
+            <div>
+                <label class="text-xs text-gray-500 mb-1 block">Tipe Tempat <span class="text-red-400">*</span></label>
+                <select name="is_indoor" id="fieldIsIndoor" required
+                    class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+                    <option value="1">Indoor</option>
+                    <option value="0">Outdoor</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-xs text-gray-500 mb-1 block">Foto Lapangan</label>
+                <input type="file" name="photo" id="fieldPhoto" accept="image/*"
+                    class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+            </div>
+            <div class="flex gap-3 pt-1">
+                <button type="button" onclick="closeModal('fieldModal')"
+                    class="flex-1 border border-gray-200 text-gray-600 text-sm font-medium py-2 rounded-xl hover:bg-gray-50 transition">
+                    Batal
+                </button>
+                <button type="submit" id="fieldSubmitBtn"
+                    class="flex-1 bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium py-2 rounded-xl transition">
+                    Simpan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 {{-- ===== DELETE FIELD ===== --}}
 <div id="deleteFieldModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center">
@@ -503,6 +579,40 @@
         document.getElementById('deleteVenueForm').action = baseUrl + id;
         document.getElementById('deleteVenueName').textContent = name;
         openModal('deleteVenueModal');
+    }
+
+    // Open add field modal
+    function openAddField() {
+        document.getElementById('fieldModalTitle').textContent = 'Tambah Lapangan';
+        document.getElementById('fieldFormMethod').value = 'POST';
+        document.getElementById('fieldForm').action = "{{ url('owner/venue') }}/{{ $activeVenue->id ?? '' }}/field";
+        document.getElementById('fieldSubmitBtn').textContent = 'Tambah';
+        
+        document.getElementById('fieldName').value = '';
+        document.getElementById('fieldSportType').value = '';
+        document.getElementById('fieldPrice').value = '';
+        document.getElementById('fieldCapacity').value = '';
+        document.getElementById('fieldIsIndoor').value = '1';
+        document.getElementById('fieldPhoto').value = '';
+        
+        openModal('fieldModal');
+    }
+
+    // Open edit field modal
+    function openEditField(id, name, sportType, price, capacity, isIndoor) {
+        document.getElementById('fieldModalTitle').textContent = 'Edit Lapangan';
+        document.getElementById('fieldFormMethod').value = 'PUT';
+        document.getElementById('fieldForm').action = "{{ url('owner/venue') }}/{{ $activeVenue->id ?? '' }}/field/" + id;
+        document.getElementById('fieldSubmitBtn').textContent = 'Simpan';
+        
+        document.getElementById('fieldName').value = name;
+        document.getElementById('fieldSportType').value = sportType;
+        document.getElementById('fieldPrice').value = price;
+        document.getElementById('fieldCapacity').value = capacity > 0 ? capacity : '';
+        document.getElementById('fieldIsIndoor').value = isIndoor ? '1' : '0';
+        document.getElementById('fieldPhoto').value = '';
+        
+        openModal('fieldModal');
     }
 
     // Populate delete field modal

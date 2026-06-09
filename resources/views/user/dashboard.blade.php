@@ -45,12 +45,12 @@
 
                 </div>
 
-                {{-- PERTANDINGAN PUBLIK --}}
+                {{-- PERMAINAN PUBLIK --}}
                 <div class="bg-gray-100 p-5 rounded-xl flex justify-between items-center">
 
                     <div>
                         <p class="text-xs text-gray-500">
-                            Total Pertandingan
+                            Total Permainan
                         </p>
 
                         <p class="text-lg font-semibold text-gray-800">
@@ -121,7 +121,7 @@
 
                     </a>
 
-                    {{-- CARI PERTANDINGAN --}}
+                    {{-- CARI PERMAINAN --}}
                     <a href="{{ route('matches.index') }}"
                        class="flex flex-col items-center gap-2 group">
 
@@ -134,12 +134,12 @@
                         </div>
 
                         <p class="text-xs text-gray-600">
-                            Cari Pertandingan
+                            Cari Permainan
                         </p>
 
                     </a>
 
-                    {{-- BUAT PERTANDINGAN --}}
+                    {{-- BUAT PERMAINAN --}}
                     <a href="{{ $hasBooking
                                 ? route('matches.create')
                                 : route('venues.index') }}"
@@ -157,7 +157,7 @@
                         <div class="text-center">
 
                             <p class="text-xs text-gray-600">
-                                Buat Pertandingan
+                                Buat Permainan
                             </p>
 
                             @if(!$hasBooking)
@@ -243,14 +243,14 @@
                     </div>
                     @endif
 
-                    {{-- PERTANDINGAN --}}
+                    {{-- PERMAINAN --}}
                     @if($nearestMatch)
                     <div class="border border-gray-100 rounded-xl p-3 bg-white hover:bg-gray-50 transition shadow-sm">
 
                         <div class="flex justify-between items-start mb-1">
 
                             <p class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">
-                                Pertandingan Terdekat
+                                Permainan Terdekat
                             </p>
 
                             <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">
@@ -336,7 +336,7 @@ new Chart(ctx, {
             },
 
             {
-                label: 'Pertandingan Diikuti',
+                label: 'Permainan Diikuti',
                 data: @json($joinedMatchData),
                 backgroundColor: '#81C784',
                 hoverBackgroundColor: '#81C784',
@@ -344,7 +344,7 @@ new Chart(ctx, {
             },
 
             {
-                label: 'Pertandingan Dibuat',
+                label: 'Permainan Dibuat',
                 data: @json($createdMatchData),
                 backgroundColor: '#2E7D32',
                 hoverBackgroundColor: '#2E7D32',

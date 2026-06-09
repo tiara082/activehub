@@ -19,9 +19,30 @@
 
     <!-- Venue Header -->
     <div class="bg-white rounded-2xl overflow-hidden mb-8 shadow-sm border border-gray-100">
+        @if($venue->photos && count($venue->photos) > 0)
+        <!-- Photo Gallery (Grid) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
+            @foreach(array_slice($venue->photos, 0, 3) as $index => $photo)
+                <div class="relative h-64 w-full {{ $index === 0 && count($venue->photos) === 1 ? 'md:col-span-2 lg:col-span-3' : ($index === 0 && count($venue->photos) === 2 ? 'lg:col-span-2' : '') }}">
+                    <img src="{{ $photo }}" class="w-full h-full object-cover">
+                    @if($index === 2 && count($venue->photos) > 3)
+                        <div class="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-bold text-2xl cursor-pointer">
+                            +{{ count($venue->photos) - 3 }} Foto
+                        </div>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+        @elseif($venue->photo_url)
+        <!-- Single Photo -->
+        <div class="relative h-64 w-full">
+            <img src="{{ $venue->photo_url }}" class="w-full h-full object-cover">
+        </div>
+        @else
         <div class="relative h-64 bg-gradient-to-r from-[#1b3a1b] to-[#2a5a2a] flex items-center justify-center">
             <i class="fas fa-building text-white/20 text-8xl"></i>
         </div>
+        @endif
         <div class="p-6 md:p-8">
             <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ $venue->name }}</h1>
             <p class="text-gray-500 text-sm mb-2">
@@ -39,20 +60,24 @@
                 <div>
                     <div class="mb-5">
                         <h2 class="text-lg font-bold text-gray-800 mb-2">Deskripsi</h2>
-                        <p class="text-gray-600 leading-relaxed text-sm">
-                            {{ $venue->description ?? 'Deskripsi venue belum tersedia.' }}
-                        </p>
+                        <div class="relative">
+                            <p id="desc-text" class="text-gray-600 leading-relaxed text-sm line-clamp-3 transition-all duration-300">
+                                {{ $venue->description ?? 'Deskripsi venue belum tersedia.' }}
+                            </p>
+                            <button id="desc-btn" onclick="toggleReadMore('desc-text', 'desc-btn')" class="text-[#1b3a1b] text-sm font-semibold mt-1 hover:underline hidden">Selengkapnya...</button>
+                        </div>
                     </div>
 
                     @if($venue->rules)
                     <hr class="border-gray-100 mb-5">
                     <div class="mb-5">
                         <h2 class="text-lg font-bold text-gray-800 mb-2">Peraturan</h2>
-                        <div class="text-gray-600 leading-relaxed text-sm whitespace-pre-line">{{ $venue->rules }}</div>
+                        <div class="relative">
+                            <div id="rules-text" class="text-gray-600 leading-relaxed text-sm whitespace-pre-line line-clamp-3 transition-all duration-300">{{ $venue->rules }}</div>
+                            <button id="rules-btn" onclick="toggleReadMore('rules-text', 'rules-btn')" class="text-[#1b3a1b] text-sm font-semibold mt-1 hover:underline hidden">Selengkapnya...</button>
+                        </div>
                     </div>
                     @endif
-
-
                 </div>
 
                 <!-- KANAN: Fasilitas + Map -->
@@ -136,9 +161,13 @@
                 @foreach($venue->fields as $idx => $field)
                 <div class="border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
                     <div class="flex items-center gap-4 p-4 cursor-pointer hover:bg-gray-50 transition" onclick="toggleField('field{{ $field->id }}', this)">
+                        @if($field->photo_url)
+                        <img src="{{ $field->photo_url }}" class="w-24 h-20 rounded-xl object-cover flex-shrink-0">
+                        @else
                         <div class="w-24 h-20 bg-[#e8f0e8] rounded-xl flex items-center justify-center flex-shrink-0">
                             <i class="fas fa-running text-[#1b3a1b] text-3xl"></i>
                         </div>
+                        @endif
                         <div class="flex-1">
                             <h3 class="text-lg font-bold text-gray-800 mb-1">{{ $field->name }}</h3>
                             <div class="flex items-center gap-3 text-sm text-gray-500 mb-2">
@@ -190,10 +219,17 @@
                 <form method="POST" action="{{ route('venues.book') }}">
                     @csrf
                     <input type="hidden" name="time_slot_id" id="selectedSlotId">
-                    <button type="submit"
-                        class="bg-[#1b3a1b] text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-sm hover:bg-[#2a5a2a] transition">
-                        Booking & Bayar
-                    </button>
+                    @if(auth()->check() && auth()->user()->role === 'owner')
+                        <button type="button" onclick="alert('Maaf, Owner tidak bisa memesan lapangan.')"
+                            class="bg-[#1b3a1b] text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-sm opacity-50 cursor-not-allowed w-full md:w-auto text-center">
+                            Pesan
+                        </button>
+                    @else
+                        <button type="submit"
+                            class="bg-[#1b3a1b] text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-sm hover:bg-[#2a5a2a] transition w-full md:w-auto text-center">
+                            Pesan
+                        </button>
+                    @endif
                 </form>
             </div>
 
@@ -408,6 +444,34 @@
 
         document.getElementById('bookingBar').classList.remove('hidden');
     }
+
+    function initReadMore(textId, btnId) {
+        const textEl = document.getElementById(textId);
+        const btnEl = document.getElementById(btnId);
+        if(textEl && btnEl) {
+            // Check if text exceeds line clamp height
+            if(textEl.scrollHeight > textEl.clientHeight) {
+                btnEl.classList.remove('hidden');
+            }
+        }
+    }
+
+    function toggleReadMore(textId, btnId) {
+        const textEl = document.getElementById(textId);
+        const btnEl = document.getElementById(btnId);
+        if(textEl.classList.contains('line-clamp-3')) {
+            textEl.classList.remove('line-clamp-3');
+            btnEl.innerText = 'Sembunyikan';
+        } else {
+            textEl.classList.add('line-clamp-3');
+            btnEl.innerText = 'Selengkapnya...';
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        initReadMore('desc-text', 'desc-btn');
+        initReadMore('rules-text', 'rules-btn');
+    });
 </script>
 
 </body>
