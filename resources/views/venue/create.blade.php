@@ -6,7 +6,11 @@
 <title>Daftarkan Venue - ActiveHub</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
+@if (app()->environment('production'))
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+@else
+    <script src="https://cdn.tailwindcss.com"></script>
+@endif
 
 <style>
     body { font-family:'DM Sans',sans-serif; }

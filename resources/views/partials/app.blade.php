@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ActiveHub</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    @if (app()->environment('production'))
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @else
+        <script src="https://cdn.tailwindcss.com"></script>
+    @endif
 
     {{-- FONTS --}}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
