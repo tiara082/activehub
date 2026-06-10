@@ -47,6 +47,9 @@ RUN mkdir -p storage/framework/{cache,sessions,views} \
 
 RUN chmod -R 775 storage bootstrap/cache
 
+# Create storage symlink
+RUN php artisan storage:link || true
+
 EXPOSE 8080
 
 CMD php artisan serve --host=0.0.0.0 --port=$PORT
