@@ -1,2 +1,6 @@
 *
 !.gitignore
+!venues/
+!venues/*
+!fields/
+!fields/*
