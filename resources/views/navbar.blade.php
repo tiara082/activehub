@@ -2,8 +2,9 @@
             bg-[#0b3d0b] shadow-sm">
 
     {{-- LOGO --}}
-    <a href="/" class="flex items-center">
+    <a href="/" class="flex items-center gap-2">
         <img src="{{ asset('assets/logo yellow.png') }}" alt="ActiveHub" class="h-9 w-auto">
+        <span class="font-display text-2xl font-black text-yellow-300 tracking-tight">ActiveHub</span>
     </a>
 
     {{-- DESKTOP MENU --}}
