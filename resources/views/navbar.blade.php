@@ -4,7 +4,7 @@
     {{-- LOGO --}}
     <a href="/" class="flex items-center gap-2">
         <img src="{{ asset('assets/logo yellow.png') }}" alt="ActiveHub" class="h-8 w-auto">
-        <span class="font-display text-xl font-black text-yellow-300 tracking-tight leading-none">ActiveHub</span>
+        <span class="font-display text-2xl font-black text-yellow-300 tracking-tight leading-none">ActiveHub</span>
     </a>
 
     {{-- DESKTOP MENU --}}
