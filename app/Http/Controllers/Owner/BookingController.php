@@ -13,7 +13,9 @@ class BookingController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        $venue = $user->venues()->with('fields')->first();
+        $venues = $user->venues()->with('fields')->get();
+        $activeVenueId = session('active_venue_id');
+        $venue = $activeVenueId ? ($venues->where('id', $activeVenueId)->first() ?? $venues->first()) : $venues->first();
         
         if (!$venue) {
             return view('owner.bookings', [
@@ -226,7 +228,9 @@ class BookingController extends Controller
     public function export(Request $request)
     {
         $user = Auth::user();
-        $venue = $user->venues()->with('fields')->first();
+        $venues = $user->venues()->with('fields')->get();
+        $activeVenueId = session('active_venue_id');
+        $venue = $activeVenueId ? ($venues->where('id', $activeVenueId)->first() ?? $venues->first()) : $venues->first();
         
         if (!$venue) {
             return back()->with('error', 'Belum ada venue.');

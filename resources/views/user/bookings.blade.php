@@ -403,14 +403,19 @@ $statusStyle = [
                                         <i class="fa-solid fa-eye text-sm"></i>
                                     </a>
                                 @elseif($booking->status_label === 'Terjadwal')
-                                    <a href="{{ route('user.bookings.show', $booking->id) }}"
+                                    @php
+                                        $bVenue = addslashes($booking->field->venue->name ?? '-');
+                                        $bField = addslashes($booking->field->name ?? '-');
+                                        $bDate = $booking->timeSlot && $booking->timeSlot->date ? $booking->timeSlot->date->format('d F Y') : '-';
+                                        $bTime = $booking->timeSlot ? date('H:i', strtotime($booking->timeSlot->start_time)) . ' - ' . date('H:i', strtotime($booking->timeSlot->end_time)) : '-';
+                                        $bPrice = number_format($booking->total_price, 0, ',', '.');
+                                        $bOrderDate = $booking->created_at->format('d M Y, H:i');
+                                        $bCity = addslashes($booking->field->venue->city ?? '-');
+                                    @endphp
+                                    <button onclick="openReceiptModal('{{ $booking->id }}', '{{ $bVenue }}', '{{ $bField }}', '{{ $bCity }}', '{{ $bDate }}', '{{ $bTime }}', '{{ $bPrice }}', '{{ $bOrderDate }}')"
                                        class="w-9 h-9 inline-flex items-center justify-center
-                                              rounded-xl hover:bg-gray-100 transition text-gray-500" title="Lihat Detail">
-                                        <i class="fa-solid fa-eye text-sm"></i>
-                                    </a>
-                                    <button class="w-9 h-9 inline-flex items-center justify-center
-                                                   rounded-xl hover:bg-gray-100 transition text-gray-500" title="Edit">
-                                        <i class="fa-solid fa-pen text-sm"></i>
+                                              rounded-xl hover:bg-gray-100 transition text-emerald-600 bg-emerald-50 border border-emerald-100" title="Lihat E-Ticket / Kwitansi">
+                                        <i class="fa-solid fa-ticket text-sm"></i>
                                     </button>
                                 @elseif($booking->status_label === 'Selesai')
                                     @if($booking->review)
@@ -638,6 +643,27 @@ function closeRatingModal() {
     document.getElementById('ratingModal').classList.add('hidden');
 }
 
+function openReceiptModal(id, venue, field, city, date, time, price, orderDate) {
+    document.getElementById('receiptOrderId').textContent = '#' + id;
+    document.getElementById('receiptOrderDate').textContent = orderDate;
+    document.getElementById('receiptVenue').textContent = venue;
+    document.getElementById('receiptField').textContent = field;
+    document.getElementById('receiptCity').textContent = city;
+    document.getElementById('receiptDate').textContent = date;
+    document.getElementById('receiptTime').textContent = time + ' WIB';
+    document.getElementById('receiptPrice').textContent = 'Rp ' + price;
+    
+    // Set href for download button
+    const url = "{{ url('/user/bookings') }}/" + id + "/receipt";
+    document.getElementById('receiptDownloadBtn').href = url;
+    
+    document.getElementById('receiptModal').classList.remove('hidden');
+}
+
+function closeReceiptModal() {
+    document.getElementById('receiptModal').classList.add('hidden');
+}
+
 function setRating(category, rating) {
     ratings[category] = rating;
     document.getElementById('rating' + category).value = rating;
@@ -744,6 +770,73 @@ document.getElementById('ratingForm').addEventListener('submit', function(e) {
                 Kirim Ulasan
             </button>
         </form>
+    </div>
+</div>
+
+<!-- Modal E-Ticket / Kwitansi -->
+<div id="receiptModal" class="fixed inset-0 z-[60] hidden bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden transform transition-all border border-gray-100">
+        
+        <!-- Modal Header (Receipt Style) -->
+        <div class="relative bg-[#1b3a1b] p-6 text-white text-center">
+            <!-- Decorative circles -->
+            <div class="absolute -bottom-3 -left-3 w-6 h-6 bg-white rounded-full"></div>
+            <div class="absolute -bottom-3 -right-3 w-6 h-6 bg-white rounded-full"></div>
+            
+            <h2 class="text-2xl font-black tracking-tighter uppercase">ActiveHub</h2>
+            <p class="text-emerald-100 text-sm mt-1">E-Ticket / Bukti Pemesanan</p>
+            
+            <button type="button" onclick="closeReceiptModal()" class="absolute top-4 right-4 w-8 h-8 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Modal Body (Receipt Style) -->
+        <div class="p-6 relative">
+            
+            <div class="flex justify-between items-center border-b border-dashed border-gray-200 pb-4 mb-4">
+                <div>
+                    <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Order ID</p>
+                    <p class="font-bold text-gray-800 text-lg" id="receiptOrderId">#0</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Tanggal Order</p>
+                    <p class="font-semibold text-gray-700 text-sm" id="receiptOrderDate">-</p>
+                </div>
+            </div>
+
+            <div class="space-y-4 mb-6">
+                <div>
+                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Detail Lapangan</p>
+                    <p class="font-bold text-gray-800 text-base" id="receiptVenue">-</p>
+                    <p class="text-sm text-gray-600" id="receiptField">-</p>
+                    <p class="text-xs text-gray-500 mt-0.5" id="receiptCity">-</p>
+                </div>
+
+                <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Tanggal Main</p>
+                            <p class="font-bold text-[#1b3a1b] text-sm" id="receiptDate">-</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Pukul</p>
+                            <p class="font-bold text-[#1b3a1b] text-sm" id="receiptTime">-</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-between items-center pt-2">
+                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Lunas</p>
+                    <p class="font-black text-gray-900 text-xl" id="receiptPrice">Rp 0</p>
+                </div>
+            </div>
+
+            <a id="receiptDownloadBtn" href="#" target="_blank" class="w-full bg-[#1b3a1b] text-white font-bold py-3.5 rounded-xl hover:bg-[#285228] transition-all flex items-center justify-center gap-2 shadow-sm">
+                <i class="fa-solid fa-download"></i> Download / Print Kwitansi
+            </a>
+            
+        </div>
     </div>
 </div>
 

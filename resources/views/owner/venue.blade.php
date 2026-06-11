@@ -4,17 +4,44 @@
 
 @section('content')
 
-{{-- FLASH MESSAGES --}}
-@if(session('success'))
-<div class="mb-4 px-4 py-3 bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl">
-    {{ session('success') }}
+{{-- VENUE SELECTOR & ADD BUTTON --}}
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+    <div>
+        <h2 class="text-xl font-bold text-gray-900">Kelola Cabang</h2>
+        <p class="text-sm text-gray-500">Pilih cabang yang ingin Anda lihat dan kelola</p>
+    </div>
+    <div class="flex items-stretch gap-3 w-full md:w-auto">
+        <form id="venueSwitchForm" method="POST" action="{{ route('owner.venue.switch') }}" class="flex-1 md:flex-none relative">
+            @csrf
+            <input type="hidden" name="venue_id" id="venue_id_input" value="{{ $activeVenue ? $activeVenue->id : '' }}">
+            
+            <div class="relative w-full md:w-64 h-full">
+                <!-- Trigger Button -->
+                <button type="button" onclick="toggleVenueMenu()" class="w-full h-full flex items-center justify-between border border-gray-200 rounded-xl text-sm pl-4 pr-4 py-2.5 bg-white shadow-sm font-medium text-gray-800 hover:bg-gray-50 transition focus:outline-none focus:ring-2 focus:ring-gray-900/5 focus:border-gray-900">
+                    <span id="venue_selected_text" class="truncate pr-2">
+                        {{ $activeVenue ? $activeVenue->name : 'Pilih Cabang' }}
+                    </span>
+                    <svg class="h-4 w-4 text-gray-400 transition-transform duration-200" id="venueMenuIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div id="venueDropdownMenu" class="absolute left-0 top-full mt-2 w-full bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 opacity-0 invisible translate-y-2 transition-all duration-200 z-50">
+                    @foreach($venues as $v)
+                        <button type="button" onclick="selectVenue('{{ $v->id }}', '{{ addslashes($v->name) }}')" class="w-full text-left px-4 py-2 text-sm transition-colors {{ $activeVenue && $activeVenue->id == $v->id ? 'bg-[#1b3a1b]/5 text-[#1b3a1b] font-bold' : 'text-gray-700 hover:bg-gray-50' }}">
+                            {{ $v->name }}
+                        </button>
+                    @endforeach
+                </div>
+            </div>
+        </form>
+        <a href="{{ route('owner.venue.create') }}" class="bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 hover:text-gray-900 transition whitespace-nowrap inline-flex items-center justify-center gap-2 shadow-sm h-full">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            Tambah Cabang
+        </a>
+    </div>
 </div>
-@endif
-@if(session('error'))
-<div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl">
-    {{ session('error') }}
-</div>
-@endif
 
 <div class="grid lg:grid-cols-3 gap-6">
 
@@ -474,9 +501,17 @@
             </div>
             <div>
                 <label class="text-xs text-gray-500 mb-1 block">Tipe Olahraga <span class="text-red-400">*</span></label>
-                <input type="text" name="sport_type" id="fieldSportType" required
-                    class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
-                    placeholder="cth. Futsal">
+                <select name="sport_type" id="fieldSportType" required
+                    class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 bg-white">
+                    <option value="">-- Pilih Olahraga --</option>
+                    <option value="Futsal">Futsal</option>
+                    <option value="Basket">Basket</option>
+                    <option value="Bulu Tangkis">Bulu Tangkis</option>
+                    <option value="Tennis">Tennis</option>
+                    <option value="Voli">Voli</option>
+                    <option value="Padel">Padel</option>
+                    <option value="Kebugaran">Kebugaran</option>
+                </select>
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
@@ -571,6 +606,40 @@
         modal.addEventListener('click', function (e) {
             if (e.target === this) closeModal(this.id);
         });
+    });
+
+    // Custom Venue Dropdown
+    let venueMenuOpen = false;
+    function toggleVenueMenu() {
+        const menu = document.getElementById('venueDropdownMenu');
+        const icon = document.getElementById('venueMenuIcon');
+        if (venueMenuOpen) {
+            menu.classList.replace('opacity-100', 'opacity-0');
+            menu.classList.replace('visible', 'invisible');
+            menu.classList.replace('translate-y-0', 'translate-y-2');
+            icon.style.transform = 'rotate(0deg)';
+        } else {
+            menu.classList.replace('opacity-0', 'opacity-100');
+            menu.classList.replace('invisible', 'visible');
+            menu.classList.replace('translate-y-2', 'translate-y-0');
+            icon.style.transform = 'rotate(180deg)';
+        }
+        venueMenuOpen = !venueMenuOpen;
+    }
+
+    function selectVenue(id, name) {
+        document.getElementById('venue_id_input').value = id;
+        document.getElementById('venue_selected_text').textContent = name;
+        toggleVenueMenu();
+        document.getElementById('venueSwitchForm').submit();
+    }
+
+    // Close venue dropdown on outside click
+    document.addEventListener('click', function(event) {
+        const dropdownForm = document.getElementById('venueSwitchForm');
+        if (venueMenuOpen && dropdownForm && !dropdownForm.contains(event.target)) {
+            toggleVenueMenu();
+        }
     });
 
     // Populate delete venue modal

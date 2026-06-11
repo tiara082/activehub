@@ -27,9 +27,31 @@ class VenueController extends Controller
             ->latest()
             ->get();
 
-        $activeVenue = $venues->first();
+        $activeVenue = null;
+        $activeVenueId = session('active_venue_id');
+        if ($activeVenueId) {
+            $activeVenue = $venues->where('id', $activeVenueId)->first();
+        }
+        
+        if (!$activeVenue) {
+            $activeVenue = $venues->first();
+            if ($activeVenue) {
+                session(['active_venue_id' => $activeVenue->id]);
+            }
+        }
 
         return view('owner.venue', compact('venues', 'activeVenue'));
+    }
+
+    public function switchVenue(Request $request): RedirectResponse
+    {
+        $request->validate(['venue_id' => 'required|exists:venues,id']);
+        
+        $venue = Venue::findOrFail($request->venue_id);
+        $this->authorizeVenue($venue);
+
+        session(['active_venue_id' => $venue->id]);
+        return back()->with('success', 'Berhasil beralih ke cabang ' . $venue->name . '.');
     }
 
     public function create(): View
@@ -92,6 +114,9 @@ class VenueController extends Controller
         foreach ($data['fields'] as $field) {
             $venue->fields()->create($field);
         }
+        
+        // Set as active venue
+        session(['active_venue_id' => $venue->id]);
 
         return redirect()->route('owner.venue')
             ->with('success', 'Venue & lapangan berhasil ditambahkan.');
