@@ -43,7 +43,7 @@
     </div>
 </div>
 
-<div class="grid lg:grid-cols-3 gap-6">
+<div class="grid xl:grid-cols-3 gap-6">
 
     {{-- ===================== LEFT COL ===================== --}}
     <div class="lg:col-span-2 space-y-5">
@@ -165,50 +165,44 @@
                         : 'bg-blue-50 text-blue-700';
                     $typeLabel = $field->is_indoor ? 'Indoor' : 'Outdoor';
                 @endphp
-                <div class="border border-gray-100 rounded-xl p-4 flex items-center justify-between hover:shadow-sm transition">
-                    <div class="flex items-center gap-4">
+                <div class="border border-gray-100 rounded-xl p-4 hover:shadow-sm transition">
+                    <div class="flex items-start gap-4">
                         @if($field->photo_url)
-                        <img src="{{ $field->photo_url }}" class="w-12 h-12 rounded-lg object-cover">
+                        <img src="{{ $field->photo_url }}" class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
                         @else
-                        <div class="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
+                        <div class="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
                             <i class="fas fa-image text-gray-300"></i>
                         </div>
                         @endif
-                        <div>
+                        <div class="flex-1 min-w-0">
                             <p class="font-medium text-gray-900">{{ $field->name }}</p>
                             <p class="text-sm text-gray-500">
                                 @if($field->capacity) Kapasitas: {{ $field->capacity }} orang @endif
                             </p>
                         </div>
                     </div>
-
-                    <div class="flex items-center gap-4">
-                        <p class="text-sm font-medium text-gray-700">
-                            Rp {{ number_format($field->price_per_hour, 0, ',', '.') }}/jam
-                        </p>
-                        <span class="text-xs font-medium px-3 py-1.5 rounded-lg {{ $typeClass }}">
-                            {{ $typeLabel }}
-                        </span>
-
-                        {{-- EDIT FIELD --}}
-                        <button type="button" onclick="openEditField({{ $field->id }}, '{{ addslashes($field->name) }}', '{{ addslashes($field->sport_type) }}', {{ $field->price_per_hour }}, {{ $field->capacity ?? 0 }}, {{ $field->is_indoor }})"
-                            class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-700 transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z"/>
-                            </svg>
-                        </button>
-
-                        {{-- DELETE FIELD --}}
-                        <button onclick="openDeleteField({{ $field->id }}, '{{ addslashes($field->name) }}')"
-                            class="w-7 h-7 flex items-center justify-center text-red-400 hover:text-red-600 transition">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="3 6 5 6 21 6"/>
-                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                                <path d="M10 11v6"/><path d="M14 11v6"/>
-                                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                            </svg>
-                        </button>
+                    <div class="flex items-center justify-between mt-3 flex-wrap gap-2">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <p class="text-sm font-medium text-gray-700">Rp {{ number_format($field->price_per_hour, 0, ',', '.') }}/jam</p>
+                            <span class="text-xs font-medium px-3 py-1.5 rounded-lg {{ $typeClass }}">{{ $typeLabel }}</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button type="button" onclick="openEditField({{ $field->id }}, '{{ addslashes($field->name) }}', '{{ addslashes($field->sport_type) }}', {{ $field->price_per_hour }}, {{ $field->capacity ?? 0 }}, {{ $field->is_indoor }})"
+                                class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z"/>
+                                </svg>
+                            </button>
+                            <button onclick="openDeleteField({{ $field->id }}, '{{ addslashes($field->name) }}')"
+                                class="w-8 h-8 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"/>
+                                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                    <path d="M10 11v6"/><path d="M14 11v6"/>
+                                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 @endforeach

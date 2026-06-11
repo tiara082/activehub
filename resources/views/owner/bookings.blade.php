@@ -24,7 +24,7 @@ $statusStyle = [
 ];
 @endphp
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-6">
 
     {{-- GRAFIK 6 BULAN --}}
     <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
@@ -358,207 +358,110 @@ $statusStyle = [
 <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
 
     {{-- HEADER --}}
-    <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-
+    <div class="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-100">
         <div>
-
-            <p class="text-sm font-semibold text-gray-800">
-                Ringkasan Pemesanan
-            </p>
-
-            <p class="text-xs text-gray-400">
-                {{ $todayLabel }}
-            </p>
-
+            <p class="text-sm font-semibold text-gray-800">Ringkasan Pemesanan</p>
+            <p class="text-xs text-gray-400">{{ $todayLabel }}</p>
         </div>
-
-        <a href="{{ route('owner.bookings.export', request()->all()) }}" 
-           class="px-4 py-2 text-sm rounded-xl border border-gray-200 inline-block
-                  hover:border-[#1b3a1b] hover:text-[#1b3a1b] transition">
-            Ekspor Data
+        <a href="{{ route('owner.bookings.export', request()->all()) }}"
+           class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-xl border border-gray-200 inline-block
+                  hover:border-[#1b3a1b] hover:text-[#1b3a1b] transition whitespace-nowrap">
+            Ekspor
         </a>
-
     </div>
 
-
-    {{-- TABLE CONTENT --}}
-    <div class="overflow-x-auto">
-
+    {{-- DESKTOP TABLE --}}
+    <div class="hidden md:block overflow-x-auto">
         <table class="w-full text-sm">
-
             <thead class="text-[11px] text-gray-400 uppercase tracking-wider text-center">
-
                 <tr>
-
-                    <th class="px-6 py-4">
-                        Pemesan
-                    </th>
-
-                    <th class="px-6 py-4">
-                        Lapangan
-                    </th>
-
-                    <th class="px-6 py-4">
-                        Jadwal
-                    </th>
-
-                    <th class="px-6 py-4">
-                        Durasi
-                    </th>
-
-                    <th class="px-6 py-4">
-                        Total
-                    </th>
-
-                    <th class="px-6 py-4">
-                        Status
-                    </th>
-
-                    <th class="px-6 py-4">
-                        Aksi
-                    </th>
-
+                    <th class="px-6 py-4">Pemesan</th>
+                    <th class="px-6 py-4">Lapangan</th>
+                    <th class="px-6 py-4">Jadwal</th>
+                    <th class="px-6 py-4">Durasi</th>
+                    <th class="px-6 py-4">Total</th>
+                    <th class="px-6 py-4">Status</th>
+                    <th class="px-6 py-4">Aksi</th>
                 </tr>
-
             </thead>
-
-
             <tbody class="divide-y divide-gray-50 text-center">
-
                 @forelse($bookings as $b)
-
                 <tr class="hover:bg-gray-50 transition">
-
                     <td class="px-6 py-4">
-
-                        <p class="font-medium text-gray-800">
-                            {{ $b['name'] }}
-                        </p>
-
-                        <p class="text-xs text-gray-400">
-                            {{ $b['phone'] }}
-                        </p>
-
+                        <p class="font-medium text-gray-800">{{ $b['name'] }}</p>
+                        <p class="text-xs text-gray-400">{{ $b['phone'] }}</p>
                     </td>
-
-                    <td class="px-6 py-4 text-gray-600">
-                        {{ $b['court'] }}
-                    </td>
-
+                    <td class="px-6 py-4 text-gray-600">{{ $b['court'] }}</td>
                     <td class="px-6 py-4">
-
-                        <p class="text-gray-700">
-                            {{ $b['date'] }}
-                        </p>
-
-                        <p class="text-xs text-gray-400">
-                            {{ $b['time'] }}
-                        </p>
-
+                        <p class="text-gray-700">{{ $b['date'] }}</p>
+                        <p class="text-xs text-gray-400">{{ $b['time'] }}</p>
                     </td>
-
-                    <td class="px-6 py-4 text-gray-600">
-                        {{ $b['dur'] }}
-                    </td>
-
-                    <td class="px-6 py-4 font-medium text-gray-800">
-                        {{ $b['total'] }}
-                    </td>
-
+                    <td class="px-6 py-4 text-gray-600">{{ $b['dur'] }}</td>
+                    <td class="px-6 py-4 font-medium text-gray-800">{{ $b['total'] }}</td>
                     <td class="px-6 py-4">
-
-                        <span class="px-3 py-1 rounded-full text-xs font-medium
-                            {{ $statusStyle[$b['status']] ?? 'bg-gray-50 text-gray-600' }}">
-
+                        <span class="px-3 py-1 rounded-full text-xs font-medium {{ $statusStyle[$b['status']] ?? 'bg-gray-50 text-gray-600' }}">
                             {{ $b['status'] }}
-
                         </span>
-
                     </td>
-
                     <td class="px-6 py-4">
-
                         <div class="flex justify-center gap-2">
-
-                            {{-- DATA DIV --}}
                             <div id="booking-data-{{ $b['id'] }}" class="hidden"
                                 data-id="#BKG-{{ str_pad($b['id'], 4, '0', STR_PAD_LEFT) }}"
-                                data-name="{{ $b['name'] }}"
-                                data-phone="{{ $b['phone'] }}"
-                                data-court="{{ $b['court'] }}"
-                                data-date="{{ $b['date'] }}"
-                                data-time="{{ $b['time'] }}"
-                                data-dur="{{ $b['dur'] }}"
-                                data-total="{{ $b['total'] }}"
-                                data-status="{{ $b['status'] }}"
-                            ></div>
-
-                            {{-- DETAIL --}}
-                            <button onclick="openDetailBookingModal({{ $b['id'] }})" class="w-9 h-9 inline-flex items-center justify-center rounded-xl hover:bg-gray-100 transition text-gray-500" title="Detail Pesanan">
-
-                                <svg class="w-4 h-4" viewBox="0 0 24 24"
-                                     fill="none" stroke="currentColor">
-
-                                    <path stroke-width="2"
-                                          d="M2.458 12C3.732 7.943 7.523 5 12 5
-                                             c4.477 0 8.268 2.943 9.542 7
-                                             C20.268 16.057 16.477 19 12 19
-                                             c-4.477 0-8.268-2.943-9.542-7z"/>
-
+                                data-name="{{ $b['name'] }}" data-phone="{{ $b['phone'] }}"
+                                data-court="{{ $b['court'] }}" data-date="{{ $b['date'] }}"
+                                data-time="{{ $b['time'] }}" data-dur="{{ $b['dur'] }}"
+                                data-total="{{ $b['total'] }}" data-status="{{ $b['status'] }}"></div>
+                            <button onclick="openDetailBookingModal({{ $b['id'] }})" class="w-9 h-9 inline-flex items-center justify-center rounded-xl hover:bg-gray-100 transition text-gray-500">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7C20.268 16.057 16.477 19 12 19c-4.477 0-8.268-2.943-9.542-7z"/>
                                     <circle cx="12" cy="12" r="3" stroke-width="2"/>
-
                                 </svg>
-
                             </button>
-
-
-                            {{-- EDIT --}}
-                            <button class="w-9 h-9 inline-flex items-center justify-center
-                                           rounded-xl hover:bg-gray-100 transition text-gray-500">
-
-                                <svg class="w-4 h-4" viewBox="0 0 24 24"
-                                     fill="none" stroke="currentColor">
-
-                                    <path stroke-width="2"
-                                          d="M16.862 4.487l1.687-1.688
-                                             a1.875 1.875 0 112.652 2.652
-                                             L10.582 16.07
-                                             a4.5 4.5 0 01-1.897 1.13L6 18
-                                             l.8-2.685
-                                             a4.5 4.5 0 011.13-1.897
-                                             l8.932-8.931z"/>
-
-                                    <path stroke-width="2"
-                                          d="M19.5 7.125L16.875 4.5"/>
-
-                                </svg>
-
-                            </button>
-
                         </div>
-
                     </td>
-
                 </tr>
-
                 @empty
-
-                <tr>
-
-                    <td colspan="7" class="text-center py-16 text-gray-400">
-
-                        Belum ada pemesanan
-
-                    </td>
-
-                </tr>
-
+                <tr><td colspan="7" class="text-center py-16 text-gray-400">Belum ada pemesanan</td></tr>
                 @endforelse
-
             </tbody>
-
         </table>
+    </div>
 
+    {{-- MOBILE CARD LIST --}}
+    <div class="md:hidden divide-y divide-gray-50">
+        @forelse($bookings as $b)
+        <div class="p-4">
+            <div id="booking-data-{{ $b['id'] }}" class="hidden"
+                data-id="#BKG-{{ str_pad($b['id'], 4, '0', STR_PAD_LEFT) }}"
+                data-name="{{ $b['name'] }}" data-phone="{{ $b['phone'] }}"
+                data-court="{{ $b['court'] }}" data-date="{{ $b['date'] }}"
+                data-time="{{ $b['time'] }}" data-dur="{{ $b['dur'] }}"
+                data-total="{{ $b['total'] }}" data-status="{{ $b['status'] }}"></div>
+            <div class="flex items-start justify-between mb-2">
+                <div>
+                    <p class="font-semibold text-gray-800 text-sm">{{ $b['name'] }}</p>
+                    <p class="text-xs text-gray-400">{{ $b['phone'] }}</p>
+                </div>
+                <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $statusStyle[$b['status']] ?? 'bg-gray-50 text-gray-600' }}">
+                    {{ $b['status'] }}
+                </span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs text-gray-500 mb-3">
+                <div><span class="text-gray-400">Lapangan:</span> {{ $b['court'] }}</div>
+                <div><span class="text-gray-400">Durasi:</span> {{ $b['dur'] }}</div>
+                <div><span class="text-gray-400">Tanggal:</span> {{ $b['date'] }}</div>
+                <div><span class="text-gray-400">Jam:</span> {{ $b['time'] }}</div>
+            </div>
+            <div class="flex items-center justify-between">
+                <p class="text-sm font-semibold text-gray-800">{{ $b['total'] }}</p>
+                <button onclick="openDetailBookingModal({{ $b['id'] }})" class="text-xs text-[#1b3a1b] font-medium px-3 py-1.5 rounded-lg bg-[#1b3a1b]/5 hover:bg-[#1b3a1b]/10 transition">
+                    Lihat Detail
+                </button>
+            </div>
+        </div>
+        @empty
+        <div class="text-center py-16 text-gray-400 text-sm">Belum ada pemesanan</div>
+        @endforelse
     </div>
 
 </div>

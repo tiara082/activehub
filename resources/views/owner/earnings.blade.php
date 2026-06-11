@@ -8,7 +8,7 @@
 
 @section('content')
 
-<div class="grid lg:grid-cols-3 gap-5 mb-5">
+<div class="grid xl:grid-cols-3 gap-5 mb-5">
 
     {{-- SALDO CARD --}}
     <div class="bg-[#1b3a1b] rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between">
@@ -87,7 +87,7 @@
 
 
 {{-- ===== BOTTOM ROW ===== --}}
-<div class="grid lg:grid-cols-2 gap-5">
+<div class="grid xl:grid-cols-2 gap-5">
 
     {{-- RINCIAN PER LAPANGAN --}}
     <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
