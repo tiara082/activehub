@@ -147,18 +147,18 @@ class VenueController extends Controller
 
         $photos = $venue->photos ?? [];
         if ($request->hasFile('photos')) {
-            // Delete old photos
+            // Delete old photos from Supabase
             if ($venue->photos) {
                 foreach ($venue->photos as $oldPhoto) {
-                    if (str_starts_with($oldPhoto, '/storage/')) {
-                        \Illuminate\Support\Facades\Storage::disk('public')->delete(str_replace('/storage/', '', $oldPhoto));
-                    }
+                    $key = ltrim(parse_url($oldPhoto, PHP_URL_PATH), '/');
+                    \Illuminate\Support\Facades\Storage::disk('supabase')->delete($key);
                 }
             }
             $photos = [];
             foreach ($request->file('photos') as $file) {
-                $path = $file->store('venues', 'public');
-                $photos[] = '/storage/' . $path;
+                $filename = 'venues/' . uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
+                \Illuminate\Support\Facades\Storage::disk('supabase')->put($filename, file_get_contents($file), 'public');
+                $photos[] = \Illuminate\Support\Facades\Storage::disk('supabase')->url($filename);
             }
         }
 
@@ -198,8 +198,10 @@ class VenueController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('fields', 'public');
-            $data['photo_url'] = '/storage/' . $path;
+            $file     = $request->file('photo');
+            $filename = 'fields/' . uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
+            \Illuminate\Support\Facades\Storage::disk('supabase')->put($filename, file_get_contents($file), 'public');
+            $data['photo_url'] = \Illuminate\Support\Facades\Storage::disk('supabase')->url($filename);
         }
 
         $venue->fields()->create($data);
@@ -230,11 +232,15 @@ class VenueController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
-            if ($field->photo_url && str_starts_with($field->photo_url, '/storage/')) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete(str_replace('/storage/', '', $field->photo_url));
+            // Hapus foto lama dari Supabase
+            if ($field->photo_url && !str_starts_with($field->photo_url, '/storage/')) {
+                $key = ltrim(parse_url($field->photo_url, PHP_URL_PATH), '/');
+                \Illuminate\Support\Facades\Storage::disk('supabase')->delete($key);
             }
-            $path = $request->file('photo')->store('fields', 'public');
-            $data['photo_url'] = '/storage/' . $path;
+            $file     = $request->file('photo');
+            $filename = 'fields/' . uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
+            \Illuminate\Support\Facades\Storage::disk('supabase')->put($filename, file_get_contents($file), 'public');
+            $data['photo_url'] = \Illuminate\Support\Facades\Storage::disk('supabase')->url($filename);
         }
 
         $field->update($data);
