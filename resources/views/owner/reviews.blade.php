@@ -6,7 +6,33 @@
 
 @section('content')
 
-<div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+@push('styles')
+<style>
+    .review-row {
+        position: relative;
+        transition: all 0.25s ease;
+    }
+    .review-row::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background-color: #0b3d0b;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+    }
+    .review-row:hover::after {
+        opacity: 1;
+    }
+    .review-row:hover {
+        background-color: rgba(11, 61, 11, 0.02) !important;
+    }
+</style>
+@endpush
+
+<div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.02)]">
     @if($reviews->isEmpty())
         <div class="p-10 text-center">
             <div class="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -19,10 +45,13 @@
         </div>
     @else
         {{-- HEADER --}}
-        <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-            <div>
-                <p class="text-sm font-semibold text-gray-800">Daftar Ulasan</p>
-                <p class="text-xs text-gray-400">Menampilkan semua ulasan pelanggan</p>
+        <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-gray-50/50">
+            <div class="flex items-center gap-2.5">
+                <span class="w-1.5 h-5 bg-[#0b3d0b] rounded-full"></span>
+                <div>
+                    <p class="text-sm font-bold text-gray-800">Daftar Ulasan</p>
+                    <p class="text-[11px] text-gray-400 font-medium">Menampilkan semua ulasan pelanggan</p>
+                </div>
             </div>
         </div>
 
@@ -39,7 +68,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-50">
                     @foreach($reviews as $review)
-                        <tr class="hover:bg-gray-50 transition">
+                        <tr class="review-row hover:bg-gray-50 transition">
                             <td class="px-6 py-4">
                                 <p class="font-medium text-gray-800">{{ $review->user->name ?? 'Pengguna' }}</p>
                                 <p class="text-xs text-gray-400">{{ $review->created_at->format('d M Y') }}</p>
@@ -148,7 +177,7 @@
         </div>
         
         <div class="mt-6 pt-4 border-t border-gray-100 text-right">
-            <button type="button" onclick="closeDetailReviewModal()" class="bg-[#0b3d0b] text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#145214] transition">
+            <button type="button" onclick="closeDetailReviewModal()" class="bg-[#0b3d0b] text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-[#145214] transition">
                 Tutup
             </button>
         </div>

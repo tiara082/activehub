@@ -57,7 +57,7 @@
                     {{-- NAME --}}
                     <div>
 
-                        <label class="text-sm font-medium text-gray-700 mb-2 block">
+                        <label class="text-xs font-bold text-gray-600 mb-2 block">
                             Nama Lengkap
                         </label>
 
@@ -72,11 +72,10 @@
                                 name="name"
                                 value="{{ old('name', $user->name) }}"
                                 class="w-full border border-gray-200
-                                       rounded-xl pl-11 pr-4 py-3
+                                       rounded-xl pl-11 pr-4 py-3 text-sm
                                        focus:outline-none
-                                       focus:ring-2
-                                       focus:ring-[#0b3d0b]/20
-                                       focus:border-[#0b3d0b]">
+                                       focus:ring-4 focus:ring-[#0b3d0b]/10
+                                       focus:border-[#0b3d0b] transition-all">
 
                         </div>
 
@@ -85,7 +84,7 @@
                     {{-- EMAIL --}}
                     <div>
 
-                        <label class="text-sm font-medium text-gray-700 mb-2 block">
+                        <label class="text-xs font-bold text-gray-600 mb-2 block">
                             Email
                         </label>
 
@@ -100,11 +99,10 @@
                                 name="email"
                                 value="{{ old('email', $user->email) }}"
                                 class="w-full border border-gray-200
-                                       rounded-xl pl-11 pr-4 py-3
+                                       rounded-xl pl-11 pr-4 py-3 text-sm
                                        focus:outline-none
-                                       focus:ring-2
-                                       focus:ring-[#0b3d0b]/20
-                                       focus:border-[#0b3d0b]">
+                                       focus:ring-4 focus:ring-[#0b3d0b]/10
+                                       focus:border-[#0b3d0b] transition-all">
 
                         </div>
 
@@ -113,7 +111,7 @@
                 {{-- PHONE --}}
                 <div>
 
-                    <label class="text-sm font-medium text-gray-700 mb-2 block">
+                    <label class="text-xs font-bold text-gray-600 mb-2 block">
                         Nomor HP
                     </label>
 
@@ -128,11 +126,10 @@
                             name="phone"
                             value="{{ old('phone', $user->phone) }}"
                             class="w-full border border-gray-200
-                                   rounded-xl pl-11 pr-4 py-3
+                                   rounded-xl pl-11 pr-4 py-3 text-sm
                                    focus:outline-none
-                                   focus:ring-2
-                                   focus:ring-[#0b3d0b]/20
-                                   focus:border-[#0b3d0b]">
+                                   focus:ring-4 focus:ring-[#0b3d0b]/10
+                                   focus:border-[#0b3d0b] transition-all">
 
                     </div>
 
@@ -141,7 +138,7 @@
                 {{-- GENDER --}}
                 <div>
 
-                    <label class="text-sm font-medium text-gray-700 mb-2 block">
+                    <label class="text-xs font-bold text-gray-600 mb-2 block">
                         Gender / Jenis Kelamin
                     </label>
 
@@ -154,11 +151,10 @@
                         <select
                             name="gender"
                             class="w-full border border-gray-200
-                                   rounded-xl pl-11 pr-4 py-3
+                                   rounded-xl pl-11 pr-4 py-3 text-sm
                                    focus:outline-none
-                                   focus:ring-2
-                                   focus:ring-[#0b3d0b]/20
-                                   focus:border-[#0b3d0b]">
+                                   focus:ring-4 focus:ring-[#0b3d0b]/10
+                                   focus:border-[#0b3d0b] transition-all">
                             <option value="male" {{ old('gender', $user->gender) === 'male' ? 'selected' : '' }}>Pria (Male)</option>
                             <option value="female" {{ old('gender', $user->gender) === 'female' ? 'selected' : '' }}>Wanita (Female)</option>
                         </select>
@@ -175,7 +171,7 @@
                        class="px-5 py-2.5 rounded-xl
                               border border-gray-200
                               hover:bg-gray-50
-                              text-gray-700 text-sm font-medium transition">
+                              text-gray-700 text-xs font-bold transition">
 
                         Batal
 
@@ -185,9 +181,8 @@
                         type="submit"
                         class="inline-flex items-center gap-2
                                px-5 py-2.5 rounded-xl
-                               bg-[#0b3d0b]
-                               hover:bg-[#145214]
-                               text-white text-sm font-medium transition">
+                               bg-[#0b3d0b] hover:bg-[#145214] hover:shadow-lg hover:shadow-green-900/10
+                               text-white text-xs font-bold transition-all duration-300">
 
                         Simpan Perubahan
 

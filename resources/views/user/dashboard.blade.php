@@ -6,15 +6,28 @@
 
 <div class="space-y-6">
 
-    {{-- HEADER --}}
-    <div>
-        <h2 class="text-lg font-semibold text-gray-900">
-            Halo, {{ auth()->user()->name }}
-        </h2>
-
-        <p class="text-sm text-gray-500">
-            Selamat datang di ActiveHub
-        </p>
+    {{-- HEADER BANNER --}}
+    <div class="bg-gradient-to-r from-[#0b3d0b] via-[#124d12] to-[#1b5e1b] rounded-3xl p-6 text-white relative overflow-hidden shadow-lg border border-green-800/20">
+        <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/5 rounded-full blur-2xl"></div>
+        <div class="absolute -right-2 -bottom-12 w-36 h-36 bg-yellow-400/10 rounded-full blur-xl"></div>
+        
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <p class="text-yellow-300 text-xs font-extrabold tracking-widest uppercase mb-1">DASHBOARD AKTIVITAS</p>
+                <h2 class="text-2xl font-black tracking-tight flex items-center gap-2">
+                    Halo, {{ auth()->user()->name }}! <span class="animate-bounce">👋</span>
+                </h2>
+                <p class="text-sm text-green-100/90 mt-1 font-medium">
+                    Selamat datang di ActiveHub. Siap berolahraga hari ini?
+                </p>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <a href="{{ route('venues.index') }}" class="px-5 py-2.5 bg-yellow-400 hover:bg-yellow-500 text-gray-950 text-xs font-bold rounded-xl shadow-md transition-all duration-300 hover:scale-105">
+                    Pesan Lapangan
+                </a>
+            </div>
+        </div>
     </div>
 
     {{-- GRID --}}
@@ -27,39 +40,39 @@
             <div class="grid grid-cols-2 gap-4">
 
                 {{-- TOTAL PESANAN --}}
-                <div class="bg-gray-100 p-5 rounded-xl flex justify-between items-center">
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.02)] flex justify-between items-center hover:shadow-[0_12px_30px_rgba(11,61,11,0.06)] hover:-translate-y-0.5 transition-all duration-300 group">
 
                     <div>
-                        <p class="text-xs text-gray-500">
+                        <p class="text-xs font-extrabold text-gray-400 uppercase tracking-wider group-hover:text-green-700 transition-colors">
                             Total Pesanan
                         </p>
 
-                        <p class="text-lg font-semibold text-gray-800">
+                        <p class="text-2xl font-black text-gray-800 mt-1 font-mono">
                             {{ $totalBooking }}
                         </p>
                     </div>
 
-                    <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
-                        <i class="fas fa-calendar-check text-green-700"></i>
+                    <div class="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center group-hover:bg-green-700 group-hover:text-white transition-all duration-300 shadow-sm">
+                        <i class="fas fa-calendar-check text-lg"></i>
                     </div>
 
                 </div>
 
                 {{-- PERMAINAN PUBLIK --}}
-                <div class="bg-gray-100 p-5 rounded-xl flex justify-between items-center">
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.02)] flex justify-between items-center hover:shadow-[0_12px_30px_rgba(11,61,11,0.06)] hover:-translate-y-0.5 transition-all duration-300 group">
 
                     <div>
-                        <p class="text-xs text-gray-500">
+                        <p class="text-xs font-extrabold text-gray-400 uppercase tracking-wider group-hover:text-green-700 transition-colors">
                             Total Permainan
                         </p>
 
-                        <p class="text-lg font-semibold text-gray-800">
+                        <p class="text-2xl font-black text-gray-800 mt-1 font-mono">
                             {{ $matchBooking }}
                         </p>
                     </div>
 
-                    <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
-                        <i class="fas fa-users text-blue-700"></i>
+                    <div class="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center group-hover:bg-green-700 group-hover:text-white transition-all duration-300 shadow-sm">
+                        <i class="fas fa-users text-lg"></i>
                     </div>
 
                 </div>
@@ -67,12 +80,13 @@
             </div>
 
             {{-- CHART --}}
-            <div class="bg-white rounded-2xl border p-6 shadow-sm">
+            <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-[0_8px_30px_rgba(0,0,0,0.02)]">
 
                 <div class="flex justify-between mb-4">
 
                     <div>
-                        <h3 class="font-semibold text-gray-800">
+                        <h3 class="font-bold text-gray-800 text-sm tracking-wide flex items-center gap-2">
+                            <span class="w-1.5 h-4 bg-green-700 rounded-full"></span>
                             Aktivitas Pengguna
                         </h3>
 
@@ -95,9 +109,10 @@
         <div class="space-y-6">
 
             {{-- ===== AKSI CEPAT ===== --}}
-            <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-[0_8px_30px_rgba(0,0,0,0.02)]">
 
-                <h3 class="font-semibold text-gray-800 mb-5">
+                <h3 class="font-bold text-gray-800 text-sm tracking-wide mb-5 flex items-center gap-2">
+                    <span class="w-1.5 h-4 bg-green-700 rounded-full"></span>
                     Aksi Cepat
                 </h3>
 
@@ -107,15 +122,15 @@
                     <a href="{{ route('venues.index') }}"
                        class="flex flex-col items-center gap-2 group">
 
-                        <div class="w-12 h-12 rounded-xl bg-green-700
+                        <div class="w-12 h-12 rounded-2xl bg-[#0b3d0b]
                                     flex items-center justify-center
-                                    group-hover:scale-105 transition">
+                                    group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-green-900/10 transition-all duration-300">
 
                             <i class="fas fa-search text-white"></i>
 
                         </div>
 
-                        <p class="text-xs text-gray-600">
+                        <p class="text-xs font-semibold text-gray-600 group-hover:text-green-800 transition-colors">
                             Temukan Lapangan
                         </p>
 
@@ -125,15 +140,15 @@
                     <a href="{{ route('matches.index') }}"
                        class="flex flex-col items-center gap-2 group">
 
-                        <div class="w-12 h-12 rounded-xl bg-blue-500
+                        <div class="w-12 h-12 rounded-2xl bg-[#0b3d0b]
                                     flex items-center justify-center
-                                    group-hover:scale-105 transition">
+                                    group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-green-900/10 transition-all duration-300">
 
                             <i class="fas fa-users text-white"></i>
 
                         </div>
 
-                        <p class="text-xs text-gray-600">
+                        <p class="text-xs font-semibold text-gray-600 group-hover:text-green-800 transition-colors">
                             Cari Permainan
                         </p>
 
@@ -145,10 +160,10 @@
                                 : route('venues.index') }}"
                        class="flex flex-col items-center gap-2 group">
 
-                        <div class="w-12 h-12 rounded-xl
-                                    {{ $hasBooking ? 'bg-yellow-500' : 'bg-gray-400' }}
+                        <div class="w-12 h-12 rounded-2xl
+                                    {{ $hasBooking ? 'bg-yellow-500' : 'bg-gray-300' }}
                                     flex items-center justify-center
-                                    group-hover:scale-105 transition">
+                                    group-hover:scale-105 group-hover:shadow-lg transition-all duration-300">
 
                             <i class="fas fa-plus text-white"></i>
 
@@ -156,13 +171,13 @@
 
                         <div class="text-center">
 
-                            <p class="text-xs text-gray-600">
+                            <p class="text-xs font-semibold text-gray-600 group-hover:text-yellow-600 transition-colors">
                                 Buat Permainan
                             </p>
 
                             @if(!$hasBooking)
-                            <p class="text-[10px] text-gray-400 mt-1 leading-tight">
-                                Pesan lapangan terlebih dahulu
+                            <p class="text-[9px] text-gray-400 mt-1 leading-tight font-medium">
+                                Pesan lapangan dahulu
                             </p>
                             @endif
 
@@ -175,9 +190,10 @@
             </div>
 
             {{-- ===== AKTIVITAS TERDEKAT ===== --}}
-            <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-[0_8px_30px_rgba(0,0,0,0.02)]">
 
-                <h3 class="font-semibold text-gray-800 mb-4">
+                <h3 class="font-bold text-gray-800 text-sm tracking-wide mb-4 flex items-center gap-2">
+                    <span class="w-1.5 h-4 bg-green-700 rounded-full"></span>
                     Aktivitas Terdekat
                 </h3>
 
@@ -185,11 +201,11 @@
 
                     {{-- PESANAN --}}
                     @if($nearestBooking)
-                    <div class="border border-gray-100 rounded-xl p-3 bg-white hover:bg-gray-50 transition shadow-sm">
+                    <div class="border-l-4 border-green-700 rounded-r-2xl border-y border-r border-gray-100 p-4 bg-white hover:bg-green-50/20 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.01)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
 
                         <div class="flex justify-between items-start mb-1">
 
-                            <p class="text-[10px] font-bold text-green-600 uppercase tracking-wider">
+                            <p class="text-[9px] font-extrabold text-green-700 uppercase tracking-widest">
                                 Pesanan Terdekat
                             </p>
 
@@ -204,98 +220,102 @@
                                 }
                             @endphp
 
-                            <span class="text-[10px] px-2 py-0.5 rounded-full {{ $statusColor }}">
+                            <span class="text-[9px] font-bold px-2.5 py-0.5 rounded-full {{ $statusColor }}">
                                 {{ $statusLabel }}
                             </span>
 
                         </div>
 
-                        <p class="text-sm font-semibold text-gray-800">
+                        <p class="text-sm font-bold text-gray-800 mt-1">
                             {{ $nearestBooking->field->venue->name ?? 'Venue' }}
                         </p>
 
-                        <p class="text-xs text-gray-500">
+                        <p class="text-xs text-gray-500 font-medium">
                             {{ $nearestBooking->field->name ?? 'Lapangan' }}
                         </p>
 
-                        <p class="text-[11px] text-gray-400 mt-2 flex items-center gap-1.5">
-                            <i class="far fa-calendar text-gray-400"></i>
+                        <div class="mt-3 space-y-1">
+                            <p class="text-[11px] text-gray-500 flex items-center gap-1.5 font-medium">
+                                <i class="far fa-calendar text-green-700"></i>
 
-                            {{ $nearestBooking->timeSlot && $nearestBooking->timeSlot->date
-                                ? $nearestBooking->timeSlot->date->format('d M Y')
-                                : '-' }}
-                        </p>
+                                {{ $nearestBooking->timeSlot && $nearestBooking->timeSlot->date
+                                    ? $nearestBooking->timeSlot->date->format('d M Y')
+                                    : '-' }}
+                            </p>
 
-                        <p class="text-[11px] text-gray-400 mt-1 flex items-center gap-1.5">
-                            <i class="far fa-clock text-gray-400"></i>
+                            <p class="text-[11px] text-gray-500 flex items-center gap-1.5 font-medium">
+                                <i class="far fa-clock text-green-700"></i>
 
-                            {{ $nearestBooking->timeSlot
-                                ? date('H:i', strtotime($nearestBooking->timeSlot->start_time))
-                                : '-' }}
+                                {{ $nearestBooking->timeSlot
+                                    ? date('H:i', strtotime($nearestBooking->timeSlot->start_time))
+                                    : '-' }}
 
-                            -
+                                -
 
-                            {{ $nearestBooking->timeSlot
-                                ? date('H:i', strtotime($nearestBooking->timeSlot->end_time))
-                                : '-' }}
-                        </p>
+                                {{ $nearestBooking->timeSlot
+                                    ? date('H:i', strtotime($nearestBooking->timeSlot->end_time))
+                                    : '-' }} WIB
+                            </p>
+                        </div>
 
                     </div>
                     @endif
 
                     {{-- PERMAINAN --}}
                     @if($nearestMatch)
-                    <div class="border border-gray-100 rounded-xl p-3 bg-white hover:bg-gray-50 transition shadow-sm">
+                    <div class="border-l-4 border-blue-600 rounded-r-2xl border-y border-r border-gray-100 p-4 bg-white hover:bg-blue-50/20 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.01)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
 
                         <div class="flex justify-between items-start mb-1">
 
-                            <p class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">
+                            <p class="text-[9px] font-extrabold text-blue-600 uppercase tracking-widest">
                                 Permainan Terdekat
                             </p>
 
-                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">
+                            <span class="text-[9px] font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-600">
                                 Bergabung
                             </span>
 
                         </div>
 
-                        <p class="text-sm font-semibold text-gray-800">
+                        <p class="text-sm font-bold text-gray-800 mt-1">
                             {{ $nearestMatch->field->venue->name ?? 'Venue' }}
                         </p>
 
-                        <p class="text-xs text-gray-500">
+                        <p class="text-xs text-gray-500 font-medium">
                             {{ $nearestMatch->field->name ?? 'Lapangan' }}
                         </p>
 
-                        <p class="text-[11px] text-gray-400 mt-2 flex items-center gap-1.5">
-                            <i class="far fa-calendar text-gray-400"></i>
+                        <div class="mt-3 space-y-1">
+                            <p class="text-[11px] text-gray-500 flex items-center gap-1.5 font-medium">
+                                <i class="far fa-calendar text-blue-600"></i>
 
-                            {{ $nearestMatch->timeSlot && $nearestMatch->timeSlot->date
-                                ? $nearestMatch->timeSlot->date->format('d M Y')
-                                : '-' }}
-                        </p>
+                                {{ $nearestMatch->timeSlot && $nearestMatch->timeSlot->date
+                                    ? $nearestMatch->timeSlot->date->format('d M Y')
+                                    : '-' }}
+                            </p>
 
-                        <p class="text-[11px] text-gray-400 mt-1 flex items-center gap-1.5">
-                            <i class="far fa-clock text-gray-400"></i>
+                            <p class="text-[11px] text-gray-500 flex items-center gap-1.5 font-medium">
+                                <i class="far fa-clock text-blue-600"></i>
 
-                            {{ $nearestMatch->timeSlot
-                                ? date('H:i', strtotime($nearestMatch->timeSlot->start_time))
-                                : '-' }}
+                                {{ $nearestMatch->timeSlot
+                                    ? date('H:i', strtotime($nearestMatch->timeSlot->start_time))
+                                    : '-' }}
 
-                            -
+                                -
 
-                            {{ $nearestMatch->timeSlot
-                                ? date('H:i', strtotime($nearestMatch->timeSlot->end_time))
-                                : '-' }}
-                        </p>
+                                {{ $nearestMatch->timeSlot
+                                    ? date('H:i', strtotime($nearestMatch->timeSlot->end_time))
+                                    : '-' }} WIB
+                            </p>
+                        </div>
 
                     </div>
                     @endif
 
                     {{-- EMPTY --}}
                     @if(!$nearestBooking && !$nearestMatch)
-                    <div class="text-center text-sm text-gray-400 py-6">
-                        Belum ada aktivitas
+                    <div class="text-center text-sm text-gray-400 py-6 font-medium">
+                        Belum ada aktivitas terdekat
                     </div>
                     @endif
 

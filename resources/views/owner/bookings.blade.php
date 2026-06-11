@@ -9,6 +9,32 @@
 
 @section('content')
 
+@push('styles')
+<style>
+    .booking-row {
+        position: relative;
+        transition: all 0.25s ease;
+    }
+    .booking-row::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background-color: #0b3d0b;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+    }
+    .booking-row:hover::after {
+        opacity: 1;
+    }
+    .booking-row:hover {
+        background-color: rgba(11, 61, 11, 0.02) !important;
+    }
+</style>
+@endpush
+
 @php
 use Carbon\Carbon;
 
@@ -87,7 +113,7 @@ $statusStyle = [
                     <div class="w-full rounded-t-lg transition-all duration-500 ease-out"
                          @style([
                              "height: {$heightPct}%",
-                             "background: " . ($isLast ? '#1b3a1b' : '#e5ede5'),
+                             "background: " . ($isLast ? '#0b3d0b' : '#bbf7d0'),
                              "min-height: 4px"
                          ])>
                     </div>
@@ -95,7 +121,7 @@ $statusStyle = [
 
                 {{-- LABEL --}}
                 <span class="text-[11px] font-medium
-                    {{ $isLast ? 'text-[#1b3a1b]' : 'text-gray-400' }}">
+                    {{ $isLast ? 'text-[#0b3d0b]' : 'text-gray-400' }}">
 
                     {{ $stat['label'] }}
 
@@ -233,7 +259,7 @@ $statusStyle = [
            class="relative flex items-center gap-2 whitespace-nowrap px-4 py-2 rounded-xl
            transition-all duration-200 ease-out
            {{ $isActive
-                ? 'bg-white shadow-sm text-[#1b3a1b]'
+                ? 'bg-[#0b3d0b] shadow-md text-white'
                 : 'text-gray-500 hover:text-gray-800 hover:bg-white/60'
            }}">
 
@@ -243,7 +269,7 @@ $statusStyle = [
 
             <span class="text-[11px] font-semibold px-2 py-[2px] rounded-full
                 {{ $isActive
-                    ? 'bg-[#1b3a1b]/10 text-[#1b3a1b]'
+                    ? 'bg-white/20 text-white'
                     : 'bg-gray-200 text-gray-500'
                 }}">
 
@@ -252,7 +278,7 @@ $statusStyle = [
             </span>
 
             @if($isActive)
-                <span class="absolute inset-0 rounded-xl ring-1 ring-[#1b3a1b]/10"></span>
+                <span class="absolute inset-0 rounded-xl ring-1 ring-[#0b3d0b]/10"></span>
             @endif
 
         </a>
@@ -282,7 +308,7 @@ $statusStyle = [
             placeholder="Cari nama atau nomor telepon..."
             class="w-full bg-white border border-gray-200 rounded-2xl
                    px-4 py-3 pl-10 text-sm
-                   focus:ring-2 focus:ring-[#1b3a1b] outline-none"
+                   focus:ring-4 focus:ring-[#0b3d0b]/10 focus:border-[#0b3d0b] transition-all outline-none"
             onchange="document.getElementById('filterForm').submit()">
 
         <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -308,8 +334,8 @@ $statusStyle = [
             onchange="document.getElementById('filterForm').submit()"
             class="w-full appearance-none bg-white border border-gray-200
                    rounded-2xl px-4 py-3 pr-10 text-sm
-                   focus:ring-2 focus:ring-[#1b3a1b]
-                   outline-none hover:border-gray-300 transition">
+                   focus:ring-4 focus:ring-[#0b3d0b]/10 focus:border-[#0b3d0b]
+                   outline-none hover:border-[#0b3d0b] transition-all">
 
             <option value="">
                 Semua Lapangan
@@ -349,7 +375,7 @@ $statusStyle = [
         name="date"
         value="{{ request('date') }}"
         onchange="document.getElementById('filterForm').submit()"
-        class="bg-white border border-gray-200 rounded-2xl px-4 py-3 text-sm">
+        class="bg-white border border-gray-200 rounded-2xl px-4 py-3 text-sm focus:ring-4 focus:ring-[#0b3d0b]/10 focus:border-[#0b3d0b] outline-none transition-all">
 
 </form>
 
@@ -386,7 +412,7 @@ $statusStyle = [
             </thead>
             <tbody class="divide-y divide-gray-50 text-center">
                 @forelse($bookings as $b)
-                <tr class="hover:bg-gray-50 transition">
+                <tr class="booking-row hover:bg-gray-50 transition">
                     <td class="px-6 py-4">
                         <p class="font-medium text-gray-800">{{ $b['name'] }}</p>
                         <p class="text-xs text-gray-400">{{ $b['phone'] }}</p>

@@ -41,7 +41,7 @@
                                     ];
                                 @endphp
                                 @foreach($months as $num => $name)
-                                    <button onclick="changeDate('{{ $num }}', '{{ $currentYear }}')" class="text-left text-xs px-3 py-2 rounded-lg transition {{ $currentMonth === $num ? 'bg-[#1b3a1b] text-white font-semibold' : 'text-gray-600 hover:bg-gray-50' }}">{{ $name }}</button>
+                                    <button onclick="changeDate('{{ $num }}', '{{ $currentYear }}')" class="text-left text-xs px-3 py-2 rounded-lg transition {{ $currentMonth === $num ? 'bg-[#0b3d0b] text-white font-semibold' : 'text-gray-600 hover:bg-gray-50' }}">{{ $name }}</button>
                                 @endforeach
                             </div>
                         </div>
@@ -49,7 +49,7 @@
                             <p class="text-[10px] font-bold text-gray-400 uppercase mb-2">Tahun</p>
                             <div class="flex flex-col gap-1 max-h-48 overflow-y-auto no-scrollbar pr-1">
                                 @for($y = date('Y') - 5; $y <= date('Y') + 5; $y++)
-                                    <button onclick="changeDate('{{ $currentMonth }}', '{{ $y }}')" class="text-left text-xs px-3 py-2 rounded-lg transition {{ $currentYear == $y ? 'bg-[#1b3a1b] text-white font-semibold' : 'text-gray-600 hover:bg-gray-50' }}">{{ $y }}</button>
+                                    <button onclick="changeDate('{{ $currentMonth }}', '{{ $y }}')" class="text-left text-xs px-3 py-2 rounded-lg transition {{ $currentYear == $y ? 'bg-[#0b3d0b] text-white font-semibold' : 'text-gray-600 hover:bg-gray-50' }}">{{ $y }}</button>
                                 @endfor
                             </div>
                         </div>
@@ -59,10 +59,10 @@
 
             {{-- RIGHT ACTION (POJOK) --}}
             <div class="flex items-center gap-2">
-                <a href="{{ route('owner.calendar', ['month' => \Carbon\Carbon::parse($date)->subMonth()->format('m'), 'year' => \Carbon\Carbon::parse($date)->subMonth()->format('Y')]) }}" class="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200">&lt;</a>
-                <a href="{{ route('owner.calendar', ['month' => \Carbon\Carbon::parse($date)->addMonth()->format('m'), 'year' => \Carbon\Carbon::parse($date)->addMonth()->format('Y')]) }}" class="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200">&gt;</a>
+                <a href="{{ route('owner.calendar', ['month' => \Carbon\Carbon::parse($date)->subMonth()->format('m'), 'year' => \Carbon\Carbon::parse($date)->subMonth()->format('Y')]) }}" class="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200 text-xs font-bold">&lt;</a>
+                <a href="{{ route('owner.calendar', ['month' => \Carbon\Carbon::parse($date)->addMonth()->format('m'), 'year' => \Carbon\Carbon::parse($date)->addMonth()->format('Y')]) }}" class="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200 text-xs font-bold">&gt;</a>
                 
-                <button onclick="openManageBlockModal()" class="px-3 py-1.5 text-[11px] rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition font-semibold">
+                <button onclick="openManageBlockModal()" class="px-3 py-1.5 text-[10px] rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition font-bold border border-red-100">
                     Kelola Blokir
                 </button>
             </div>
@@ -72,7 +72,7 @@
         {{-- DAY LABELS --}}
         <div class="grid grid-cols-7 px-3 pt-3">
             @foreach(['Min','Sen','Sel','Rab','Kam','Jum','Sab'] as $d)
-                <div class="text-center text-[10px] font-medium text-gray-400 py-1.5">
+                <div class="text-center text-[10px] font-bold text-gray-400 py-1.5">
                     {{ $d }}
                 </div>
             @endforeach
@@ -86,7 +86,7 @@
                     @if($day['empty'])
                         text-gray-300 cursor-default pointer-events-none
                     @elseif($day['type'] === 'today')
-                        bg-[#1b3a1b] text-white font-bold hover:bg-[#285228] shadow-md
+                        bg-[#0b3d0b] text-white font-bold hover:bg-[#145214] shadow-md
                     @elseif($day['type'] === 'booked')
                         bg-green-50 text-green-700 font-semibold hover:bg-green-100 border border-green-100
                     @elseif($day['type'] === 'partial')
@@ -111,7 +111,7 @@
             <div class="flex items-center gap-4 flex-wrap">
 
                 <div class="flex items-center gap-1.5 text-[11px] text-gray-500">
-                    <div class="w-3 h-3 rounded-md bg-[#1b3a1b] shadow-sm"></div>
+                    <div class="w-3 h-3 rounded-md bg-[#0b3d0b] shadow-sm"></div>
                     Terpilih
                 </div>
 
