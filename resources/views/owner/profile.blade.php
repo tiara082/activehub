@@ -86,28 +86,38 @@
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
 
         @php
+        $venuesData = $user->venues()->with('fields')->get();
+        $venueCount = $venuesData->count();
+        $fieldCount = $venuesData->sum(fn($v) => $v->fields->count());
+        $fieldIds = $venuesData->flatMap->fields->pluck('id');
+        
+        $totalBookings = \App\Models\Booking::whereIn('field_id', $fieldIds)->count();
+        $totalEarnings = \App\Models\Booking::whereIn('field_id', $fieldIds)
+            ->whereIn('status', ['paid', 'completed', 'confirmed'])
+            ->sum('total_price');
+
         $stats = [
             [
                 'label' => 'Jumlah Venue',
-                'value' => '3',
+                'value' => $venueCount,
                 'icon'  => 'building',
                 'color' => 'blue'
             ],
             [
                 'label' => 'Jumlah Lapangan',
-                'value' => '8',
+                'value' => $fieldCount,
                 'icon'  => 'futbol',
                 'color' => 'green'
             ],
             [
                 'label' => 'Total Pemesanan',
-                'value' => '45',
+                'value' => $totalBookings,
                 'icon'  => 'calendar-check',
                 'color' => 'orange'
             ],
             [
                 'label' => 'Total Pendapatan',
-                'value' => 'Rp 12.450.000',
+                'value' => 'Rp ' . number_format($totalEarnings, 0, ',', '.'),
                 'icon'  => 'money-bill-wave',
                 'color' => 'yellow'
             ],
@@ -186,27 +196,10 @@
 
         </div>
 
-        @php
-        $venues = [
-            [
-                'name'=>'Active Arena',
-                'fields'=>['Lapangan A','Lapangan B','Lapangan Basket'],
-            ],
-            [
-                'name'=>'Sport Center',
-                'fields'=>['Badminton 1','Lapangan Tenis'],
-            ],
-            [
-                'name'=>'Victory Futsal',
-                'fields'=>['Lapangan Utama'],
-            ],
-        ];
-        @endphp
-
         {{-- LIST --}}
         <div class="space-y-4">
 
-            @foreach($venues as $v)
+            @forelse($venuesData as $v)
 
             <div class="border border-gray-100 rounded-2xl p-5 hover:bg-gray-50 transition">
 
@@ -216,32 +209,32 @@
                     <div>
 
                         <p class="font-semibold text-gray-900 text-base">
-                            {{ $v['name'] }}
+                            {{ $v->name }}
                         </p>
 
                         <p class="text-sm text-gray-500 mt-1">
-                            {{ count($v['fields']) }} Lapangan
+                            {{ $v->fields->count() }} Lapangan
                         </p>
 
                     </div>
 
                     {{-- ACTION --}}
-                    <button
-                        class="w-9 h-9 rounded-xl
+                    <a href="{{ route('owner.venue') }}"
+                        class="w-9 h-9 rounded-xl flex items-center justify-center
                                hover:bg-gray-100
                                text-gray-400 hover:text-gray-700
                                transition">
 
                         <i class="fas fa-chevron-right text-xs"></i>
 
-                    </button>
+                    </a>
 
                 </div>
 
                 {{-- FIELD --}}
                 <div class="flex flex-wrap gap-2 mt-5">
 
-                    @foreach($v['fields'] as $field)
+                    @forelse($v->fields as $field)
 
                     <div
                         class="inline-flex items-center gap-2
@@ -250,17 +243,23 @@
 
                         <i class="fas fa-futbol text-green-700 text-[10px]"></i>
 
-                        {{ $field }}
+                        {{ $field->name }}
 
                     </div>
 
-                    @endforeach
+                    @empty
+                    <p class="text-xs text-gray-400">Belum ada lapangan di venue ini.</p>
+                    @endforelse
 
                 </div>
 
             </div>
 
-            @endforeach
+            @empty
+            <div class="text-center py-8 text-gray-400 text-sm">
+                Anda belum mendaftarkan venue apapun.
+            </div>
+            @endforelse
 
         </div>
 

@@ -1,6 +1,15 @@
 @php
     $user = auth()->user();
     $role = $user->role;
+    $activeVenueName = null;
+    if ($role === 'owner') {
+        $venues = $user->venues()->get();
+        $activeVenueId = session('active_venue_id');
+        $venue = $activeVenueId ? ($venues->where('id', $activeVenueId)->first() ?? $venues->first()) : $venues->first();
+        if ($venue) {
+            $activeVenueName = $venue->name;
+        }
+    }
 @endphp
 
 <aside class="w-52 bg-white border-r border-gray-200 min-h-screen fixed top-0 left-0 z-50 flex flex-col">
@@ -18,26 +27,33 @@
 
         {{-- USER INFO (CLICKABLE TO PROFILE) --}}
         <a href="{{ route($role === 'user' ? 'user.profile' : 'owner.profile') }}"
-           class="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-gray-100 bg-white shadow-sm hover:bg-gray-50 transition">
+           class="group flex items-center gap-3 px-3 py-3 rounded-2xl border border-gray-200 bg-white hover:border-[#1b3a1b]/30 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-[0_4px_12px_rgba(27,58,27,0.08)] transition-all duration-300 cursor-pointer">
 
-            <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#0b3d0b] to-[#145214]
-                        flex items-center justify-center text-white font-semibold text-xs">
+            <div class="w-10 h-10 flex-shrink-0 rounded-full bg-gradient-to-br from-[#0b3d0b] to-[#1a6e1a]
+                        flex items-center justify-center text-white font-bold text-sm shadow-inner ring-2 ring-green-50">
                 {{ strtoupper(substr($user->name, 0, 2)) }}
             </div>
 
-            <div class="leading-tight flex-1">
-                <p class="text-[13px] text-gray-900 font-semibold">
+            <div class="leading-tight flex-1 overflow-hidden">
+                <p class="text-sm text-gray-900 font-bold truncate">
                     {{ $user->name }}
                 </p>
-                <p class="text-[11px] text-gray-400 capitalize">
-                    {{ $role }}
+                <p class="text-[11px] text-gray-500 mt-0.5 flex items-center">
+                    <span class="capitalize font-medium text-gray-600">{{ $role }}</span>
+                    @if($activeVenueName)
+                        <span class="mx-1 text-gray-300">•</span>
+                        <span class="text-[#0b3d0b] font-semibold truncate" title="{{ $activeVenueName }}">
+                            {{ $activeVenueName }}
+                        </span>
+                    @endif
                 </p>
             </div>
 
-            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    d="M9 5l7 7-7 7"/>
-            </svg>
+            <div class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-gray-50 group-hover:bg-[#1b3a1b]/10 transition-colors">
+                <svg class="w-3.5 h-3.5 text-gray-400 group-hover:text-[#1b3a1b] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                </svg>
+            </div>
 
         </a>
 
@@ -128,6 +144,15 @@
                 <path stroke-width="2" d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
             </svg>
             <span>Pendapatan</span>
+        </a>
+
+        <a href="{{ route('owner.reviews') }}"
+           class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition
+           {{ request()->routeIs('owner.reviews') ? 'bg-[#0b3d0b]/5 text-[#0b3d0b] font-medium' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100' }}">
+            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+            </svg>
+            <span>Ulasan</span>
         </a>
 
         @endif

@@ -82,19 +82,23 @@
 
             @foreach($days as $day)
             <a href="{{ $day['empty'] ? '#' : route('owner.calendar', ['date' => $day['date'], 'month' => \Carbon\Carbon::parse($date)->format('m'), 'year' => \Carbon\Carbon::parse($date)->format('Y')]) }}"
-                class="aspect-square flex flex-col items-center justify-center rounded-xl text-[13px]
-                       relative transition-all cursor-pointer
-                       hover:scale-[1.02]
-                       {{ $day['empty'] ? 'text-gray-300 cursor-default pointer-events-none' : 'hover:bg-gray-50 text-gray-700' }}
-                       {{ $day['type'] === 'today' ? 'bg-[#1b3a1b] text-white font-bold' : '' }}
-                       {{ $day['type'] === 'booked' ? 'bg-green-50 text-green-700' : '' }}
-                       {{ $day['type'] === 'partial' ? 'bg-yellow-50 text-yellow-700' : '' }}
+                class="aspect-square flex flex-col items-center justify-center rounded-xl text-[13px] relative transition-all cursor-pointer hover:scale-[1.02]
+                    @if($day['empty'])
+                        text-gray-300 cursor-default pointer-events-none
+                    @elseif($day['type'] === 'today')
+                        bg-[#1b3a1b] text-white font-bold hover:bg-[#285228] shadow-md
+                    @elseif($day['type'] === 'booked')
+                        bg-green-50 text-green-700 font-semibold hover:bg-green-100 border border-green-100
+                    @elseif($day['type'] === 'partial')
+                        bg-yellow-50 text-yellow-700 font-semibold hover:bg-yellow-100 border border-yellow-100
+                    @else
+                        bg-white text-gray-700 hover:bg-gray-50 border border-gray-100
+                    @endif
                 ">
                 {{ $day['n'] }}
 
                 @if(in_array($day['type'],['booked','partial']))
-                    <span class="absolute bottom-1 w-1 h-1 rounded-full
-                                 {{ $day['type'] === 'booked' ? 'bg-green-500' : 'bg-yellow-500' }}"></span>
+                    <span class="absolute bottom-1 w-1 h-1 rounded-full {{ $day['type'] === 'booked' ? 'bg-green-500' : 'bg-yellow-500' }}"></span>
                 @endif
             </a>
             @endforeach
@@ -107,22 +111,22 @@
             <div class="flex items-center gap-4 flex-wrap">
 
                 <div class="flex items-center gap-1.5 text-[11px] text-gray-500">
-                    <div class="w-2.5 h-2.5 rounded-full bg-[#1b3a1b]"></div>
-                    Hari Ini
+                    <div class="w-3 h-3 rounded-md bg-[#1b3a1b] shadow-sm"></div>
+                    Terpilih
                 </div>
 
                 <div class="flex items-center gap-1.5 text-[11px] text-gray-500">
-                    <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                    <div class="w-3 h-3 rounded-md bg-green-50 border border-green-100"></div>
                     Penuh
                 </div>
 
                 <div class="flex items-center gap-1.5 text-[11px] text-gray-500">
-                    <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
+                    <div class="w-3 h-3 rounded-md bg-yellow-50 border border-yellow-100"></div>
                     Sebagian
                 </div>
 
                 <div class="flex items-center gap-1.5 text-[11px] text-gray-500">
-                    <div class="w-2.5 h-2.5 rounded-full bg-gray-300"></div>
+                    <div class="w-3 h-3 rounded-md bg-white border border-gray-100"></div>
                     Kosong
                 </div>
 
@@ -142,7 +146,7 @@
             </div>
 
             <button onclick="openAddBookingModal()" class="px-4 py-2 text-sm rounded-xl bg-[#0b3d0b] text-white hover:bg-[#163016] transition">
-                + Tambah Booking
+                + Tambah Pesanan
             </button>
 
         </div>
@@ -215,7 +219,7 @@
 <div id="addBookingModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
         <div class="flex items-center justify-between mb-5">
-            <h3 class="font-semibold text-gray-900">Tambah Booking Offline</h3>
+            <h3 class="font-semibold text-gray-900">Tambah Pesanan Offline</h3>
             <button onclick="closeAddBookingModal()" class="text-gray-400 hover:text-gray-600 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-width="2" stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/>

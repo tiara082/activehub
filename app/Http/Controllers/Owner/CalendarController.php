@@ -13,7 +13,9 @@ class CalendarController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        $venue = $user->venues()->with('fields')->first();
+        $venues = $user->venues()->with('fields')->get();
+        $activeVenueId = session('active_venue_id');
+        $venue = $activeVenueId ? ($venues->where('id', $activeVenueId)->first() ?? $venues->first()) : $venues->first();
 
         // Default to current month/year if not provided
         $month = $request->get('month', date('m'));
@@ -161,7 +163,9 @@ class CalendarController extends Controller
         ]);
 
         $user = Auth::user();
-        $venue = $user->venues()->with('fields')->first();
+        $venues = $user->venues()->with('fields')->get();
+        $activeVenueId = session('active_venue_id');
+        $venue = $activeVenueId ? ($venues->where('id', $activeVenueId)->first() ?? $venues->first()) : $venues->first();
         if (!$venue) {
             return back()->with('error', 'Venue tidak ditemukan.');
         }
@@ -179,6 +183,20 @@ class CalendarController extends Controller
 
         if ($fieldsToBlock->isEmpty()) {
             return back()->with('error', 'Lapangan tidak valid.');
+        }
+
+        // PRE-CHECK FOR EXISTING BOOKINGS
+        foreach ($fieldsToBlock as $field) {
+            $hasBooking = \App\Models\Booking::where('field_id', $field->id)
+                ->whereIn('status', ['paid', 'confirmed', 'pending'])
+                ->whereHas('timeSlot', function($q) use ($date) {
+                    $q->where('date', $date);
+                })
+                ->exists();
+                
+            if ($hasBooking) {
+                return back()->with('error', 'Gagal memblokir: Terdapat pesanan pada tanggal ' . date('d M Y', strtotime($date)) . ' untuk ' . $field->name . '.');
+            }
         }
 
         foreach ($fieldsToBlock as $field) {
@@ -217,7 +235,9 @@ class CalendarController extends Controller
         ]);
 
         $user = Auth::user();
-        $venue = $user->venues()->with('fields')->first();
+        $venues = $user->venues()->with('fields')->get();
+        $activeVenueId = session('active_venue_id');
+        $venue = $activeVenueId ? ($venues->where('id', $activeVenueId)->first() ?? $venues->first()) : $venues->first();
         if (!$venue) {
             return back()->with('error', 'Venue tidak ditemukan.');
         }
@@ -252,7 +272,9 @@ class CalendarController extends Controller
         ]);
 
         $user = Auth::user();
-        $venue = $user->venues()->with('fields')->first();
+        $venues = $user->venues()->with('fields')->get();
+        $activeVenueId = session('active_venue_id');
+        $venue = $activeVenueId ? ($venues->where('id', $activeVenueId)->first() ?? $venues->first()) : $venues->first();
         if (!$venue) return back()->with('error', 'Venue tidak ditemukan.');
 
         $field = $venue->fields->where('id', $request->field_id)->first();

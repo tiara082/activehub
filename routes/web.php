@@ -162,6 +162,8 @@ Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
         ->name('bookings');
     Route::get('/bookings/{booking}', [\App\Http\Controllers\User\BookingController::class, 'show'])
         ->name('bookings.show');
+    Route::get('/bookings/{booking}/receipt', [\App\Http\Controllers\User\BookingController::class, 'receipt'])
+        ->name('bookings.receipt');
     Route::post('/reviews', [\App\Http\Controllers\User\ReviewController::class, 'store'])
         ->name('reviews.store');
     Route::get('/profile', fn () => view('user.profile'))->name('profile');
@@ -188,6 +190,7 @@ Route::middleware(['auth'])->prefix('owner')->name('owner.')->group(function () 
 
 
     Route::get('/venue/create', [OwnerVenueController::class, 'create'])->name('venue.create');
+    Route::post('/venue/switch', [OwnerVenueController::class, 'switchVenue'])->name('venue.switch');
     Route::get('/venue/{venue}/edit', [OwnerVenueController::class, 'edit'])->name('venue.edit');
 
     // Venue
@@ -211,6 +214,10 @@ Route::middleware(['auth'])->prefix('owner')->name('owner.')->group(function () 
     Route::post('/calendar/booking', [\App\Http\Controllers\Owner\CalendarController::class, 'storeOfflineBooking'])->name('calendar.booking');
     Route::get('/earnings', [\App\Http\Controllers\Owner\EarningsController::class, 'index'])->name('earnings');
     Route::get('/profile', fn () => view('owner.profile'))->name('profile');
+
+    // Reviews
+    Route::get('/reviews', [\App\Http\Controllers\Owner\ReviewController::class, 'index'])->name('reviews');
+    Route::delete('/reviews/{review}', [\App\Http\Controllers\Owner\ReviewController::class, 'destroy'])->name('reviews.destroy');
 });
 
 

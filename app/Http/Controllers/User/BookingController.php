@@ -147,4 +147,15 @@ public function show(Booking $booking)
 
     return view('user.bookings-detail', compact('booking'));
 }
+
+public function receipt(Booking $booking)
+{
+    if ($booking->user_id !== Auth::id()) {
+        abort(403, 'Unauthorized');
+    }
+
+    $booking->load(['field.venue', 'timeSlot', 'user']);
+
+    return view('user.receipt', compact('booking'));
+}
 }

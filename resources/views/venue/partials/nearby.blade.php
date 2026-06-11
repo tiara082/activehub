@@ -30,12 +30,24 @@
                 </div>
 
             @php
-                $defaultPhotos = [
-                    'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=600&q=80',
-                    'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=600&q=80',
-                    'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600&q=80',
-                ];
-                $bgImage = $venue->photo_url ?? $defaultPhotos[$loop->index % count($defaultPhotos)];
+                // Ambil foto valid dari database (tidak menggunakan unsplash)
+                static $validDbPhotosNearby = null;
+                if ($validDbPhotosNearby === null) {
+                    $validDbPhotosNearby = \App\Models\Venue::whereNotNull('photo_url')
+                        ->pluck('photo_url')
+                        ->filter(function($url) { return file_exists(public_path($url)); })
+                        ->values()
+                        ->toArray();
+                }
+                
+                $bgImage = $venue->photo_url;
+                if (!$bgImage || !file_exists(public_path($bgImage))) {
+                    if (!empty($validDbPhotosNearby)) {
+                        $bgImage = $validDbPhotosNearby[$loop->index % count($validDbPhotosNearby)];
+                    } else {
+                        $bgImage = 'https://ui-avatars.com/api/?name=' . urlencode($venue->name) . '&background=1b3a1b&color=fff&size=600';
+                    }
+                }
             @endphp
             <div class="relative">
                 <img src="{{ $bgImage }}"

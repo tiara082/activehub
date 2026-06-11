@@ -283,16 +283,24 @@ function searchFilter() {
             $sports = array_unique($sports);
             $mainSport = count($sports) > 0 ? $sports[0] : 'Olahraga';
             
-            $defaultPhotos = [
-                'https://images.unsplash.com/photo-1522778119026-d647f0598c20?w=600&q=80',
-                'https://images.unsplash.com/photo-1574629810360-7efbb92bf450?w=600&q=80',
-                'https://images.unsplash.com/photo-1518605368461-1e1e808ce8cb?w=600&q=80',
-                'https://images.unsplash.com/photo-1519861531473-9200262188bf?w=600&q=80',
-                'https://images.unsplash.com/photo-1508344928928-7137b29de218?w=600&q=80',
-                'https://images.unsplash.com/photo-1554068865-24cecd4e34f8?w=600&q=80',
-                'https://images.unsplash.com/photo-1526676037777-05a232554f77?w=600&q=80',
-            ];
-            $bgImage = $venue->photo_url ?? $defaultPhotos[$loop->index % count($defaultPhotos)];
+            // Ambil foto valid dari database (tidak menggunakan unsplash)
+            static $validDbPhotos = null;
+            if ($validDbPhotos === null) {
+                $validDbPhotos = \App\Models\Venue::whereNotNull('photo_url')
+                    ->pluck('photo_url')
+                    ->filter(function($url) { return file_exists(public_path($url)); })
+                    ->values()
+                    ->toArray();
+            }
+            
+            $bgImage = $venue->photo_url;
+            if (!$bgImage || !file_exists(public_path($bgImage))) {
+                if (!empty($validDbPhotos)) {
+                    $bgImage = $validDbPhotos[$loop->index % count($validDbPhotos)];
+                } else {
+                    $bgImage = 'https://ui-avatars.com/api/?name=' . urlencode($venue->name) . '&background=1b3a1b&color=fff&size=600';
+                }
+            }
         @endphp
         
         <a href="/venues/{{ $venue->id }}" class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 block group">

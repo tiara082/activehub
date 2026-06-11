@@ -9,7 +9,7 @@
     {{-- HEADER --}}
     <div>
         <h2 class="text-lg font-semibold text-gray-900">
-            Halo, {{ auth()->user()->name }} 👋
+            Halo, {{ auth()->user()->name }}
         </h2>
 
         <p class="text-sm text-gray-500">
@@ -314,22 +314,34 @@
 {{-- ================= SCRIPT ================= --}}
 @push('scripts')
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{{-- Hidden Element to store Chart Data safely for JS --}}
+<div id="dashboardChartData" class="hidden"
+     data-months="{{ json_encode($months) }}"
+     data-booking="{{ json_encode($bookingData) }}"
+     data-joined="{{ json_encode($joinedMatchData) }}"
+     data-created="{{ json_encode($createdMatchData) }}">
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+const chartDataEl = document.getElementById('dashboardChartData');
+const chartMonths = JSON.parse(chartDataEl.dataset.months);
+const chartBooking = JSON.parse(chartDataEl.dataset.booking);
+const chartJoined = JSON.parse(chartDataEl.dataset.joined);
+const chartCreated = JSON.parse(chartDataEl.dataset.created);
 const ctx = document.getElementById('bookingChart').getContext('2d');
 
 new Chart(ctx, {
     type: 'bar',
 
     data: {
-        labels: @json($months),
+        labels: chartMonths,
 
         datasets: [
 
            {
                 label: 'Total Pesanan',
-                data: @json($bookingData),
+                data: chartBooking,
                 backgroundColor: '#C8E6C9',
                 hoverBackgroundColor: '#C8E6C9',
                 borderRadius: 4,
@@ -337,7 +349,7 @@ new Chart(ctx, {
 
             {
                 label: 'Permainan Diikuti',
-                data: @json($joinedMatchData),
+                data: chartJoined,
                 backgroundColor: '#81C784',
                 hoverBackgroundColor: '#81C784',
                 borderRadius: 4,
@@ -345,7 +357,7 @@ new Chart(ctx, {
 
             {
                 label: 'Permainan Dibuat',
-                data: @json($createdMatchData),
+                data: chartCreated,
                 backgroundColor: '#2E7D32',
                 hoverBackgroundColor: '#2E7D32',
                 borderRadius: 4,

@@ -480,9 +480,21 @@ $statusStyle = [
 
                         <div class="flex justify-center gap-2">
 
+                            {{-- DATA DIV --}}
+                            <div id="booking-data-{{ $b['id'] }}" class="hidden"
+                                data-id="#BKG-{{ str_pad($b['id'], 4, '0', STR_PAD_LEFT) }}"
+                                data-name="{{ $b['name'] }}"
+                                data-phone="{{ $b['phone'] }}"
+                                data-court="{{ $b['court'] }}"
+                                data-date="{{ $b['date'] }}"
+                                data-time="{{ $b['time'] }}"
+                                data-dur="{{ $b['dur'] }}"
+                                data-total="{{ $b['total'] }}"
+                                data-status="{{ $b['status'] }}"
+                            ></div>
+
                             {{-- DETAIL --}}
-                            <button class="w-9 h-9 inline-flex items-center justify-center
-                                           rounded-xl hover:bg-gray-100 transition text-gray-500">
+                            <button onclick="openDetailBookingModal({{ $b['id'] }})" class="w-9 h-9 inline-flex items-center justify-center rounded-xl hover:bg-gray-100 transition text-gray-500" title="Detail Pesanan">
 
                                 <svg class="w-4 h-4" viewBox="0 0 24 24"
                                      fill="none" stroke="currentColor">
@@ -550,5 +562,120 @@ $statusStyle = [
     </div>
 
 </div>
+
+{{-- MODAL DETAIL BOOKING --}}
+<div id="detailBookingModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm transition-opacity">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 transform scale-95 transition-transform text-left">
+        <div class="flex justify-between items-start border-b border-gray-100 pb-4 mb-4">
+            <div>
+                <h3 class="font-bold text-gray-900 text-lg">Detail Pemesanan</h3>
+                <p id="detail-booking-id" class="text-xs text-gray-500 mt-1"></p>
+            </div>
+            <button type="button" onclick="closeDetailBookingModal()" class="text-gray-400 hover:text-gray-600 p-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        
+        <div class="space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Status</p>
+                    <span id="detail-booking-status" class="px-3 py-1 rounded-full text-xs font-medium"></span>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Total Biaya</p>
+                    <p id="detail-booking-total" class="font-bold text-[#1b3a1b] text-lg"></p>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 space-y-3">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Pemesan</p>
+                        <p id="detail-booking-name" class="font-medium text-gray-900 text-sm"></p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Telepon</p>
+                        <p id="detail-booking-phone" class="font-medium text-gray-900 text-sm"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 space-y-3">
+                <div>
+                    <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Lapangan</p>
+                    <p id="detail-booking-court" class="font-medium text-gray-900 text-sm"></p>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Tanggal</p>
+                        <p id="detail-booking-date" class="font-medium text-gray-900 text-sm"></p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Waktu & Durasi</p>
+                        <p class="font-medium text-gray-900 text-sm"><span id="detail-booking-time"></span> (<span id="detail-booking-dur"></span>)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-6 pt-4 border-t border-gray-100 text-right">
+            <button type="button" onclick="closeDetailBookingModal()" class="bg-[#1b3a1b] text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#285228] transition">
+                Tutup
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const statusStyles = {
+        'Selesai': 'bg-green-50 text-green-700',
+        'Berlangsung': 'bg-yellow-50 text-yellow-700',
+        'Terjadwal': 'bg-blue-50 text-blue-700',
+        'Dibatalkan': 'bg-red-50 text-red-700',
+        'Menunggu': 'bg-orange-50 text-orange-600',
+        'Diblokir': 'bg-red-50 text-red-600',
+        'Blokir': 'bg-red-50 text-red-600'
+    };
+
+    function openDetailBookingModal(id) {
+        const modal = document.getElementById('detailBookingModal');
+        const data = document.getElementById('booking-data-' + id).dataset;
+
+        document.getElementById('detail-booking-id').innerText = data.id;
+        document.getElementById('detail-booking-name').innerText = data.name;
+        document.getElementById('detail-booking-phone').innerText = data.phone;
+        document.getElementById('detail-booking-court').innerText = data.court;
+        document.getElementById('detail-booking-date').innerText = data.date;
+        document.getElementById('detail-booking-time').innerText = data.time;
+        document.getElementById('detail-booking-dur').innerText = data.dur;
+        document.getElementById('detail-booking-total').innerText = data.total;
+        
+        const statusEl = document.getElementById('detail-booking-status');
+        statusEl.innerText = data.status;
+        statusEl.className = 'px-3 py-1 rounded-full text-xs font-medium ' + (statusStyles[data.status] || 'bg-gray-50 text-gray-600');
+
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.querySelector('div').classList.remove('scale-95');
+            modal.querySelector('div').classList.add('scale-100');
+        }, 10);
+    }
+
+    function closeDetailBookingModal() {
+        const modal = document.getElementById('detailBookingModal');
+        modal.querySelector('div').classList.remove('scale-100');
+        modal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 150);
+    }
+
+    document.getElementById('detailBookingModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDetailBookingModal();
+        }
+    });
+</script>
 
 @endsection

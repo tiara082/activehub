@@ -13,7 +13,9 @@ class EarningsController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $venue = $user->venues()->with('fields')->first();
+        $venues = $user->venues()->with('fields')->get();
+        $activeVenueId = session('active_venue_id');
+        $venue = $activeVenueId ? ($venues->where('id', $activeVenueId)->first() ?? $venues->first()) : $venues->first();
         
         if (!$venue) {
             return back()->with('error', 'Venue tidak ditemukan.');

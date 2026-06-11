@@ -53,5 +53,47 @@
     </div>
 
     @stack('scripts')
+
+    {{-- GLOBAL TOAST NOTIFICATIONS --}}
+    @if(session('success'))
+        <div id="toast-success" class="fixed bottom-5 right-5 z-[100] flex items-center w-full max-w-sm p-4 space-x-3 text-gray-700 bg-white border border-gray-100 rounded-2xl shadow-xl transform transition-all duration-500 translate-y-0 opacity-100" role="alert">
+            <div class="inline-flex items-center justify-center flex-shrink-0 w-10 h-10 bg-green-50 rounded-xl text-green-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <div class="ml-3 text-sm font-medium pr-2 flex-1">{{ session('success') }}</div>
+            <button type="button" onclick="closeToast('toast-success')" class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div id="toast-error" class="fixed bottom-5 right-5 z-[100] flex items-center w-full max-w-sm p-4 space-x-3 text-gray-700 bg-white border border-gray-100 rounded-2xl shadow-xl transform transition-all duration-500 translate-y-0 opacity-100" role="alert">
+            <div class="inline-flex items-center justify-center flex-shrink-0 w-10 h-10 bg-red-50 rounded-xl text-red-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </div>
+            <div class="ml-3 text-sm font-medium pr-2 flex-1">{{ session('error') }}</div>
+            <button type="button" onclick="closeToast('toast-error')" class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+    @endif
+
+    <script>
+        function closeToast(id) {
+            const toast = document.getElementById(id);
+            if (toast) {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 500);
+            }
+        }
+        
+        // Auto dismiss after 4 seconds
+        setTimeout(() => {
+            closeToast('toast-success');
+            closeToast('toast-error');
+        }, 4000);
+    </script>
 </body>
 </html>
