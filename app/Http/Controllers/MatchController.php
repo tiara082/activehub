@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\GameMatch;
+use App\Services\SupabaseStorageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -196,8 +197,8 @@ class MatchController extends Controller
 
         $photoUrl = null;
         if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('matches', 'public');
-            $photoUrl = '/storage/' . $path;
+            $supabase = app(SupabaseStorageService::class);
+            $photoUrl = $supabase->upload($request->file('photo'), 'matches');
         }
 
         $match = GameMatch::create([
@@ -263,11 +264,12 @@ class MatchController extends Controller
 
         $photoUrl = $match->photo_url;
         if ($request->hasFile('photo')) {
-            if ($photoUrl && str_starts_with($photoUrl, '/storage/')) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete(str_replace('/storage/', '', $photoUrl));
+            $supabase = app(SupabaseStorageService::class);
+            // Hapus foto lama jika ada di Supabase
+            if ($photoUrl && !str_starts_with($photoUrl, '/storage/')) {
+                $supabase->delete($photoUrl);
             }
-            $path = $request->file('photo')->store('matches', 'public');
-            $photoUrl = '/storage/' . $path;
+            $photoUrl = $supabase->upload($request->file('photo'), 'matches');
         }
 
         $match->update([

@@ -13,11 +13,12 @@
 @endphp
 
 {{-- ===== MOBILE TOPBAR ===== --}}
-<div class="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200 lg:hidden">
-    <h1 style="font-family:'Bebas Neue',sans-serif;" class="text-[#0b3d0b] text-xl tracking-wide leading-none">
-        ACTIVE<span class="text-black">HUB</span>
-    </h1>
-    <button id="sidebar-toggle" class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition" aria-label="Buka menu">
+<div class="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 bg-[#0b3d0b] border-b border-white/10 lg:hidden">
+    <a href="/" class="flex items-center gap-2">
+        <img src="{{ asset('assets/logo yellow.png') }}" alt="ActiveHub" class="h-6 w-auto">
+        <span class="font-display text-lg font-black text-yellow-300 tracking-tight leading-none">ActiveHub</span>
+    </a>
+    <button id="sidebar-toggle" class="p-2 rounded-lg text-white/70 hover:bg-white/10 transition" aria-label="Buka menu">
         <svg id="icon-open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-width="2" stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/>
         </svg>
@@ -38,10 +39,10 @@
 
         {{-- LOGO --}}
         <div class="px-1">
-            <h1 style="font-family:'Bebas Neue',sans-serif;"
-                class="text-[#0b3d0b] text-2xl tracking-wide leading-none">
-                ACTIVE<span class="text-black">HUB</span>
-            </h1>
+            <a href="/" class="flex items-center gap-2">
+                <img src="{{ asset('assets/logo yellow.png') }}" alt="ActiveHub" class="h-7 w-auto">
+                <span class="font-display text-xl font-black text-yellow-400 tracking-tight leading-none">ActiveHub</span>
+            </a>
         </div>
 
         {{-- USER INFO (CLICKABLE TO PROFILE) --}}
