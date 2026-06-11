@@ -18,7 +18,7 @@
     </div>
 
     {{-- GRID --}}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
         {{-- ================= LEFT ================= --}}
         <div class="lg:col-span-2 space-y-6">
@@ -83,7 +83,7 @@
 
                 </div>
 
-                <div class="h-72">
+                <div class="h-56 sm:h-72">
                     <canvas id="bookingChart"></canvas>
                 </div>
 

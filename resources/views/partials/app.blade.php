@@ -47,10 +47,10 @@
     @include('partials.sidebar')
 
     {{-- ===== MAIN AREA ===== --}}
-    <div class="ml-56 flex flex-col min-h-screen">
+    <div class="lg:ml-52 flex flex-col min-h-screen">
 
         {{-- PAGE CONTENT --}}
-        <main class="flex-1 p-6 lg:p-8">
+        <main class="flex-1 p-4 pt-[4.5rem] lg:pt-6 lg:p-8">
             @yield('content')
         </main>
 

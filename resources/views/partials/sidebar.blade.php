@@ -3,7 +3,26 @@
     $role = $user->role;
 @endphp
 
-<aside class="w-52 bg-white border-r border-gray-200 min-h-screen fixed top-0 left-0 z-50 flex flex-col">
+{{-- ===== MOBILE TOPBAR ===== --}}
+<div class="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200 lg:hidden">
+    <h1 style="font-family:'Bebas Neue',sans-serif;" class="text-[#0b3d0b] text-xl tracking-wide leading-none">
+        ACTIVE<span class="text-black">HUB</span>
+    </h1>
+    <button id="sidebar-toggle" class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition" aria-label="Buka menu">
+        <svg id="icon-open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-width="2" stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+        <svg id="icon-close" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-width="2" stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+    </button>
+</div>
+
+{{-- ===== OVERLAY ===== --}}
+<div id="sidebar-overlay" class="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm hidden lg:hidden"></div>
+
+<aside id="sidebar" class="w-52 bg-white border-r border-gray-200 min-h-screen fixed top-0 left-0 z-50 flex flex-col
+    -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
 
     {{-- HEADER --}}
     <div class="px-4 pt-6 pb-4 space-y-5">
@@ -157,3 +176,36 @@
     </div>
 
 </aside>
+
+<script>
+(function() {
+    const toggle   = document.getElementById('sidebar-toggle');
+    const sidebar  = document.getElementById('sidebar');
+    const overlay  = document.getElementById('sidebar-overlay');
+    const iconOpen  = document.getElementById('icon-open');
+    const iconClose = document.getElementById('icon-close');
+
+    function openSidebar() {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+        iconOpen.classList.add('hidden');
+        iconClose.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSidebar() {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+        iconOpen.classList.remove('hidden');
+        iconClose.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
+    toggle.addEventListener('click', function() {
+        const isOpen = !sidebar.classList.contains('-translate-x-full');
+        isOpen ? closeSidebar() : openSidebar();
+    });
+
+    overlay.addEventListener('click', closeSidebar);
+})();
+</script>

@@ -51,21 +51,21 @@
                 <div>
                     <label class="text-sm font-medium">Nama Venue</label>
                     <input readonly
-                        value="{{ $booking->field->venue->name ?? '-' }}"
+                        value="{{ $booking?->field?->venue?->name ?? '-' }}"
                         class="w-full border rounded-lg p-3 mt-1 bg-gray-50 text-gray-700">
                 </div>
 
                 <div>
                     <label class="text-sm font-medium">Nama Lapangan</label>
                     <input readonly
-                        value="{{ $booking->field->name ?? '-' }}"
+                        value="{{ $booking?->field?->name ?? '-' }}"
                         class="w-full border rounded-lg p-3 mt-1 bg-gray-50 text-gray-700">
                 </div>
 
                 <div>
                     <label class="text-sm font-medium">Jenis Olahraga</label>
                     <input readonly
-                        value="{{ $booking->field->sport_type ?? '-' }}"
+                        value="{{ $booking?->field?->sport_type ?? '-' }}"
                         class="w-full border rounded-lg p-3 mt-1 bg-gray-50 text-gray-700">
                 </div>
 
@@ -73,7 +73,7 @@
                     <div>
                         <label class="text-sm font-medium">Tanggal</label>
                         <input readonly
-                            value="{{ $booking->timeSlot ? $booking->timeSlot->date->format('Y-m-d') : '-' }}"
+                            value="{{ $booking?->timeSlot?->date ? $booking->timeSlot->date->format('Y-m-d') : '-' }}"
                             type="date"
                             class="w-full border rounded-lg p-3 mt-1 bg-gray-50 text-gray-700">
                     </div>
@@ -81,7 +81,7 @@
                     <div>
                         <label class="text-sm font-medium">Jam</label>
                         <input readonly
-                            value="{{ $booking->timeSlot ? \Carbon\Carbon::parse($booking->timeSlot->start_time)->format('H:i') . ' - ' . \Carbon\Carbon::parse($booking->timeSlot->end_time)->format('H:i') : '-' }}"
+                            value="{{ $booking?->timeSlot ? \Carbon\Carbon::parse($booking->timeSlot->start_time)->format('H:i') . ' - ' . \Carbon\Carbon::parse($booking->timeSlot->end_time)->format('H:i') : '-' }}"
                             class="w-full border rounded-lg p-3 mt-1 bg-gray-50 text-gray-700">
                     </div>
                 </div>
@@ -90,14 +90,14 @@
                     <div>
                         <label class="text-sm font-medium">Tipe Lapangan</label>
                         <input readonly
-                            value="{{ ($booking->field->is_indoor ?? false) ? 'Indoor' : 'Outdoor' }}"
+                            value="{{ ($booking?->field?->is_indoor ?? false) ? 'Indoor' : 'Outdoor' }}"
                             class="w-full border rounded-lg p-3 mt-1 bg-gray-50 text-gray-700">
                     </div>
 
                     <div>
                         <label class="text-sm font-medium">Kapasitas</label>
                         <input readonly
-                            value="{{ $booking->field->capacity ?? '-' }} orang"
+                            value="{{ $booking?->field?->capacity ?? '-' }} orang"
                             class="w-full border rounded-lg p-3 mt-1 bg-gray-50 text-gray-700">
                     </div>
                 </div>
@@ -105,10 +105,10 @@
                 <div>
                     <label class="text-sm font-medium">Harga Lapangan</label>
                     <input readonly id="fieldPrice"
-                        value="{{ $booking->field->price_per_hour ?? 0 }}"
+                        value="{{ $booking?->field?->price_per_hour ?? 0 }}"
                         class="hidden">
                     <input readonly
-                        value="Rp {{ number_format($booking->field->price_per_hour ?? 0, 0, ',', '.') }} / jam"
+                        value="Rp {{ number_format($booking?->field?->price_per_hour ?? 0, 0, ',', '.') }} / jam"
                         class="w-full border rounded-lg p-3 mt-1 bg-gray-50 text-gray-700 font-semibold">
                 </div>
 
@@ -130,12 +130,12 @@
                 {{-- Ringkasan lapangan --}}
                 <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-2">
                     <p class="text-sm text-green-800">
-                        <strong>{{ $booking->field->venue->name ?? '' }}</strong> &mdash;
-                        {{ $booking->field->name ?? '' }} &mdash;
-                        {{ $booking->field->sport_type ?? '' }}
+                        <strong>{{ $booking?->field?->venue?->name ?? '' }}</strong> &mdash;
+                        {{ $booking?->field?->name ?? '' }} &mdash;
+                        {{ $booking?->field?->sport_type ?? '' }}
                         &middot;
-                        {{ $booking->timeSlot && $booking->timeSlot->date ? $booking->timeSlot->date->format('d M Y') : '' }}
-                        ({{ $booking->timeSlot ? \Carbon\Carbon::parse($booking->timeSlot->start_time)->format('H:i') . ' - ' . \Carbon\Carbon::parse($booking->timeSlot->end_time)->format('H:i') : '' }})
+                        {{ $booking?->timeSlot?->date ? $booking->timeSlot->date->format('d M Y') : '' }}
+                        ({{ $booking?->timeSlot ? \Carbon\Carbon::parse($booking->timeSlot->start_time)->format('H:i') . ' - ' . \Carbon\Carbon::parse($booking->timeSlot->end_time)->format('H:i') : '' }})
                     </p>
                 </div>
 

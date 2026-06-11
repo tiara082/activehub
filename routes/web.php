@@ -53,11 +53,19 @@ Route::middleware('auth')->group(function () {
 
         $bookingId = request('booking');
 
+        if (!$bookingId) {
+            return redirect()->route('matches.index')->with('error', 'Silakan pilih booking untuk membuat permainan');
+        }
+
         $booking = \App\Models\Booking::with([
             'field',
             'field.venue',
             'timeSlot',
         ])->find($bookingId);
+
+        if (!$booking) {
+            return redirect()->route('matches.index')->with('error', 'Booking tidak ditemukan');
+        }
 
         return view('pubmatch.create', compact('booking'));
 
