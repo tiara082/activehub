@@ -134,7 +134,7 @@
             <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
             </svg>
-            <span>venue saya</span>
+            <span>Venue Saya</span>
         </a>
 
         <a href="{{ route('owner.bookings') }}"
