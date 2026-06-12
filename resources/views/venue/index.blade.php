@@ -30,9 +30,21 @@
     <h1 class="font-anton text-white text-4xl md:text-5xl uppercase tracking-wide leading-tight mb-6">
         PILIH LAPANGANMU, ATUR PERMAINANMU
     </h1>
-    <button class="inline-block bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-12 py-4 rounded-xl transition">
-        Daftarkan Lapangan Anda
-    </button>
+    @auth
+        @if(auth()->user()->role === 'user')
+            <a href="{{ route('venues.index') }}" class="inline-block bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-12 py-4 rounded-xl transition">
+                Cari Lapangan Sekarang
+            </a>
+        @else
+            <button class="inline-block bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-12 py-4 rounded-xl transition">
+                Daftarkan Lapangan Anda
+            </button>
+        @endif
+    @else
+        <button class="inline-block bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-12 py-4 rounded-xl transition">
+            Daftarkan Lapangan Anda
+        </button>
+    @endauth
 </section>
 
 <!-- ===================== SEARCH BAR ===================== -->

@@ -101,7 +101,7 @@
                     Aksi Cepat
                 </h3>
 
-                <div class="grid grid-cols-3 gap-4 text-center">
+                <div class="grid grid-cols-2 gap-4 text-center">
 
                     {{-- CARI LAPANGAN --}}
                     <a href="{{ route('venues.index') }}"
@@ -136,37 +136,6 @@
                         <p class="text-xs text-gray-600">
                             Cari Permainan
                         </p>
-
-                    </a>
-
-                    {{-- BUAT PERMAINAN --}}
-                    <a href="{{ $hasBooking
-                                ? route('matches.create')
-                                : route('venues.index') }}"
-                       class="flex flex-col items-center gap-2 group">
-
-                        <div class="w-12 h-12 rounded-xl
-                                    {{ $hasBooking ? 'bg-yellow-500' : 'bg-gray-400' }}
-                                    flex items-center justify-center
-                                    group-hover:scale-105 transition">
-
-                            <i class="fas fa-plus text-white"></i>
-
-                        </div>
-
-                        <div class="text-center">
-
-                            <p class="text-xs text-gray-600">
-                                Buat Permainan
-                            </p>
-
-                            @if(!$hasBooking)
-                            <p class="text-[10px] text-gray-400 mt-1 leading-tight">
-                                Pesan lapangan terlebih dahulu
-                            </p>
-                            @endif
-
-                        </div>
 
                     </a>
 
