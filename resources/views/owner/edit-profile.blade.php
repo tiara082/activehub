@@ -11,10 +11,10 @@
 <div class="space-y-6">
 
     {{-- FORM --}}
-    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.02)]">
+    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
 
         {{-- TOP --}}
-        <div class="px-6 py-5 border-b border-gray-100 bg-gray-50/50">
+        <div class="px-6 py-5 border-b border-gray-100">
 
             <div class="flex items-center gap-3">
 
@@ -28,12 +28,11 @@
 
                 <div>
 
-                    <h3 class="font-bold text-gray-900 text-sm flex items-center gap-2">
-                        <span class="w-1.5 h-4 bg-[#0b3d0b] rounded-full"></span>
-                        Informasi Profil
+                    <h3 class="font-semibold text-gray-900 text-lg">
+                        Informasi Profile
                     </h3>
 
-                    <p class="text-xs text-gray-500 mt-1 font-medium">
+                    <p class="text-sm text-gray-500">
                         Perbarui data akun ActiveHub Anda
                     </p>
 
@@ -58,7 +57,7 @@
                     {{-- NAME --}}
                     <div>
 
-                        <label class="text-xs font-bold text-gray-600 mb-2 block">
+                        <label class="text-sm font-medium text-gray-700 mb-2 block">
                             Nama Lengkap
                         </label>
 
@@ -73,10 +72,11 @@
                                 name="name"
                                 value="{{ old('name', $user->name) }}"
                                 class="w-full border border-gray-200
-                                       rounded-xl pl-11 pr-4 py-3 text-sm
+                                       rounded-xl pl-11 pr-4 py-3
                                        focus:outline-none
-                                       focus:ring-4 focus:ring-[#0b3d0b]/10
-                                       focus:border-[#0b3d0b] transition-all">
+                                       focus:ring-2
+                                       focus:ring-[#0b3d0b]/20
+                                       focus:border-[#0b3d0b]">
 
                         </div>
 
@@ -85,7 +85,7 @@
                     {{-- EMAIL --}}
                     <div>
 
-                        <label class="text-xs font-bold text-gray-600 mb-2 block">
+                        <label class="text-sm font-medium text-gray-700 mb-2 block">
                             Email
                         </label>
 
@@ -100,10 +100,11 @@
                                 name="email"
                                 value="{{ old('email', $user->email) }}"
                                 class="w-full border border-gray-200
-                                       rounded-xl pl-11 pr-4 py-3 text-sm
+                                       rounded-xl pl-11 pr-4 py-3
                                        focus:outline-none
-                                       focus:ring-4 focus:ring-[#0b3d0b]/10
-                                       focus:border-[#0b3d0b] transition-all">
+                                       focus:ring-2
+                                       focus:ring-[#0b3d0b]/20
+                                       focus:border-[#0b3d0b]">
 
                         </div>
 
@@ -112,7 +113,7 @@
                 {{-- PHONE --}}
                 <div>
 
-                    <label class="text-xs font-bold text-gray-600 mb-2 block">
+                    <label class="text-sm font-medium text-gray-700 mb-2 block">
                         Nomor HP
                     </label>
 
@@ -127,10 +128,11 @@
                             name="phone"
                             value="{{ old('phone', $user->phone) }}"
                             class="w-full border border-gray-200
-                                   rounded-xl pl-11 pr-4 py-3 text-sm
+                                   rounded-xl pl-11 pr-4 py-3
                                    focus:outline-none
-                                   focus:ring-4 focus:ring-[#0b3d0b]/10
-                                   focus:border-[#0b3d0b] transition-all">
+                                   focus:ring-2
+                                   focus:ring-[#0b3d0b]/20
+                                   focus:border-[#0b3d0b]">
 
                     </div>
 
@@ -140,11 +142,11 @@
                 {{-- BUTTON --}}
                 <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
 
-                    <a href="{{ route('owner.profile') }}"
+                    <a href="{{ route('user.profile') }}"
                        class="px-5 py-2.5 rounded-xl
                               border border-gray-200
                               hover:bg-gray-50
-                              text-gray-700 text-xs font-bold transition">
+                              text-gray-700 text-sm font-medium transition">
 
                         Batal
 
@@ -154,8 +156,9 @@
                         type="submit"
                         class="inline-flex items-center gap-2
                                px-5 py-2.5 rounded-xl
-                               bg-[#0b3d0b] hover:bg-[#145214] hover:shadow-lg hover:shadow-green-900/10
-                               text-white text-xs font-bold transition-all duration-300">
+                               bg-[#0b3d0b]
+                               hover:bg-[#145214]
+                               text-white text-sm font-medium transition">
 
                         Simpan Perubahan
 

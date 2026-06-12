@@ -4,32 +4,6 @@
 
 @section('content')
 
-@push('styles')
-<style>
-    .booking-item {
-        position: relative;
-        transition: all 0.25s ease;
-    }
-    .booking-item::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 4px;
-        background-color: #0b3d0b;
-        opacity: 0;
-        transition: opacity 0.25s ease;
-    }
-    .booking-item:hover::after {
-        opacity: 1;
-    }
-    .booking-item:hover {
-        background-color: rgba(11, 61, 11, 0.02) !important;
-    }
-</style>
-@endpush
-
 @php
 $statusStyle = [
     'Selesai' => 'bg-green-50 text-green-700',
@@ -81,7 +55,7 @@ $statusStyle = [
                 placeholder="Cari venue atau lapangan..."
                 class="w-full bg-white border border-gray-200 rounded-2xl
                        px-4 py-3 pl-10 text-sm
-                       focus:ring-4 focus:ring-[#0b3d0b]/10 focus:border-[#0b3d0b] transition-all outline-none">
+                       focus:ring-2 focus:ring-[#1b3a1b] outline-none">
 
             <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                  fill="none"
@@ -105,12 +79,12 @@ $statusStyle = [
                 id="dateFilter"
                 class="bg-white border border-gray-200 rounded-2xl
                        px-4 py-3 text-sm w-full md:w-auto
-                       focus:ring-4 focus:ring-[#0b3d0b]/10 focus:border-[#0b3d0b] transition-all outline-none">
+                       focus:ring-2 focus:ring-[#1b3a1b] outline-none">
                        
             {{-- CUSTOM SORT DROPDOWN --}}
             <div class="relative w-full md:w-auto" id="customSortDropdown">
                 <button type="button" onclick="toggleSortMenu()" 
-                    class="w-full bg-white border border-gray-200 hover:border-gray-300 rounded-2xl px-4 py-3 text-sm focus:ring-4 focus:ring-[#0b3d0b]/10 focus:border-[#0b3d0b]/40 outline-none flex items-center justify-between gap-3 transition-all shadow-sm text-gray-700 font-medium">
+                    class="w-full bg-white border border-gray-200 hover:border-gray-300 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#1b3a1b]/20 outline-none flex items-center justify-between gap-3 transition-colors shadow-sm text-gray-700 font-medium">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-arrow-down-wide-short text-gray-400"></i>
                         <span id="sortLabel">Urutkan: Paling Baru</span>
@@ -153,15 +127,15 @@ $statusStyle = [
                 onclick="showTab('all', this)"
                 class="tab-btn active-tab relative flex items-center gap-2 whitespace-nowrap
                        px-4 py-2 rounded-xl
-                       bg-[#0b3d0b] shadow-md text-white
+                       bg-white shadow-sm text-[#1b3a1b]
                        transition-all duration-200 ease-out">
 
                 <span class="text-sm font-medium">
                     Semua
                 </span>
 
-                <span class="badge-count text-[11px] font-semibold px-2 py-[2px] rounded-full
-                             bg-white/20 text-white">
+                <span class="text-[11px] font-semibold px-2 py-[2px] rounded-full
+                             bg-[#1b3a1b]/10 text-[#1b3a1b]">
 
                     {{ $allBookings->count() }}
 
@@ -180,7 +154,7 @@ $statusStyle = [
                     Menunggu
                 </span>
 
-                <span class="badge-count text-[11px] font-semibold px-2 py-[2px] rounded-full
+                <span class="text-[11px] font-semibold px-2 py-[2px] rounded-full
                              bg-gray-200 text-gray-500">
 
                     {{ $pendingBookings->count() }}
@@ -200,7 +174,7 @@ $statusStyle = [
                     Terjadwal
                 </span>
 
-                <span class="badge-count text-[11px] font-semibold px-2 py-[2px] rounded-full
+                <span class="text-[11px] font-semibold px-2 py-[2px] rounded-full
                              bg-gray-200 text-gray-500">
 
                     {{ $scheduledBookings->count() }}
@@ -220,7 +194,7 @@ $statusStyle = [
                     Berlangsung
                 </span>
 
-                <span class="badge-count text-[11px] font-semibold px-2 py-[2px] rounded-full
+                <span class="text-[11px] font-semibold px-2 py-[2px] rounded-full
                              bg-gray-200 text-gray-500">
 
                     {{ $ongoingBookings->count() }}
@@ -241,7 +215,7 @@ $statusStyle = [
                     Selesai
                 </span>
 
-                <span class="badge-count text-[11px] font-semibold px-2 py-[2px] rounded-full
+                <span class="text-[11px] font-semibold px-2 py-[2px] rounded-full
                              bg-gray-200 text-gray-500">
 
                     {{ $completedBookings->count() }}
@@ -262,7 +236,7 @@ $statusStyle = [
                     Dibatalkan
                 </span>
 
-                <span class="badge-count text-[11px] font-semibold px-2 py-[2px] rounded-full
+                <span class="text-[11px] font-semibold px-2 py-[2px] rounded-full
                              bg-gray-200 text-gray-500">
 
                     {{ $cancelledBookings->count() }}
@@ -277,21 +251,21 @@ $statusStyle = [
 
 
     {{-- TABLE --}}
-    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.02)]">
+    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
 
         {{-- HEADER --}}
-        <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-gray-50/50">
+        <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
 
-            <div class="flex items-center gap-2.5">
-                <span class="w-1.5 h-5 bg-[#0b3d0b] rounded-full"></span>
-                <div>
-                    <p class="text-sm font-bold text-gray-800">
-                        Ringkasan Pemesanan
-                    </p>
-                    <p class="text-[11px] text-gray-400 font-medium">
-                        Daftar seluruh aktivitas pemesanan Anda
-                    </p>
-                </div>
+            <div>
+
+                <p class="text-sm font-semibold text-gray-800">
+                    Ringkasan Pemesanan
+                </p>
+
+                <p class="text-xs text-gray-400">
+                    Daftar seluruh aktivitas pemesanan Anda
+                </p>
+
             </div>
 
         </div>
@@ -495,22 +469,23 @@ function showTab(tabId, el)
     activeTab = tabId
 
     document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('bg-[#0b3d0b]', 'text-white', 'shadow-md')
+
+        btn.classList.remove(
+            'bg-white',
+            'shadow-sm',
+            'text-[#1b3a1b]'
+        )
+
         btn.classList.add('text-gray-500')
-        const badge = btn.querySelector('.badge-count');
-        if (badge) {
-            badge.classList.remove('bg-white/20', 'text-white')
-            badge.classList.add('bg-gray-200', 'text-gray-500')
-        }
     })
 
-    el.classList.add('bg-[#0b3d0b]', 'text-white', 'shadow-md')
+    el.classList.add(
+        'bg-white',
+        'shadow-sm',
+        'text-[#1b3a1b]'
+    )
+
     el.classList.remove('text-gray-500')
-    const badge = el.querySelector('.badge-count');
-    if (badge) {
-        badge.classList.remove('bg-gray-200', 'text-gray-500')
-        badge.classList.add('bg-white/20', 'text-white')
-    }
 
     filterData()
 }

@@ -7,11 +7,8 @@
 {{-- VENUE SELECTOR & ADD BUTTON --}}
 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
     <div>
-        <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
-            <span class="w-1.5 h-5 bg-[#0b3d0b] rounded-full"></span>
-            Kelola Cabang
-        </h2>
-        <p class="text-xs text-gray-500 mt-1 font-medium">Pilih cabang yang ingin Anda lihat dan kelola</p>
+        <h2 class="text-xl font-bold text-gray-900">Kelola Cabang</h2>
+        <p class="text-sm text-gray-500">Pilih cabang yang ingin Anda lihat dan kelola</p>
     </div>
     <div class="flex items-stretch gap-3 w-full md:w-auto">
         <form id="venueSwitchForm" method="POST" action="{{ route('owner.venue.switch') }}" class="flex-1 md:flex-none relative">
@@ -20,7 +17,7 @@
             
             <div class="relative w-full md:w-64 h-full">
                 <!-- Trigger Button -->
-                <button type="button" onclick="toggleVenueMenu()" class="w-full h-full flex items-center justify-between border border-gray-200 rounded-xl text-xs pl-4 pr-4 py-2.5 bg-white shadow-sm font-bold text-gray-700 hover:bg-gray-50 transition focus:outline-none focus:ring-4 focus:ring-[#0b3d0b]/10 focus:border-[#0b3d0b]">
+                <button type="button" onclick="toggleVenueMenu()" class="w-full h-full flex items-center justify-between border border-gray-200 rounded-xl text-sm pl-4 pr-4 py-2.5 bg-white shadow-sm font-medium text-gray-800 hover:bg-gray-50 transition focus:outline-none focus:ring-2 focus:ring-gray-900/5 focus:border-gray-900">
                     <span id="venue_selected_text" class="truncate pr-2">
                         {{ $activeVenue ? $activeVenue->name : 'Pilih Cabang' }}
                     </span>
@@ -28,18 +25,18 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
- 
+
                 <!-- Dropdown Menu -->
                 <div id="venueDropdownMenu" class="absolute left-0 top-full mt-2 w-full bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 opacity-0 invisible translate-y-2 transition-all duration-200 z-50">
                     @foreach($venues as $v)
-                        <button type="button" onclick="selectVenue('{{ $v->id }}', '{{ addslashes($v->name) }}')" class="w-full text-left px-4 py-2 text-xs transition-colors {{ $activeVenue && $activeVenue->id == $v->id ? 'bg-[#0b3d0b]/10 text-[#0b3d0b] font-bold' : 'text-gray-700 hover:bg-gray-50' }}">
+                        <button type="button" onclick="selectVenue('{{ $v->id }}', '{{ addslashes($v->name) }}')" class="w-full text-left px-4 py-2 text-sm transition-colors {{ $activeVenue && $activeVenue->id == $v->id ? 'bg-[#1b3a1b]/5 text-[#1b3a1b] font-bold' : 'text-gray-700 hover:bg-gray-50' }}">
                             {{ $v->name }}
                         </button>
                     @endforeach
                 </div>
             </div>
         </form>
-        <a href="{{ route('owner.venue.create') }}" class="bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-gray-50 hover:text-gray-900 transition whitespace-nowrap inline-flex items-center justify-center gap-2 shadow-sm h-full">
+        <a href="{{ route('owner.venue.create') }}" class="bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 hover:text-gray-900 transition whitespace-nowrap inline-flex items-center justify-center gap-2 shadow-sm h-full">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
             Tambah Cabang
         </a>
@@ -143,27 +140,19 @@
 
 
         {{-- ===== FIELD LIST ===== --}}
-        <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-2xl border border-gray-100 p-5">
 
-            <div class="flex items-center justify-between px-5 py-3.5 bg-[#0b3d0b]">
-                <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H3.75A.75.75 0 013 21V9.75z"/>
-                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M9 21V12h6v9"/>
-                    </svg>
-                    <h3 class="font-semibold text-white text-sm tracking-wide">Lapangan</h3>
-                </div>
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-semibold text-gray-800">Lapangan</h3>
                 <button type="button" onclick="openAddField()"
-                    class="inline-flex items-center gap-1.5 text-xs font-medium bg-yellow-400 hover:bg-yellow-300
-                           text-[#0b3d0b] px-3 py-1.5 rounded-lg transition font-semibold">
+                    class="inline-flex items-center gap-1.5 text-xs font-medium bg-gray-900 hover:bg-gray-700
+                           text-white px-3 py-2 rounded-lg transition">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-width="2" stroke-linecap="round" d="M12 5v14M5 12h14"/>
                     </svg>
                     Tambah Lapangan
                 </button>
             </div>
-
-            <div class="p-5">
 
             @if($activeVenue->fields->isEmpty())
                 <p class="text-sm text-gray-400 text-center py-8">Belum ada lapangan. Tambahkan lapangan pertama kamu.</p>
@@ -220,7 +209,6 @@
             </div>
             @endif
 
-            </div>{{-- end inner p-5 --}}
         </div>
 
         @else
@@ -253,18 +241,12 @@
         @if($activeVenue)
 
         {{-- LIVE FIELD STATUS --}}
-        <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-            <div class="px-5 py-3.5 bg-[#0b3d0b] flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
-                    </span>
-                    <h3 class="font-semibold text-white text-sm tracking-wide">Status Lapangan Langsung</h3>
-                </div>
-                <span class="text-xs text-yellow-300 font-medium">Sekarang</span>
+        <div class="bg-white rounded-2xl border border-gray-100">
+            <div class="px-5 py-4 border-b flex items-center justify-between">
+                <h3 class="font-semibold text-gray-800 text-sm">Status Lapangan Langsung</h3>
+                <span class="text-xs text-gray-400">Sekarang</span>
             </div>
-            <div class="divide-y divide-gray-50">
+            <div class="divide-y">
                 @forelse($activeVenue->fields as $field)
                 @php
                     $now           = now();
@@ -304,17 +286,11 @@
 
 
         {{-- PAYMENT OVERVIEW --}}
-        <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-            <div class="px-5 py-3.5 bg-[#0b3d0b] flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
-                    </svg>
-                    <p class="text-sm font-semibold text-white tracking-wide">Ringkasan Pembayaran</p>
-                </div>
-                <span class="text-xs text-yellow-300 font-medium">Bulan ini</span>
+        <div class="bg-white rounded-2xl border border-gray-100 p-5">
+            <div class="flex items-center justify-between mb-4">
+                <p class="text-sm font-semibold text-gray-800">Ringkasan Pembayaran</p>
+                <span class="text-xs text-gray-400">Bulan ini</span>
             </div>
-            <div class="p-5">
             @php
                 $venueFieldIds = $activeVenue->fields->pluck('id');
                 $paid    = \App\Models\Booking::whereIn('field_id', $venueFieldIds)
@@ -350,7 +326,6 @@
                     <span class="text-sm font-semibold text-gray-500">{{ $expired }}</span>
                 </div>
             </div>
-            </div>{{-- end p-5 --}}
         </div>
 
 
