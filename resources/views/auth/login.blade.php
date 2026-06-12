@@ -91,21 +91,16 @@
       transform: translateX(4px);
     }
 
-    .brand-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      background: #c6df28;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 8px 20px rgba(198, 223, 40, 0.45);
-      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    .brand-logo {
+      height: 36px;
+      width: auto;
+      filter: brightness(0) invert(1);
+      transition: transform 0.3s ease, opacity 0.3s ease;
     }
 
-    .brand:hover .brand-icon {
-      box-shadow: 0 12px 28px rgba(198, 223, 40, 0.65);
-      transform: rotate(-6deg) scale(1.1);
+    .brand:hover .brand-logo {
+      transform: rotate(-4deg) scale(1.08);
+      opacity: 0.9;
     }
 
     .brand-name {
@@ -612,14 +607,7 @@
   <section class="hero-panel" aria-label="ActiveHub intro">
     <div class="hero-overlay">
       <a href="{{ route('home') }}" class="brand" aria-label="ActiveHub">
-        <span class="brand-icon" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="8" stroke="#03210F" stroke-width="2"/>
-            <path d="M4 12H20" stroke="#03210F" stroke-width="2" stroke-linecap="round"/>
-            <path d="M12 4C13.9101 5.9543 15 8.55692 15 12C15 15.4431 13.9101 18.0457 12 20" stroke="#03210F" stroke-width="2" stroke-linecap="round"/>
-            <path d="M12 4C10.0899 5.9543 9 8.55692 9 12C9 15.4431 10.0899 18.0457 12 20" stroke="#03210F" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </span>
+        <img src="{{ asset('assets/logo white.png') }}" alt="ActiveHub" class="brand-logo">
         <span class="brand-name">ActiveHub</span>
       </a>
 
