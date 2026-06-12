@@ -95,6 +95,8 @@ class MatchController extends Controller
             $query->latest('matches.created_at');
         }
 
+        $matches = $query->get();
+
         $hasBooking = Auth::check()
             ? Booking::where('user_id', Auth::id())->exists()
             : false;
