@@ -36,12 +36,131 @@
             ISI SLOT DAN MULAI PERMAINAN
         </h1>
 
-        <a href="{{ route('matches.create') }}"
-        class="inline-block bg-yellow-400 hover:bg-yellow-400
-                text-black font-bold px-12 py-4 rounded-xl transition">
-            Buat Permainan
-        </a>
+        @auth
+            @if(auth()->user()->role === 'user')
+                @if($hasBooking ?? false)
+                    <a href="{{ route('matches.create') }}"
+                       class="inline-block bg-yellow-400 hover:bg-yellow-500
+                               text-black font-bold px-12 py-4 rounded-xl transition">
+                        Buat Permainan
+                    </a>
+                @else
+                    <button onclick="document.getElementById('bookingRequiredModal').classList.remove('hidden')"
+                            class="inline-block bg-yellow-400 hover:bg-yellow-500
+                                   text-black font-bold px-12 py-4 rounded-xl transition cursor-pointer border-0">
+                        Buat Permainan
+                    </button>
+                @endif
+            @else
+                <a href="{{ route('matches.create') }}"
+                   class="inline-block bg-yellow-400 hover:bg-yellow-500
+                           text-black font-bold px-12 py-4 rounded-xl transition">
+                    Buat Permainan
+                </a>
+            @endif
+        @else
+            <a href="{{ route('login') }}"
+               class="inline-block bg-yellow-400 hover:bg-yellow-500
+                       text-black font-bold px-12 py-4 rounded-xl transition">
+                Buat Permainan
+            </a>
+        @endauth
     </section>
+
+    {{-- ===== MODAL: BOOKING REQUIRED ===== --}}
+    <div id="bookingRequiredModal"
+         class="hidden fixed inset-0 z-50 flex items-center justify-center p-4"
+         onclick="if(event.target===this) this.classList.add('hidden')">
+
+        {{-- Backdrop --}}
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+
+        {{-- Card --}}
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+             style="animation: modalIn .25s cubic-bezier(.34,1.56,.64,1) both;">
+
+            {{-- Top accent bar --}}
+            <div class="h-1.5 w-full bg-gradient-to-r from-[#1b3a1b] via-yellow-400 to-[#1b3a1b]"></div>
+
+            {{-- Body --}}
+            <div class="px-8 pt-8 pb-6">
+
+                {{-- Icon --}}
+                <div class="w-14 h-14 rounded-xl bg-[#1b3a1b]/8 border border-[#1b3a1b]/15 flex items-center justify-center mb-5">
+                    <svg class="w-7 h-7 text-[#1b3a1b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+
+                <h2 class="text-xl font-bold text-gray-900 mb-2 leading-snug">
+                    Booking Lapangan Terlebih Dahulu
+                </h2>
+
+                <p class="text-sm text-gray-500 leading-relaxed mb-1">
+                    Untuk membuat pertandingan terbuka, kamu perlu memiliki
+                    <span class="font-semibold text-gray-700">booking lapangan yang aktif</span>
+                    terlebih dahulu.
+                </p>
+
+                <p class="text-sm text-gray-500 leading-relaxed">
+                    Pilih lapangan, tentukan jadwal, lalu buat permainanmu dan undang pemain lain untuk bergabung.
+                </p>
+
+            </div>
+
+            {{-- Steps --}}
+            <div class="mx-8 mb-6 rounded-xl border border-gray-100 bg-gray-50 divide-y divide-gray-100">
+
+                <div class="flex items-center gap-4 px-5 py-3.5">
+                    <div class="w-6 h-6 rounded-full bg-[#1b3a1b] flex items-center justify-center flex-shrink-0">
+                        <span class="text-white text-[10px] font-bold">1</span>
+                    </div>
+                    <p class="text-sm text-gray-700">Cari dan booking lapangan yang tersedia</p>
+                </div>
+
+                <div class="flex items-center gap-4 px-5 py-3.5">
+                    <div class="w-6 h-6 rounded-full bg-[#1b3a1b] flex items-center justify-center flex-shrink-0">
+                        <span class="text-white text-[10px] font-bold">2</span>
+                    </div>
+                    <p class="text-sm text-gray-700">Buka permainan terbuka dari dashboard kamu</p>
+                </div>
+
+                <div class="flex items-center gap-4 px-5 py-3.5">
+                    <div class="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center flex-shrink-0">
+                        <span class="text-black text-[10px] font-bold">3</span>
+                    </div>
+                    <p class="text-sm text-gray-700">Undang pemain dan mulai pertandingan</p>
+                </div>
+
+            </div>
+
+            {{-- Actions --}}
+            <div class="px-8 pb-8 flex flex-col gap-3">
+
+                <a href="{{ route('venues.index') }}"
+                   class="w-full bg-[#1b3a1b] hover:bg-[#2a5a2a] text-white font-semibold
+                          py-3.5 rounded-xl text-sm text-center transition-colors">
+                    Cari Lapangan Sekarang
+                </a>
+
+                <button onclick="document.getElementById('bookingRequiredModal').classList.add('hidden')"
+                        class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold
+                               py-3.5 rounded-xl text-sm transition-colors border-0 cursor-pointer">
+                    Kembali
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+
+    <style>
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(.92) translateY(12px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+    </style>
 
     {{-- ===== SEARCH BAR ===== --}}
     <section class="max-w-5xl mx-auto px-4 mt-8 mb-6" x-data="searchFilter()">

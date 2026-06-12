@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
 use App\Models\GameMatch;
 use App\Services\SupabaseStorageService;
 use Illuminate\Http\Request;
@@ -94,9 +95,11 @@ class MatchController extends Controller
             $query->latest('matches.created_at');
         }
 
-        $matches = $query->get();
+        $hasBooking = Auth::check()
+            ? Booking::where('user_id', Auth::id())->exists()
+            : false;
 
-        return view('pubmatch.list', compact('matches'));
+        return view('pubmatch.list', compact('matches', 'hasBooking'));
     }
 
 
