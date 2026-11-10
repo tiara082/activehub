@@ -15,23 +15,48 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, sqlite3, pdo_sqlite, bcmath, xml, curl, gd, zip
+          coverage: none
+
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist
 
-      - name: Install Playwright browsers
+      - name: Prepare Laravel
+        run: |
+          cat > .env <<EOF
+          APP_NAME=ActiveHub
+          APP_ENV=local
+          APP_KEY=
+          APP_DEBUG=true
+          APP_URL=http://127.0.0.1:8000
+          DB_CONNECTION=sqlite
+          DB_DATABASE=${{ github.workspace }}/database/database.sqlite
+          SESSION_DRIVER=file
+          CACHE_STORE=file
+          QUEUE_CONNECTION=sync
+          EOF
+          php artisan key:generate
+          touch database/database.sqlite
+          php artisan migrate --seed --force
+
+      - name: Install Node dependencies and build assets
+        run: |
+          npm ci
+          npm run build
+
+      - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 
       - name: Run Playwright tests
         run: npx playwright test
-        env:
-          BASE_URL: ${{ secrets.BASE_URL }}
-          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
-          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
