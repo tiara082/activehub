@@ -45,7 +45,8 @@ jobs:
           EOF
           php artisan key:generate
           touch database/database.sqlite
-          php artisan migrate --seed --force
+          php artisan migrate --force
+          php artisan db:seed --class=E2ESeeder --force
 
       - name: Install Node dependencies and build assets
         run: |
